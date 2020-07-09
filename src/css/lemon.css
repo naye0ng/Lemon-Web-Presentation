@@ -1,0 +1,6 @@
+/* css에서 파일 삽입 */
+div.lemon{
+    background: url('../img/calendar.png');
+    width: 100px;
+    height: 100px;
+}
