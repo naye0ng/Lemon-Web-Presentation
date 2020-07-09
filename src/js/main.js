@@ -1,6 +1,11 @@
-// css import
+// import css
 import '../css/common.css';
 import '../css/lemon.css';
+
+// import javascript
+import './Tutorial/DataBinding';
+import './Tutorial/CreateSlide';
+
 
 // 자바스크립트에서 파일 삽입
 // import check from '../img/check.png';

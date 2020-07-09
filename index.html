@@ -1,13 +1,49 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lemon Presentation🍋</title>
-</head>
-<body>
-    <div class="lemon"></div>
 
-    <script src="./dist/js/main.js"></script> 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    section {
+      padding: 5% 0 0 5%;
+    }
+
+    .container {
+      width: 500px;
+    }
+
+    #slide-input,
+    #slide-output {
+      display: inline-block;
+      width: 45%;
+      height: 300px;
+      float: left;
+    }
+
+    #slide-output {
+      background-color: aliceblue;
+      margin-left: 3%;
+    }
+  </style>
+  <title>Lemon Presentation🍋</title>
+</head>
+
+<body>
+  <section id="data-binding">
+    <h3>1. data binding</h3>
+    <input type="text" name="" id="bind-input" />
+    <p>this is binding: <span id="bind-output"></span></p>
+  </section>
+
+  <section id="data-binding">
+    <h3>2. create slide</h3>
+    <div class="container">
+      <textarea id="slide-input"></textarea>
+      <div id="slide-output"></div>
+    </div>
+  </section>
+  <script src="./dist/js/main.js"></script>
 </body>
+
 </html>
