@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // [방법1] : 계속 돌렸을 때, 성능 문제 안생길까? >> 500ms로 늘려본다.
   setInterval(() => {
     document.getElementById('bind-output').innerText = obj.text;
-  }, 500);
+  });
 
   // [방법2] : change는 입력을 아예 끝내버리고 focus가 해제됐을 떄 실행된다. >> 실시간이라 볼 수 없다.
   // const input = document.querySelector('#bind-input');

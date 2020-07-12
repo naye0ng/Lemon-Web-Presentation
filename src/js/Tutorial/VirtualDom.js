@@ -1,4 +1,4 @@
-// import createElement from './vDOM/CreateElement';
+import createElement from './vDOM/CreateElement';
 import render from './vDOM/Render';
 import mount from './vDOM/Mount';
 import diff from './vDOM/Diff';
@@ -17,9 +17,9 @@ import diff from './vDOM/Diff';
 // });
 
 
-let DOM = {
+let DOM = createElement({
   tagName: 'ul',
-  attrs: {},
+  // attrs: {},
   children: [
     {
       tagName: 'li',
@@ -51,11 +51,11 @@ let DOM = {
       ],
     },
   ],
-};
+});
 
 const $app = render(DOM);
 let $rootEl = mount($app, document.querySelector('#app'));
-
+console.log($app);
 
 // 임시적으로 차이를 보여줌
 let counter = 1;
@@ -68,4 +68,4 @@ setInterval(() => {
   const patch = diff(DOM, DOM2);
   $rootEl = patch($rootEl);
   DOM = DOM2;
-}, 1000);
+});

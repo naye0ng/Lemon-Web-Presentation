@@ -10,7 +10,7 @@
     }
 
     section {
-      padding: 5% 0 0 5%;
+      margin: 5% 0 0 5%;
     }
 
     .container {
@@ -21,7 +21,7 @@
     #slide-input,
     #slide-output {
       display: inline-block;
-      width: 45%;
+      width: 48%;
       height: 300px;
       float: left;
     }
@@ -31,7 +31,8 @@
       margin-left: 3%;
     }
 
-    #virtual-dom {
+    #virtual-dom,
+    #convert-dom {
       float: clear;
       width: 500px;
       height: 300px;
@@ -68,6 +69,22 @@
   <section>
     <div id="virtual-dom">
       <div id="app"></div>
+    </div>
+  </section>
+  <section id="convert-dom">
+    <div id="target" :size="10">
+      알라리알라 알라리 알라
+      <ul>
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4
+          <ol>
+            <li>77</li>
+            <li>88</li>
+          </ol>
+        </li>
+      </ul>
     </div>
   </section>
   <script src="./dist/js/main.js"></script>
