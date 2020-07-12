@@ -5,6 +5,9 @@ import '../css/lemon.css';
 // import javascript
 import './Tutorial/DataBinding';
 import './Tutorial/CreateSlide';
+// import './Tutorial/MarkupSlide';
+
+import './Tutorial/VirtualDom';
 
 
 // 자바스크립트에서 파일 삽입

@@ -5,12 +5,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     section {
       padding: 5% 0 0 5%;
     }
 
     .container {
       width: 500px;
+      overflow: hidden;
     }
 
     #slide-input,
@@ -24,6 +29,20 @@
     #slide-output {
       background-color: aliceblue;
       margin-left: 3%;
+    }
+
+    #virtual-dom {
+      float: clear;
+      width: 500px;
+      height: 300px;
+      background: antiquewhite;
+    }
+
+    slide {
+      display: block;
+      padding: 10px;
+      color: red;
+      background-color: blue;
     }
   </style>
   <title>Lemon Presentation🍋</title>
@@ -41,6 +60,14 @@
     <div class="container">
       <textarea id="slide-input"></textarea>
       <div id="slide-output"></div>
+    </div>
+  </section>
+  <!-- <div>
+    <img src="https://media.giphy.com/media/13CoXDiaCcCoyk/giphy.gif" alt="">
+  </div> -->
+  <section>
+    <div id="virtual-dom">
+      <div id="app"></div>
     </div>
   </section>
   <script src="./dist/js/main.js"></script>

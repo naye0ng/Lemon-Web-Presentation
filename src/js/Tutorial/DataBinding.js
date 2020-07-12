@@ -8,6 +8,7 @@
 https://im-developer.tistory.com/140
 */
 
+// base 객체에 key 속성을 추가하고 거기에 el를 저장하겠다.
 function bind (base, el, key) {
   Object.defineProperty(base, key, {
     // base 객체에 key 속성을 추가하고 해당 속성의 옵션을 아래와 같이 설정하겠다는 의미
