@@ -42,5 +42,8 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
+  },
+  "dependencies": {
+    "core-js": "^3.6.5"
   }
 }
