@@ -7,8 +7,8 @@ import '../css/lemon.css';
 // import './Tutorial/CreateSlide';
 import './Tutorial/MarkupSlide';
 
-import './Tutorial/VirtualDom';
-import './Tutorial/ConvertDOMtoObject';
+// import './Tutorial/VirtualDom';
+// import './Tutorial/ConvertDOMtoObject';
 
 
 // 자바스크립트에서 파일 삽입
