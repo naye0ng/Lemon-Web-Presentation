@@ -67,6 +67,7 @@ section.presentation::-webkit-scrollbar {
     /* @media */
     flex-direction: column;
 }
+/* TODO : Slide padding 제거하고 flex-box 이용해서 항상 contents가 가운데!! */
 .slide{
     width: 35vw;
     height: calc(35vw * 9 / 16);

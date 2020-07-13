@@ -29,15 +29,14 @@ class Presentation {
   }
 
   createDOMObject (el) {
-    const xml = new DOMParser().parseFromString(`<div class='slide-container'>${el.value}</div>`, 'text/xml');
-    return markupParser(xml.children[0]);
+    const xml = new DOMParser().parseFromString(`<div class='slide-container'>${el.value}</div >`, 'text/html');
+    return markupParser(xml.body.childNodes[0]);
   }
 
   render () {
     // TODO : 여기에서 화면에 보이는데 차이점을 찾아서 virtual DOM 만들고 뿌리기
-    this.output.innerHTML = this.getState();
-
-    // console.log(this.getState());
+    // this.output.innerHTML = this.getState();
+    console.log(this.getState());
   }
 }
 
