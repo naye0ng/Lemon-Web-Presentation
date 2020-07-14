@@ -6,6 +6,7 @@ const renderElement = ({tag, attrs, children}) => {
   }
 
   for (const child of children) {
+    if (attrs.class === 'slide-container ' && typeof child === 'string') continue;
     el.appendChild(createElement(child));
   }
 

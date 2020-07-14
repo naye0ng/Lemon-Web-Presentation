@@ -348,8 +348,13 @@ this is text
 - 지정된 문법을 제대로 사용하지 않고 입력한 경우
 
 
+#### 5) 추가
 
-#### 4) 참고 링크
+- 링크 기능
+- 수정하고 있는 부분을 프레젠테이션으로 포커스
+
+
+#### 6) 참고 링크
 
 - virtual dom : [참고 1](https://medium.com/@enro2414_40667/virtual-dom-%EB%B2%84%EC%B6%94%EC%96%BC-%EB%8F%94-%EA%B0%80%EC%83%81-%EB%8F%94-%EC%9D%84-%EC%A7%81%EC%A0%91-%EB%A7%8C%EB%93%A4%EC%96%B4%EB%B3%B4%EC%9E%90-1c44606ea9b1), [참고 2](https://wonism.github.io/deep-dive-into-vdom/)
 - 2-way binding : [참고 1](https://www.it-swarm.dev/ko/javascript/javascript%EC%97%90%EC%84%9C-dom-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EB%B0%94%EC%9D%B8%EB%94%A9%EC%9D%84-%EA%B5%AC%ED%98%84%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95/1073759748/)
