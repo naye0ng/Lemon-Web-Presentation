@@ -1,4 +1,4 @@
-import Presentation from './MarkupEditor/presentation';
+import Presentation from './Presentation/presentation';
 
 import '../css/common.css';
 import '../css/lemon.css';
