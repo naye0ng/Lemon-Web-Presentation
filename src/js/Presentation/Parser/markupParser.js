@@ -1,8 +1,8 @@
 const TEXT = 3;
 
 const ALLOW_TAGS = [
-  'SLIDE', 'DIV', 'TITLE', 'P', 'IMAGE', 'IMG',
-  'LIST', 'LI', 'OL', 'BOLD', 'B', 'ITALIC', 'I', '#text',
+  'SLIDE', 'DIV', 'TITLE', 'P', 'IMAGE', 'IMG', 'TEXT', 'ITEM',
+  'LIST', 'UL', 'LI', 'OL', 'BOLD', 'B', 'ITALIC', 'I', '#text',
 ];
 
 const TAGS = {
@@ -10,7 +10,8 @@ const TAGS = {
   TITLE: 'P',
   TEXT: 'P',
   IMAGE: 'IMG',
-  LIST: 'LI',
+  LIST: 'UL',
+  ITEM: 'LI',
   BOLD: 'B',
   ITALIC: 'I',
 };
@@ -31,8 +32,10 @@ const attrParser = (name, value) => {
   if (name === ':width') return ['style', `width: ${value}%;`];
   if (name === ':height') return ['style', `height: ${value}%;`];
   if (name === ':float') return ['style', `float: ${value};`];
-  if (name === ':decorator') return ['style', `list-style: ${value === 'number' ? 'decimal' : value};`];
-  // TODO : animation class 추가로 정의
+  if (name === ':decorator') return ['class', `list-style-${value}`];
+  if (name === ':path') return ['style', `content:url('${value}');`];
+
+  // TODO : animation class 추가
   return [name, value];
 };
 
@@ -42,24 +45,31 @@ const markupParser = node => {
   }
 
   const parsedObj = {
-    tagName: TAGS[node.tagName] || node.tagName,
-    attrs: {
-      class: '',
-      style: '',
-    },
+    tag: TAGS[node.tagName] || node.tagName,
+    attrs: {},
     children: Array.prototype.filter
       .call(node.childNodes, child => isNode(child))
       .map(child => markupParser(child)),
   };
 
+
+  if (node.tagName === 'SLIDE') {
+    parsedObj.attrs.class = 'slide ';
+  }
+
   for (let i = 0; i < node.attributes.length || 0; i++) {
-    let nodeName; let nodeValue;
-    ({nodeName, nodeValue} = node.attributes[i]);
-    if (nodeValue) {
-      if (nodeName !== 'class' && nodeName !== 'style') {
-        [nodeName, nodeValue] = attrParser(nodeName, nodeValue);
+    let name; let value;
+    ({name, value} = node.attributes[i]);
+
+    if (value) {
+      if (name !== 'class' && name !== 'style') {
+        [name, value] = attrParser(name, value);
       }
-      parsedObj.attrs[nodeName] += `${nodeValue} `;
+
+      if (parsedObj.attrs[name] === undefined) {
+        parsedObj.attrs[name] = '';
+      }
+      parsedObj.attrs[name] += `${value} `;
     }
   }
   return parsedObj;

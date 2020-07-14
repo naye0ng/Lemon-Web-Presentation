@@ -95,3 +95,10 @@ section.editor textarea{
     padding: 15px;
     border:0;
 }
+
+.slide ul.list-style-number li {
+    list-style: decimal inside;
+}
+.slide ul.list-style-circle li {
+    list-style: disc inside;
+}
