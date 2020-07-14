@@ -1,9 +1,10 @@
-import markupParser from './markupParser';
+import markupParser from './Parser/markupParser';
+import createElement from './Parser/createElement';
 
 class Presentation {
   constructor () {
     this.state = {};
-    this.input = document.querySelector('textarea#markup-editor');
+    this.input = document.querySelector('#markup-editor');
     this.output = document.querySelector('#slide-viewer');
 
     this.init();
@@ -33,11 +34,14 @@ class Presentation {
     return markupParser(xml.body.childNodes[0]);
   }
 
+  mount (node) {
+    this.output.replaceChild(node, this.output.childNodes[0]);
+  }
+
   render () {
-    // TODO : 여기에서 화면에 보이는데 차이점을 찾아서 virtual DOM 만들고 뿌리기
-    // this.output.innerHTML = this.getState();
-    console.log(this.getState());
+    this.mount(createElement(this.getState()));
   }
 }
 
 export default Presentation;
+
