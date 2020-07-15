@@ -4,7 +4,11 @@
   "description": "Lemon Presentation🍋, 2020 Kakao Internship Project",
   "main": "index.js",
   "scripts": {
-    "build": "webpack -w"
+    "watch": "webpack -w",
+    "lint": "eslint ./src --fix",
+    "build": "PUBLIC_URL='https://github.daumkakao.com/pages/kelley-j/Lemon-Presentation/' webpack -p",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist/"
   },
   "repository": {
     "type": "git",
@@ -38,5 +42,8 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
+  },
+  "dependencies": {
+    "core-js": "^3.6.5"
   }
 }
