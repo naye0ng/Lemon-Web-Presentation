@@ -1,5 +1,5 @@
 * {
-    -webkit-text-size-adjust: none
+    /* -webkit-text-size-adjust: none */
 }
 
 body {
@@ -116,7 +116,7 @@ section.editor textarea {
 }
 
 .slide>.head-2, h2 {
-    font-size: 2.25vw;
+    font-size: 2.3vw;
 }
 
 .slide>.head-3, h3 {
