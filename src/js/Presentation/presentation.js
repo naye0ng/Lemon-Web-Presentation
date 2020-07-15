@@ -1,5 +1,5 @@
 import markupParser from './Parser/markupParser';
-import createElement from './Parser/createElement';
+import convertObjToElem from './Parser/convertObjToElem';
 
 class Presentation {
   constructor () {
@@ -39,7 +39,7 @@ class Presentation {
   }
 
   render () {
-    this.mount(createElement(this.getState()));
+    this.mount(convertObjToElem(this.getState()));
   }
 }
 

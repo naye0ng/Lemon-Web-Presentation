@@ -2,46 +2,46 @@ import attrParser from './attrParser';
 import {ALLOW_TAGS, TAGS} from './constants';
 
 
-const isNode = node => {
-  if (!ALLOW_TAGS.includes(node.nodeName)) return false;
-  if (node.nodeName === '#text' && node.nodeValue.trim() === '') return false;
+const isNode = ({nodeName, nodeValue}) => {
+  if (!ALLOW_TAGS.includes(nodeName)) return false;
+  if (nodeName === '#text' && nodeValue.trim() === '') return false;
 
   return true;
 };
 
-const markupParser = node => {
-  if (node.nodeName === '#text') {
-    if (node.nodeValue[0] === '\n') return node.nodeValue.slice(1);
-    return node.nodeValue;
+const markupParser = ({nodeName, nodeValue, tagName, attributes, childNodes}) => {
+  if (nodeName === '#text') {
+    if (nodeValue[0] === '\n') return nodeValue.slice(1);
+    return nodeValue;
   }
 
   const parsedObj = {
-    tag: TAGS[node.tagName] || node.tagName,
+    tag: TAGS[tagName] || tagName,
     attrs: {},
-    children: Array.prototype.filter
-      .call(node.childNodes, child => isNode(child))
-      .map(child => markupParser(child)),
   };
 
-  if (node.tagName === 'SLIDE') {
+  parsedObj.children = Array.from(childNodes)
+    .filter(child => isNode(child))
+    .map(child => markupParser(child));
+
+  if (tagName === 'SLIDE') {
     parsedObj.attrs.class = 'slide ';
   }
 
-  for (let i = 0; i < node.attributes.length || 0; i++) {
+  for (let i = 0; i < attributes.length || 0; i++) {
     let name; let value;
-    ({name, value} = node.attributes[i]);
+    ({name, value} = attributes[i]);
 
     if (value) {
-      if (name !== 'class' && name !== 'style') {
-        [name, value] = attrParser(name, value);
-      }
+      [name, value] = attrParser(name, value);
 
-      if (parsedObj.attrs[name] === undefined) {
+      if (!parsedObj.attrs[name]) {
         parsedObj.attrs[name] = '';
       }
       parsedObj.attrs[name] += `${value} `;
     }
   }
+
   return parsedObj;
 };
 
