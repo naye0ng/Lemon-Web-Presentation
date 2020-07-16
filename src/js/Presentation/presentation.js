@@ -4,7 +4,7 @@ import convertObjToElem from './Parser/convertObjToElem';
 class Presentation {
   constructor () {
     this.state = {};
-    this.domElem = '';
+    this.slideEl = '';
     this.input = document.querySelector('#markup-editor');
     this.output = document.querySelector('#slide-viewer');
 
@@ -14,7 +14,7 @@ class Presentation {
   init () {
     this.setState(this.state, 'slides', this.input);
     this.input.addEventListener('keyup', () => {
-      this.setDomElem();
+      this.setSlideElFunc();
       this.render();
     });
   }
@@ -31,11 +31,11 @@ class Presentation {
     return this.state.slides;
   }
 
-  setDomElem () {
-    this.domElem = convertObjToElem(this.getState());
+  setSlideElFunc () {
+    this.slideEl = convertObjToElem(this.getState());
   }
-  getDomElemFunc () {
-    return () => this.domElem;
+  getSlideElFunc () {
+    return () => this.slideEl;
   }
 
   createDOMObject (el) {
@@ -48,7 +48,7 @@ class Presentation {
   }
 
   render () {
-    this.mount(this.domElem);
+    this.mount(this.slideEl);
   }
 }
 
