@@ -6,7 +6,9 @@ const bindElem = ({tag, attrs, children}) => {
   }
 
   for (const child of children) {
-    if (attrs.class === 'slide-container ' && typeof child === 'string') continue;
+    if (attrs.class === 'slide-container ') {
+      if (typeof child === 'string' || child.attrs.class.indexOf('slide') === -1) continue;
+    }
     el.appendChild(convertObjToElem(child));
   }
 
