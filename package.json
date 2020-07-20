@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint ./src --fix",
-    "prewatch": "npm run lint",
     "watch": "PUBLIC_URL='./' webpack -w",
     "build": "PUBLIC_URL='https://github.daumkakao.com/pages/kelley-j/Lemon-Presentation/' webpack -p",
     "predeploy": "npm run build",

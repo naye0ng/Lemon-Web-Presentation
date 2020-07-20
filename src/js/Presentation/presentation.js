@@ -5,6 +5,7 @@ class Presentation {
   constructor () {
     this.slides = {};
     this.vDOM = null;
+
     this.editor = document.querySelector('#markup-editor');
     this.viewer = document.querySelector('#slide-viewer');
 
