@@ -8,5 +8,5 @@ document.addEventListener('DOMContentLoaded', () => {
   const presentation = new Presentation();
 
   // eslint-disable-next-line no-new
-  new Fullscreen(presentation.getSlideElFunc());
+  new Fullscreen(presentation);
 });
