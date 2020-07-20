@@ -1,11 +1,14 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const publicPath = process.env.PUBLIC_URL || '/';
 
 module.exports = {
   mode: 'development',
   entry: './src/js/main.js',
   output: {
-    path: path.resolve(__dirname, './dist/js'),
+    path: path.resolve(__dirname, './dist'),
     filename: '[name].js',
+    publicPath,
   },
   module: {
     rules: [
@@ -33,4 +36,12 @@ module.exports = {
       },
     ],
   },
+  plugins: [
+    new HtmlWebpackPlugin({
+      base: publicPath,
+      title: 'Lemon Presentation🍋',
+      filename: 'index.html',
+      template: './index.html',
+    }),
+  ],
 };
