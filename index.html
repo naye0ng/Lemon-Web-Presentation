@@ -8,13 +8,25 @@
 </head>
 
 <body>
-    <div class="presentation-editor">
-        <section id="slide-viewer" class="presentation">
-            <div class="slide-container"></div>
+    <header>
+        <div class="header__info">
+            <a href="#none">🍋</a>
+        </div>
+        <div class="header__menu">
+            <button class="usage-btn">?</button>
+            <button class="fullscreen-btn">presentation</button>
+            <button class="pdf-btn">PDF</button>
+        </div>
+    </header>
+
+    <div class="slide-editor">
+        <section id="slide-viewer" class="markup-viewer hide-scroll">
         </section>
         <section class="editor">
-            <textarea id="markup-editor"></textarea>
+            <textarea id="markup-editor" class="hide-scroll"></textarea>
         </section>
+    </div>
+    <div id="fullscreen" tabindex="0">
     </div>
 </body>
 
