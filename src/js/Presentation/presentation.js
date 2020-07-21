@@ -1,54 +1,35 @@
 import markupParser from './Parser/markupParser';
-import convertObjToElem from './Parser/convertObjToElem';
+import convertObjToDOM from './Parser/convertObjToElem';
 
 class Presentation {
   constructor () {
-    this.state = {};
-    this.slideEl = '';
-    this.input = document.querySelector('#markup-editor');
-    this.output = document.querySelector('#slide-viewer');
+    this.slides = {};
+    this.vDOM = null;
+
+    this.editor = document.querySelector('#markup-editor');
+    this.viewer = document.querySelector('#slide-viewer');
 
     this.init();
   }
 
   init () {
-    this.setState(this.state, 'slides', this.input);
-    this.input.addEventListener('keyup', () => {
-      this.setSlideElFunc();
-      this.render();
+    this.editor.addEventListener('keyup', () => {
+      this.convertStringToDOM();
     });
   }
 
-  setState (obj, key, el) {
-    Object.defineProperty(obj, key, {
-      configurable: true,
-      enumerable: true,
-      get: () => this.createDOMObject(el),
-    });
-  }
-
-  getState () {
-    return this.state.slides;
-  }
-
-  setSlideElFunc () {
-    this.slideEl = convertObjToElem(this.getState());
-  }
-  getSlideElFunc () {
-    return () => this.slideEl;
-  }
-
-  createDOMObject (el) {
-    const xml = new DOMParser().parseFromString(`<div class='slide-container'>${el.value}</div >`, 'text/html');
-    return markupParser(xml.body.childNodes[0]);
-  }
-
-  mount (node) {
-    this.output.replaceChild(node, this.output.childNodes[0]);
+  convertStringToDOM () {
+    // TODO : 변화 감지하는 함수 추가
+    const xml = new DOMParser().parseFromString(`<div class='slide-container'>${this.editor.value}</div >`, 'text/html');
+    this.slides = markupParser(xml.body.childNodes[0]);
+    this.vDOM = convertObjToDOM(this.slides);
+    this.render();
   }
 
   render () {
-    this.mount(this.slideEl);
+    // TODO : render(부모노드, 자식노드)로 변화된 부분만 랜더링!
+    this.viewer.innerHTML = '';
+    this.viewer.appendChild(this.vDOM);
   }
 }
 

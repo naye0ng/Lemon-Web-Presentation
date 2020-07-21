@@ -4,8 +4,8 @@
   "description": "Lemon Presentation🍋, 2020 Kakao Internship Project",
   "main": "index.js",
   "scripts": {
-    "watch": "webpack -w",
     "lint": "eslint ./src --fix",
+    "watch": "PUBLIC_URL='./' webpack -w",
     "build": "PUBLIC_URL='https://github.daumkakao.com/pages/kelley-j/Lemon-Presentation/' webpack -p",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist/"
