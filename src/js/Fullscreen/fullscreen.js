@@ -1,79 +1,53 @@
 class Fullscreen {
-  constructor (getSlideElFunc) {
-    this.fullscreenState = false;
-    this.fullscreenEl = document.querySelector('#fullscreen');
+  constructor (presentation) {
+    this.presentation = presentation;
 
-    this.getSlideElFunc = getSlideElFunc;
+    this.fullscreenButton = document.querySelector('button.fullscreen-btn');
+    this.fullscreenWrapper = document.querySelector('#fullscreen');
+    this.fullscreenContents = document.querySelector('#fullscreen-contents');
+
+    // TODO : 시작인덱스 입력 받기
+    this.slideIndex = 0;
+    this.slideCount = 0;
+
     this.init();
   }
 
   init () {
-    this.initCarousel();
-    this.toggleFullscreen();
-    this.bindArrowController();
-
-    document.querySelector('button.fullscreen-btn').addEventListener('click', () => {
-      if (!this.fullscreenState) {
-        this.startFullscreen();
-      }
+    this.fullscreenButton.addEventListener('click', () => {
+      this.startFullscreen();
+    });
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreen) return;
+      this.fullscreenContents.innerHTML = '';
+    });
+    document.addEventListener('keydown', ({key}) => {
+      if (!document.fullscreen) return;
+      this.arrowKeyController(key);
     });
   }
 
-  initCarousel (carousel = null, slideIndex = 0, slideCount = 0) {
-    this.carousel = carousel;
-    this.slideIndex = slideIndex;
-    this.slideCount = slideCount;
-  }
-
-  toggleFullscreenState () {
-    this.fullscreenState = !this.fullscreenState;
-    if (!this.fullscreenState) {
-      this.fullscreenEl.innerHTML = '';
-      this.initCarousel();
+  arrowKeyController (key) {
+    if (key === 'ArrowLeft' && this.slideIndex > 0) {
+      this.slideIndex -= 1;
+      this.fullscreenContents.style.marginLeft = `${-100 * this.slideIndex}vw`;
+    } else if (key === 'ArrowRight' && this.slideIndex < this.slideCount - 1) {
+      this.slideIndex += 1;
+      this.fullscreenContents.style.marginLeft = `${-100 * this.slideIndex}vw`;
     }
   }
 
-  toggleFullscreen () {
-    ['webkitfullscreenchange', 'msfullscreenchange'].forEach(event => {
-      this.fullscreenEl.addEventListener(event, () => {
-        this.toggleFullscreenState();
-      });
-    });
-  }
-
-  bindArrowController () {
-    this.fullscreenEl.addEventListener('keydown', ({key}) => {
-      if (!this.fullscreenState) return;
-
-      if (key === 'ArrowLeft' && this.slideIndex > 0) {
-        this.slideIndex -= 1;
-        this.carousel.style.marginLeft = `${-100 * this.slideIndex}vw`;
-      } else if (key === 'ArrowRight' && this.slideIndex < this.slideCount - 1) {
-        this.slideIndex += 1;
-        this.carousel.style.marginLeft = `${-100 * this.slideIndex}vw`;
-      }
-    });
-  }
-
   startFullscreen () {
-    const slideNodes = this.getSlideElFunc();
-    this.slideCount = slideNodes.childElementCount;
-    if (!this.slideCount) {
+    const slideNodes = this.presentation.vDOM;
+    if (!slideNodes || !slideNodes.childElementCount) {
       alert('작성된 슬라이드가 없습니다. \n슬라이드를 만들어주세요!');
     } else {
-      const renderFullscreen =
-        this.fullscreenEl.webkitRequestFullScreen ||
-        this.fullscreenEl.msRequestFullscreen;
+      this.slideCount = slideNodes.childElementCount;
 
-      this.fullscreenEl.appendChild(slideNodes.cloneNode(true));
+      this.fullscreenContents.appendChild(slideNodes.cloneNode(true));
+      this.fullscreenContents.firstChild.style.width = `${100 * this.slideCount}vw`;
 
-      this.carousel = document.querySelector('#fullscreen > .slide-container');
-      this.carousel.style.width = `${100 * this.slideCount}vw`;
-
-      // TODO : IE에서 테스트!
-      if (renderFullscreen) {
-        renderFullscreen.call(this.fullscreenEl);
-      }
+      this.fullscreenWrapper.requestFullscreen();
     }
   }
 }
