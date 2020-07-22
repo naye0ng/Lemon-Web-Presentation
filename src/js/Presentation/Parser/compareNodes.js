@@ -1,5 +1,31 @@
 import convertObjToDOM from './convertObjToDOM';
 
+const compareAttributes = (oldAttrs, newAttrs) => {
+  const changedAttrs = [];
+
+  for (const attr in oldAttrs) {
+    if (newAttrs[attr]) continue;
+
+    changedAttrs.push(vDOM => {
+      vDOM.removeAttribute(attr);
+    });
+  }
+
+  for (const [attr, value] of Object.entries(newAttrs)) {
+    if (oldAttrs[attr] === value) continue;
+    changedAttrs.push(vDOM => {
+      vDOM.setAttribute(attr, value);
+    });
+  }
+
+  return vDOM => {
+    for (const patch of changedAttrs) {
+      patch(vDOM);
+    }
+  };
+};
+
+
 const compareChildNodes = (oldChild, newChild) => {
   const changedChildNodes = oldChild.map((node, i) => compareNodes(node, newChild[i])
   );
@@ -50,10 +76,9 @@ const compareNodes = (oldNode, newNode) => {
     };
   }
 
-  const patchChildNodes = compareChildNodes(oldNode.children, newNode.children);
-
   return vDOM => {
-    patchChildNodes(vDOM);
+    compareAttributes(oldNode.attrs, newNode.attrs)(vDOM);
+    compareChildNodes(oldNode.children, newNode.children)(vDOM);
   };
 };
 
