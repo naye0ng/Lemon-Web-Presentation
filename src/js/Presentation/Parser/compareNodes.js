@@ -10,9 +10,17 @@ const compareChildNodes = (oldChild, newChild) => {
     });
 
   return parentVDOM => {
+    let parentIndex = 0;
+    let j = 0;
+    if (changedChildNodes.length >= 1) {
+      parentIndex = parentVDOM.childNodes.length;
+    }
     for (let i = 0; i < changedChildNodes.length; i++) {
-      // TODO : 사용자가 한꺼번에 여러 노드를 삭제하는 경우 parentVDOM.childNodes[i] 순서가 밀리게 된다.
-      changedChildNodes[i](parentVDOM.childNodes[i]);
+      if (parentIndex !== parentVDOM.childNodes.length) {
+        parentIndex = parentVDOM.childNodes.length;
+        j += 1;
+      }
+      changedChildNodes[i](parentVDOM.childNodes[i - j]);
     }
     for (let i = 0; i < addedChildNodes.length; i++) {
       addedChildNodes[i](parentVDOM);
