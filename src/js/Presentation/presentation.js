@@ -8,7 +8,7 @@ class Presentation {
 
     [this.vDOM] = this.viewer.children;
     this.slide = markupParser(this.vDOM);
-
+    // TODO : presentation script도 여기에 저장
     this.init();
   }
 
