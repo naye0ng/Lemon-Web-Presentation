@@ -1,5 +1,5 @@
 import markupParser from './Parser/markupParser';
-import compareNodes from './Parser/compareNodes';
+import updateVDOM from './vDOM/updateVDOM';
 
 class Presentation {
   constructor () {
@@ -8,20 +8,25 @@ class Presentation {
 
     [this.vDOM] = this.viewer.children;
     this.slide = markupParser(this.vDOM);
-    // TODO : presentation script도 여기에 저장
+    // TODO : presentation script
     this.init();
   }
 
   init () {
     this.editor.addEventListener('keyup', () => {
-      this.convertStringToDOM();
+      this.renderVDOM();
     });
   }
-  // TODO : 이름 바꾸기, 변화를 넘겨주는 함수?
+
   convertStringToDOM () {
-    const xml = new DOMParser().parseFromString(`<div class='slide-container'>${this.editor.value}</div >`, 'text/html');
-    const newSlide = markupParser(xml.body.childNodes[0]);
-    compareNodes(this.slide, newSlide)(this.vDOM);
+    return new DOMParser().parseFromString(`<div class='slide-container'>${this.editor.value}</div>`, 'text/html');
+  }
+
+  renderVDOM () {
+    const [newSlideDOM] = this.convertStringToDOM().body.childNodes;
+    const newSlide = markupParser(newSlideDOM);
+
+    updateVDOM(this.slide, newSlide)(this.vDOM);
     this.slide = newSlide;
   }
 }
