@@ -21,7 +21,6 @@ class Presentation {
   convertStringToDOM () {
     const xml = new DOMParser().parseFromString(`<div class='slide-container'>${this.editor.value}</div >`, 'text/html');
     const newSlide = markupParser(xml.body.childNodes[0]);
-    console.log(newSlide);
     compareNodes(this.slide, newSlide)(this.vDOM);
     this.slide = newSlide;
   }
