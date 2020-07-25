@@ -8,9 +8,10 @@ class View {
     return element;
   }
 
-  createElement (tag, attr, value) {
+  createElement (tag, attr, value, contents) {
     const element = document.createElement(tag);
     if (attr) element.setAttribute(attr, value);
+    if (contents) element.innerHTML = contents;
     return element;
   }
 
