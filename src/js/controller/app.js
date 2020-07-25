@@ -1,10 +1,10 @@
-import SlideEditor from './SlideEditor';
-import Fullscreen from './fullscreen';
+import SlideEditorController from './SlideEditorController';
+// import FullscreenModeController from './fullscreenModeController';
 
 class App {
   constructor () {
-    this.slideEditor = new SlideEditor();
-    this.fullscreen = new Fullscreen();
+    this.slideEditor = new SlideEditorController();
+    // this.fullscreen = new FullscreenModeController();
   }
 }
 

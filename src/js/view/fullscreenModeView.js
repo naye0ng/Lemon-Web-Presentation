@@ -1,15 +1,17 @@
 import View from './view';
 
-class FullscreenView extends View {
-  constructor () {
+class FullscreenModeView extends View {
+  constructor (controller) {
     super();
+    this.controller = controller;
+
     this.$fullscreen = this.createElement('div', 'id', 'fullscreen');
     this.$fullscreenMenu = this.createElement('div', 'id', 'fullscreen-menu');
     this.$fullscreenContents = this.createElement('div', 'id', 'fullscreen-contents');
-
     this.$fullscreen.append(this.$fullscreenMenu, this.$fullscreenContents);
-    this.$app.append(this.$fullscreen);
+
+    this.render(this.$fullscreen);
   }
 }
 
-export default FullscreenView;
+export default FullscreenModeView;
