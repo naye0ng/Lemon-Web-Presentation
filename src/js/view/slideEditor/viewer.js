@@ -8,6 +8,10 @@ class Viewer extends View {
     this.$slideContainer = this.createElement('div', 'class', 'slide-container');
     this.$view.append(this.$slideContainer);
   }
+
+  render (childElement, parentElement, n) {
+    parentElement.insertBefore(childElement, parentElement.childNodes[n]);
+  }
 }
 
 export default Viewer;
