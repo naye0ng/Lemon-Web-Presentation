@@ -33,7 +33,7 @@ class SlideEditorView extends View {
     this.toolbar.$view.addEventListener('click', event => {
       if (!event.target.id) return;
       if (event.target.id === 'delete') return this.controller.deleteSlide();
-      if (event.target.id === 'create') return this.controller.createSlide();
+      if (event.target.id === 'create') return this.controller.reateNextSlide();
       if (event.target.id === 'before') return this.controller.focusOnBeforeSlide();
       if (event.target.id === 'next') return this.controller.focusOnNextSlide();
     });
