@@ -4,8 +4,8 @@ class Editor extends View {
   constructor () {
     super();
 
-    this.$view = this.createElement('section', 'class', 'editor');
-    this.$textarea = this.createElement('textarea', 'class', 'markup');
+    this.$view = this.createElement('div', {class: 'editor'});
+    this.$textarea = this.createElement('textarea');
     this.$view.append(this.$textarea);
   }
 }
