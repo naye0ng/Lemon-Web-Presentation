@@ -30,12 +30,12 @@ class SlideEditorController {
     SVGWrapper.setAttribute('class', 'slide');
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', '0 0 160 90');
+    svg.setAttribute('viewBox', '0 0 1280 720');
     svg.setAttribute('width', '100%');
 
     const foreign = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
-    foreign.setAttribute('width', '160');
-    foreign.setAttribute('height', '90');
+    foreign.setAttribute('width', '1280');
+    foreign.setAttribute('height', '720');
 
     foreign.appendChild(contents);
     svg.append(foreign);
@@ -105,8 +105,8 @@ class SlideEditorController {
   deleteSlide () {
     if (this.currentSlideIndex < 0) return;
 
-    const {DOMTree} = this.getCurrentSlide();
-    DOMTree.remove();
+    const {slideTree} = this.getCurrentSlide();
+    slideTree.remove();
     this.slides[this.slideID[this.currentSlideIndex]] = null;
 
     this.slideID.splice(this.currentSlideIndex, 1);
