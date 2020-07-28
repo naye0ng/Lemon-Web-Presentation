@@ -1,11 +1,7 @@
 class View {
   constructor () {
     if (this.constructor === View) throw new TypeError('View is abstract class');
-    this.$app = this.getElement('#app');
-  }
-
-  getElement (selector) {
-    return document.querySelector(selector);
+    this.$app = document.querySelector('#app');
   }
 
   // TODO : util로 빼는 것이 좋을까?

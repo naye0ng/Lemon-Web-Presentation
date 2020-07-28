@@ -12,7 +12,7 @@ class SlideEditorView extends View {
     this.toolbar = new Toolbar();
     this.editor = new Editor();
 
-    this.$editorWrapper = this.createElement('section', {class: 'slide-editor'});
+    this.$editorWrapper = this.createElement('div', {class: 'slide-editor'});
     this.$editorWrapper.append(this.toolbar.$view, this.editor.$view);
 
     this.$slideEditor = this.createElement('div', {class: 'viewer-and-editor'});
