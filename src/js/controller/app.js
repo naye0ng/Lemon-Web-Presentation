@@ -10,9 +10,10 @@ class App {
   }
 
   startFullscreen (isStatCurrentSlide) {
-    if (this.slideEditor.slideSize === 0) return alert('작성된 슬라이드가 없습니다. \n슬라이드를 만들어주세요!');
-    if (!isStatCurrentSlide) return this.fullscreen.requestFullscreenMode(this.slideEditor.slides);
-    return this.fullscreen.requestFullscreenMode(this.slideEditor.slides, this.slideEditor.editingSlideIndex);
+    const {slides, slideID, slideSize, editingSlideIndex} = this.slideEditor;
+    if (slideSize === 0) return alert('작성된 슬라이드가 없습니다. \n슬라이드를 만들어주세요!');
+    if (!isStatCurrentSlide) return this.fullscreen.requestFullscreenMode(slides, slideID);
+    return this.fullscreen.requestFullscreenMode(slides, slideID, editingSlideIndex);
   }
 }
 

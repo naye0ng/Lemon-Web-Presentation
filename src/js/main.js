@@ -6,4 +6,3 @@ import '../css/common.css';
 (function () {
   return new App();
 })();
-

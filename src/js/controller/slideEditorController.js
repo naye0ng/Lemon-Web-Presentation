@@ -17,12 +17,31 @@ class SlideEditorController {
   }
 
   init () {
-    // TODO : 슬라이드 예시 추가
+    // TODO : 슬라이드 예
     this.createNextSlide();
   }
 
   getCurrentSlide () {
     return this.slides[this.slideID[this.currentSlideIndex]];
+  }
+
+  getSVGWrapper (contents) {
+    const SVGWrapper = document.createElement('div');
+    SVGWrapper.setAttribute('class', 'slide');
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 160 90');
+    svg.setAttribute('width', '100%');
+
+    const foreign = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+    foreign.setAttribute('width', '160');
+    foreign.setAttribute('height', '90');
+
+    foreign.appendChild(contents);
+    svg.append(foreign);
+    SVGWrapper.append(svg);
+
+    return SVGWrapper;
   }
 
   updateView () {
@@ -41,11 +60,13 @@ class SlideEditorController {
   createNextSlide () {
     const ID = `${Math.random()}`;
     const DOMTree = convertStringToDOM();
+    const slideTree = this.getSVGWrapper(DOMTree);
     const slide = markupParser(DOMTree);
 
     DOMTree.addEventListener('click', () => {
       this.focusOnNthSlide(this.slideID.indexOf(ID));
     });
+
 
     this.currentSlideIndex += 1;
     this.slideSize += 1;
@@ -53,13 +74,13 @@ class SlideEditorController {
     this.slides[ID] = {
       textareaValue: '',
       note: '',
+      slideTree,
       DOMTree,
       slide, //  TODO : 버튼으로 슬라이드 속성 변경
     };
 
     this.slideID.splice(this.currentSlideIndex, 0, ID);
-
-    this.view.viewer.renderNthChild(DOMTree, this.view.viewer.$slideContainer, this.currentSlideIndex);
+    this.view.viewer.renderNthChild(slideTree, this.view.viewer.$slideContainer, this.currentSlideIndex);
     this.updateView();
   }
 
@@ -74,8 +95,10 @@ class SlideEditorController {
 
     // TODO : 현재 커서 위치로 바꾸는 작업 필요(중간을 수정하는 경우에도 맨 아래를 보게됨)
     DOMTree.scrollTop = DOMTree.scrollHeight;
-    this.getCurrentSlide().slide = newSlide;
-    this.getCurrentSlide().textareaValue = newTextareaValue;
+
+    const currentSlide = this.getCurrentSlide();
+    currentSlide.slide = newSlide;
+    currentSlide.textareaValue = newTextareaValue;
     patch(DOMTree);
   }
 
