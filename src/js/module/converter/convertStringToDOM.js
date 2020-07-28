@@ -1,7 +1,7 @@
 
 const convertStringToDOM = (strXML = '') => {
   const DOM = new DOMParser().parseFromString(
-    `<div class='slide'>${strXML}</div>`, 'text/html');
+    `<div class='slide-contents'>${strXML}</div>`, 'text/html');
   return DOM.body.childNodes[0];
 };
 
