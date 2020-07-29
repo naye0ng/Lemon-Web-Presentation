@@ -2,6 +2,8 @@
 
 * {
     box-sizing: border-box;
+    color: #333;
+    font-weight: normal;
 }
 
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
@@ -14,7 +16,7 @@ html, body {
     overflow: hidden;
     width: 100%;
     height: 100vh;
-    background: #fff
+    background: #fff;
 }
 
 footer, header, nav, section {
@@ -28,90 +30,250 @@ a:link, a:visited, a:active, a:hover, *:focus {
     color: #333;
 }
 
-button {
+button, input {
     border: 0 none;
     cursor: pointer;
 }
 
-body, th, td, input, select, textarea, button {
-    font-size: 14px;
-    line-height: 1.5;
+body, input, textarea, button {
+    font-size: 16px;
+    line-height: 1.6;
     font-family: 'SF Pro Text Regular', 'AppleSDGothicNeo', sans-serif;
 }
 
-/* header */
+/* navigation */
 
-header {
+#app>div {
+    overflow: hidden;
+    height: 100vh;
+    float: left;
+}
+
+#app:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.navigation {
+    width: 10vw;
+}
+
+.lemon-logo {
+    width: 10vw;
+    height: 10vw;
+    background-size: 50% 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url("../assets/lemon.png");
+}
+
+.viewer-btn, .fullscreen-btn {
+    width: 80%;
+    margin: 10%;
+    padding: 5%;
+    font-size: .8rem;
+    border-radius: 50px;
+}
+
+.viewer-btn, .fullscreen-btn {
     position: relative;
+    background: #fffae0;
+    border: 1.5px solid #ffe976;
+}
+
+.viewer-btn.active {
+    background: #ffe976;
+}
+
+.viewer-btn:hover, .fullscreen-btn:hover {
+    background: #47bcd236;
+    border: 1.5px solid #47bcd2;
+}
+
+/* viewer */
+
+.viewer-and-editor {
+    width: 90vw;
+}
+
+.viewer-and-editor>div {
+    float: left;
+    height: 100vh;
+}
+
+.viewer-and-editor:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.slide-viewer {
+    overflow-y: scroll;
+    width: 35vw;
+    background: rgba(251, 240, 178, .25);
+}
+
+.slide-viewer .slide-container {
     display: flex;
-    height: 50px;
-    padding: 0 25px;
-    background: #fff;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
+    width: 100%;
+    min-height: 100%;
+    flex-flow: column nowrap;
+    justify-content: center;
     align-items: center;
-    justify-content: space-between;
-}
-
-.header__menu button {
-    margin-left: 10px;
-    padding: 5px 13px;
-    background: #f1f1f1;
-    border-radius: 15px;
-}
-
-.header__menu button:hover {
-    background: #fff44f;
-}
-
-.hide-scroll {
-    overflow: scroll;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-.hide-scroll::-webkit-scrollbar {
-    display: none;
 }
 
 /* editor */
 
 .slide-editor {
-    width: 100%;
-    height: calc(100vh - 50px);
-}
-
-.slide-editor section {
-    display: inline-block;
-    height: 100%;
-    float: left;
-}
-
-section.markup-viewer {
-    width: 45vw;
-    padding-bottom: 50px;
-    background: #f8f8f8;
-}
-
-section.markup-viewer::-webkit-scrollbar {
-    display: none;
-}
-
-section.editor {
-    overflow: hidden;
     width: 55vw;
-    height: 100%;
 }
 
-section.editor:after {
-    content: "";
+.toolbar {
+    overflow: hidden;
+    display: flex;
+    height: 40px;
+    justify-content: space-between;
+    border-bottom: 1px solid #d8d8d8;
+}
+
+.toolbar button, div#nth {
+    display: inline-block;
+    height: 40px;
+    background: #ffffff;
+}
+
+.toolbar button {
+    width: 40px;
+}
+
+.toolbar div#nth {
+    overflow: hidden;
+    width: 60px;
+}
+
+.toolbar button:hover {
+    background: #fff44f;
+}
+
+#delete, #create, #save, #before, #next {
+    background-size: 40% 40%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#delete {
+    background-image: url("../assets/delete.svg");
+}
+
+#create {
+    background-image: url("../assets/new.svg");
+}
+
+#save {
+    background-image: url("../assets/save.svg");
+}
+
+#before {
+    background-image: url("../assets/before.svg");
+}
+
+#next {
+    background-image: url("../assets/next.svg");
+}
+
+div#nth input {
     display: block;
-    clear: both;
+    width: 80%;
+    height: 80%;
+    margin: 10%;
+    text-align: center;
 }
 
-section.editor textarea {
+input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+}
+
+.editor {
+    height: 70%;
+}
+
+textarea {
     width: 100%;
     height: 100%;
     padding: 15px;
-    border: 0;
+    border: none;
     resize: none;
+}
+
+/* fullscreen */
+
+#fullscreen {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+#fullscreen-contents {
+    transition: .3s;
+    transition-timing-function: ease-in;
+    height: calc(100vw * 9 / 16);
+    display: inline-flex;
+    flex-direction: row;
+}
+
+/* slide */
+
+.slide {
+    z-index: 0;
+    overflow: hidden;
+    background: #ffffff;
+    white-space: pre-wrap;
+    flex-shrink: 0;
+}
+
+.slide-viewer .slide:hover {
+    transition: .2s;
+    transform: scale(1.02, 1.02);
+}
+
+.slide-viewer .slide {
+    width: 28vw;
+    height: calc(28vw * 9 / 16);
+    margin: 30px 0;
+    border-radius: 3px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .15);
+}
+
+.slide.active {
+    /* box-shadow: 0 5px 10px rgb(70, 162, 193, .25); */
+    transform: scale(1.03, 1.03);
+}
+
+#fullscreen-contents .slide {
+    width: 100vw;
+    height: calc(100vw * 9 / 16);
+}
+
+/* slide contents */
+
+.slide-contents {
+    overflow: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    padding: 4%;
+    font-size: 2.0rem;
+}
+
+.slide-viewer .slide-contents {
+    overflow: scroll;
+}
+
+.slide-viewer .slide-contents::-webkit-scrollbar {
+    display: none;
 }
