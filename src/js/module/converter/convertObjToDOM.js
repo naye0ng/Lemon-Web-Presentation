@@ -1,9 +1,9 @@
 const bindNode = ({tag, attrs, children}) => {
   const el = document.createElement(tag);
 
-  for (const [name, value] of Object.entries(attrs)) {
-    el.setAttribute(name, value);
-  }
+  Object.entries(attrs).forEach(([attr, value]) => {
+    el.setAttribute(attr, value);
+  });
 
   for (const child of children) {
     if (attrs.class === 'slide-container ') {
