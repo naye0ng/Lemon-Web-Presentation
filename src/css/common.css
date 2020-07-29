@@ -277,3 +277,45 @@ textarea {
 .slide-viewer .slide-contents::-webkit-scrollbar {
     display: none;
 }
+
+.slide-contents h1, .head-1 {
+    font-size: 6rem;
+}
+
+.slide-contents h2, .head-2 {
+    font-size: 5rem;
+}
+
+.slide-contents h3, .head-3 {
+    font-size: 4.2rem;
+}
+
+.slide-contents h4, .head-4 {
+    font-size: 3.7rem;
+}
+
+.slide-contents h5, .head-5 {
+    font-size: 3.5rem;
+}
+
+.slide-contents h6, .head-6 {
+    font-size: 3rem;
+}
+
+.slide ul.list-style-number li {
+    list-style: decimal inside;
+}
+
+.slide ul.list-style-circle li {
+    list-style: disc inside;
+}
+
+.slide ul {
+    margin: 0 3%;
+}
+
+.slide img {
+    display: flex;
+    width: 50%;
+    margin: auto;
+}
