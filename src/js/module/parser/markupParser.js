@@ -1,5 +1,5 @@
 import attrParser from './attrParser';
-import {ALLOW_TAGS, TAGS} from '../Utils/constants';
+import {ALLOW_TAGS, TAGS} from './constants';
 
 
 const isNode = ({nodeName, nodeValue}, isSlideChild) => {
