@@ -12,11 +12,11 @@ class FullscreenModeController {
 
   init () {
     document.addEventListener('keydown', ({key}) => {
-      this.arrowKeyController(key);
+      this.arrowKeyHandler(key);
     });
   }
 
-  arrowKeyController (key) {
+  arrowKeyHandler (key) {
     if (!document.fullscreen) return;
     if (key === 'ArrowLeft' && this.slideIndex > 0) {
       this.slideIndex -= 1;
@@ -27,10 +27,10 @@ class FullscreenModeController {
     }
   }
 
-  requestFullscreenMode (slides, slideID, startIndex = 0) {
+  requestFullscreenMode (slides, slideIDList, startIndex = 0) {
     this.view.$fullscreenContents.innerHTML = '';
     this.slideCount = slides.length;
-    slideID.forEach(id => {
+    slideIDList.forEach(id => {
       this.view.$fullscreenContents.append(slides[id].slideTree.cloneNode(true));
     });
 

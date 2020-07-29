@@ -9,7 +9,7 @@ class SlideEditorController {
 
     this.slides = {};
 
-    this.slideID = [];
+    this.slideIDList = [];
     this.slideSize = 0;
     this.currentSlideIndex = -1;
 
@@ -22,12 +22,12 @@ class SlideEditorController {
   }
 
   getCurrentSlide () {
-    return this.slides[this.slideID[this.currentSlideIndex]];
+    return this.slides[this.slideIDList[this.currentSlideIndex]];
   }
 
-  getSVGWrapper (contents) {
-    const SVGWrapper = document.createElement('div');
-    SVGWrapper.setAttribute('class', 'slide');
+  getSVGContainer (contents) {
+    const SVGContainer = document.createElement('div');
+    SVGContainer.setAttribute('class', 'slide');
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 1280 720');
@@ -39,32 +39,31 @@ class SlideEditorController {
 
     foreign.appendChild(contents);
     svg.append(foreign);
-    SVGWrapper.append(svg);
+    SVGContainer.append(svg);
 
-    return SVGWrapper;
+    return SVGContainer;
   }
 
   updateView () {
-    if (this.currentSlideIndex < 0) {
+    if (!this.slideSize) {
       this.view.editor.$textarea.value = '';
       this.view.toolbar.$inputNth.value = 0;
       // TODO : 슬라이드 추가하는 버튼 깜빡깜빡 효과!!
       return alert('슬라이드가 존재하지 않습니다.\n슬라이드를 생성해주세요!');
     }
-    if (this.view.toolbar.$inputNth.value !== this.currentSlideIndex + 1) {
-      this.view.toolbar.$inputNth.value = this.currentSlideIndex + 1;
-    }
+
+    this.view.toolbar.$inputNth.value = this.currentSlideIndex + 1;
     this.view.editor.$textarea.value = this.getCurrentSlide().textareaValue;
   }
 
   createNextSlide () {
     const ID = `${Math.random()}`;
     const DOMTree = convertStringToDOM();
-    const slideTree = this.getSVGWrapper(DOMTree);
+    const slideTree = this.getSVGContainer(DOMTree);
     const slide = markupParser(DOMTree);
 
     DOMTree.addEventListener('click', () => {
-      this.focusOnNthSlide(this.slideID.indexOf(ID));
+      this.focusOnNthSlide(this.slideIDList.indexOf(ID));
     });
 
 
@@ -79,15 +78,13 @@ class SlideEditorController {
       slide, //  TODO : 버튼으로 슬라이드 속성 변경
     };
 
-    this.slideID.splice(this.currentSlideIndex, 0, ID);
+    this.slideIDList.splice(this.currentSlideIndex, 0, ID);
     this.view.viewer.renderNthChild(slideTree, this.view.viewer.$slideContainer, this.currentSlideIndex);
     this.updateView();
   }
 
   updateSlide (newTextareaValue) {
-    if (this.currentSlideIndex < 0) {
-      return this.updateView();
-    }
+    if (!this.slideSize) return this.updateView();
 
     const {slide, DOMTree} = this.getCurrentSlide();
     const newSlide = markupParser(convertStringToDOM(newTextareaValue));
@@ -103,15 +100,20 @@ class SlideEditorController {
   }
 
   deleteSlide () {
-    if (this.currentSlideIndex < 0) return;
+    if (!this.slideSize) return;
 
     const {slideTree} = this.getCurrentSlide();
     slideTree.remove();
-    this.slides[this.slideID[this.currentSlideIndex]] = null;
+    this.slides[this.slideIDList[this.currentSlideIndex]] = null;
+    this.slideIDList.splice(this.currentSlideIndex, 1);
 
-    this.slideID.splice(this.currentSlideIndex, 1);
-    this.currentSlideIndex -= 1;
     this.slideSize -= 1;
+
+    if (!this.currentSlideIndex && this.slideSize > 0) {
+      this.currentSlideIndex = 0;
+    } else {
+      this.currentSlideIndex -= 1;
+    }
 
     this.updateView();
   }
@@ -139,4 +141,3 @@ class SlideEditorController {
 
 
 export default SlideEditorController;
-
