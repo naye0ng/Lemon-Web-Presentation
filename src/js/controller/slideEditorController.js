@@ -46,14 +46,18 @@ class SlideEditorController {
 
   updateView () {
     if (!this.slideSize) {
-      this.view.editor.$textarea.value = '';
+      this.view.editor.$rawData.value = '';
       this.view.toolbar.$inputNth.value = 0;
+      this.view.editor.$PTNote.value = '';
       // TODO : 슬라이드 추가하는 버튼 깜빡깜빡 효과!!
       return alert('슬라이드가 존재하지 않습니다.\n슬라이드를 생성해주세요!');
     }
-
+    // 현재 슬라이드에 active 삽입
+    const currentSlide = this.getCurrentSlide();
+    this.slideActivate();
+    this.view.editor.$PTNote.value = currentSlide.PTNote;
     this.view.toolbar.$inputNth.value = this.currentSlideIndex + 1;
-    this.view.editor.$textarea.value = this.getCurrentSlide().textareaValue;
+    this.view.editor.$rawData.value = currentSlide.rawData;
   }
 
   createNextSlide () {
@@ -66,28 +70,36 @@ class SlideEditorController {
       this.focusOnNthSlide(this.slideIDList.indexOf(ID));
     });
 
-
-    this.currentSlideIndex += 1;
-    this.slideSize += 1;
-
     this.slides[ID] = {
-      textareaValue: '',
-      note: '',
+      rawData: '',
+      PTNote: '',
       slideTree,
       DOMTree,
       slide, //  TODO : 버튼으로 슬라이드 속성 변경
     };
+
+
+    if (this.slideSize) {
+      this.slideDeactivate();
+    }
+
+    this.currentSlideIndex += 1;
+    this.slideSize += 1;
 
     this.slideIDList.splice(this.currentSlideIndex, 0, ID);
     this.view.viewer.renderNthChild(slideTree, this.view.viewer.$slideContainer, this.currentSlideIndex);
     this.updateView();
   }
 
-  updateSlide (newTextareaValue) {
+  updatePTNote (newNote) {
+    this.getCurrentSlide().PTNote = newNote;
+  }
+
+  updateSlide (newValue) {
     if (!this.slideSize) return this.updateView();
 
     const {slide, DOMTree} = this.getCurrentSlide();
-    const newSlide = markupParser(convertStringToDOM(newTextareaValue));
+    const newSlide = markupParser(convertStringToDOM(newValue));
     const patch = updateVDOM(slide, newSlide);
 
     // TODO : 현재 커서 위치로 바꾸는 작업 필요(중간을 수정하는 경우에도 맨 아래를 보게됨)
@@ -95,7 +107,7 @@ class SlideEditorController {
 
     const currentSlide = this.getCurrentSlide();
     currentSlide.slide = newSlide;
-    currentSlide.textareaValue = newTextareaValue;
+    currentSlide.rawData = newValue;
     patch(DOMTree);
   }
 
@@ -120,22 +132,33 @@ class SlideEditorController {
 
   focusOnBeforeSlide () {
     if (this.currentSlideIndex <= 0) return;
+    this.slideDeactivate();
     this.currentSlideIndex -= 1;
     this.updateView();
   }
 
   focusOnNextSlide () {
     if (this.currentSlideIndex >= this.slideSize - 1) return;
+    this.slideDeactivate();
     this.currentSlideIndex += 1;
     this.updateView();
   }
 
   focusOnNthSlide (n) {
     if (n < 0 || n >= this.slideSize) return;
+    this.slideDeactivate();
     this.currentSlideIndex = n;
     this.updateView();
   }
 
+  slideDeactivate () {
+    this.getCurrentSlide().slideTree.classList.remove('active');
+  }
+
+  slideActivate () {
+    // + 현재 위치로 포커싱
+    this.getCurrentSlide().slideTree.classList.add('active');
+  }
   // TODO : 드래그 이벤트로 changeSlideOrder 추가
 }
 

@@ -75,7 +75,11 @@ button, input {
     margin: 10px;
     padding: 0 20px;
     border-radius: 40px;
-    background: #f1f1f1;
+    background-color: #f1f1f1;
+}
+
+.fullscreen-btn:hover {
+    background-color: #f4d569;
 }
 
 /* viewer & editor */
@@ -84,21 +88,61 @@ button, input {
     display: flex;
     width: 100vw;
     height: calc(100vh - 45px);
+    flex-flow: row wrap;
 }
 
+/* grid */
+
+.viewer-and-editor.grid-mode .slide-viewer {
+    transition: .3s;
+    transition-timing-function: ease-out;
+    width: 70vw;
+}
+
+.viewer-and-editor.grid-mode .slide-editor {
+    transition: .3s;
+    transition-timing-function: ease-out;
+    width: 30vw;
+}
+
+.grid-mode .slide-viewer .slide-container {
+    overflow-y: scroll;
+    display: block;
+    padding: calc(3vw - 1px);
+}
+
+.grid-mode .slide-viewer .slide {
+    display: inline-block;
+    width: 13vw;
+    height: calc(13vw * 9 / 16);
+    margin: 1.5vw;
+}
+
+.grid-mode .slide-viewer .slide:hover {
+    transform: none;
+}
+
+.grid-mode .slide-viewer .slide.active {
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .1);
+}
+
+/* nomal */
+
 .slide-viewer {
-    width: 40%;
+    overflow: hidden;
+    width: 40vw;
     height: 100%;
     border-right: 1.2px solid #d8d8d8;
-    background: #f1f1f1;
+    background-color: #f1f1f1;
 }
 
 .slide-editor {
-    width: 60%;
+    width: 60vw;
     height: 100%;
 }
 
 .view-type-btns {
+    width: 40vw;
     height: 40px;
     background-color: #f1f1f1;
 }
@@ -177,13 +221,13 @@ button, input {
     border-bottom: 1.2px solid #d8d8d8;
 }
 
-#slide-title {
+.pt-title-wrap {
     overflow: hidden;
     height: 40px;
     border-bottom: 1.2px solid #d8d8d8;
 }
 
-#slide-title input {
+#pt-title {
     width: 100%;
     height: 100%;
     padding: 0 5%;
@@ -204,7 +248,7 @@ button, input {
     height: 100%;
 }
 
-.focus-btn button, #slide-number {
+.focus-btn button, .slide-number-wrap {
     overflow: hidden;
     display: inline-block;
     width: 40px;
@@ -218,7 +262,7 @@ button, input {
     font-size: .7rem;
 }
 
-.focus-btn button:hover, #slide-number input:hover, .crud-btn button:hover {
+.focus-btn button:hover, #slide-number:hover, .crud-btn button:hover {
     background-color: rgba(244, 213, 105, .25);
 }
 
@@ -236,11 +280,10 @@ button, input {
     background-image: url("../assets/next.svg");
 }
 
-#slide-number input {
+#slide-number {
     display: block;
     width: 100%;
     height: 100%;
-    /* margin: 10%; */
     text-align: center;
 }
 
@@ -368,13 +411,33 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
         background: #f1f1f1;
     }
     .viewer-and-editor {
-        flex-direction: column;
+        flex-flow: column nowrap;
     }
+    /* grid */
+    .viewer-and-editor.grid-mode .slide-viewer {
+        transition: none;
+        width: 100vw;
+    }
+    .viewer-and-editor.grid-mode .slide-editor {
+        transition: none;
+        width: 100vw;
+    }
+    .grid-mode .slide-viewer .slide-container {
+        padding: calc(2vw - 1px);
+    }
+    .grid-mode .slide-viewer .slide {
+        display: inline-block;
+        width: 28vw;
+        height: calc(28vw * 9 / 16);
+        margin: 2vw;
+    }
+    /* nomal */
     .slide-viewer {
-        width: 100%;
+        width: 100vw;
         height: 35vh;
     }
     .view-type-btns {
+        width: 100vw;
         height: 30px;
     }
     .slide-carousel {
@@ -401,10 +464,10 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
     .toolbar {
         height: 90px;
     }
-    #slide-title, .slide-controller {
+    .pt-title-wrap, .slide-controller {
         height: 30px;
     }
-    .focus-btn button, #slide-number {
+    .focus-btn button, .slide-number-wrap {
         width: 30px;
         height: 30px;
     }
@@ -421,5 +484,17 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
     .text-editor:nth-child(2) {
         height: 30%;
         font-size: .45rem;
+    }
+}
+
+@media(min-width:768px) and (max-width:1025px) {
+    .grid-mode .slide-viewer .slide {
+        display: inline-block;
+        width: 19vw;
+        height: calc(19vw * 9 / 16);
+        margin: 1.5vw;
+    }
+    .grid-mode .slide-viewer .slide-container {
+        padding: calc(2vw - 1px);
     }
 }
