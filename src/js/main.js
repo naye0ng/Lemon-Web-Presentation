@@ -1,5 +1,5 @@
 import App from './controller/app';
-import '../css/common.css';
+import '../css/style.css';
 
 App.init();
 
