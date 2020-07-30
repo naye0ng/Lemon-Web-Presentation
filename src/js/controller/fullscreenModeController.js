@@ -5,7 +5,7 @@ class FullscreenModeController {
     this.view = new FullscreenView(this);
 
     this.slideIndex = 0;
-    this.slideCount = 0;
+    this.slideSize = 0;
 
     this.init();
   }
@@ -21,7 +21,7 @@ class FullscreenModeController {
     if (key === 'ArrowLeft' && this.slideIndex > 0) {
       this.slideIndex -= 1;
       this.moveSlide();
-    } else if (key === 'ArrowRight' && this.slideIndex < this.slideCount - 1) {
+    } else if (key === 'ArrowRight' && this.slideIndex < this.slideSize - 1) {
       this.slideIndex += 1;
       this.moveSlide();
     }
@@ -29,13 +29,13 @@ class FullscreenModeController {
 
   requestFullscreenMode (slides, slideIDList, startIndex = 0) {
     this.view.$fullscreenContents.innerHTML = '';
-    this.slideCount = slides.length;
+    this.slideSize = slideIDList.length;
     slideIDList.forEach(id => {
       this.view.$fullscreenContents.append(slides[id].slideTree.cloneNode(true));
     });
 
     this.slideIndex = startIndex;
-    this.view.$fullscreenContents.style.width = `${100 * this.slideCount}vw`;
+    this.view.$fullscreenContents.style.width = `${100 * this.slideSize}vw`;
     this.moveSlide();
 
     this.view.$fullscreen.requestFullscreen();

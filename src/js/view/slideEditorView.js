@@ -27,20 +27,35 @@ class SlideEditorView extends View {
   }
 
   initListeners () {
-    this.editor.$view.addEventListener('keyup', event => {
-      this.controller.updateSlide(event.target.value);
+    this.editor.$view.addEventListener('keyup', ({target}) => {
+      if (!target.id) return;
+      if (target.id === 'raw-data') return this.controller.updateSlide(target.value);
+      if (target.id === 'pt-note') return this.controller.updatePTNote(target.value);
     });
-    this.toolbar.$view.addEventListener('click', event => {
-      if (!event.target.id) return;
-      if (event.target.id === 'delete') return this.controller.deleteSlide();
-      if (event.target.id === 'create') return this.controller.createNextSlide();
-      if (event.target.id === 'before') return this.controller.focusOnBeforeSlide();
-      if (event.target.id === 'next') return this.controller.focusOnNextSlide();
+    this.viewer.$viewModeChangeBtn.addEventListener('click', ({target}) => {
+      const {id, classList} = target;
+      if (!id) return;
+      if (id === 'editor-view-btn' && !classList.length) return this.toggleViewerMode();
+      if (id === 'grid-view-btn' && !classList.length) return this.toggleViewerMode();
     });
-    this.toolbar.$view.addEventListener('keyup', event => {
-      if (!event.target.value) return;
-      this.controller.focusOnNthSlide(event.target.value - 1);
+
+    this.toolbar.$view.addEventListener('click', ({target}) => {
+      if (!target.id) return;
+      if (target.id === 'delete') return this.controller.deleteSlide();
+      if (target.id === 'create') return this.controller.createNextSlide();
+      if (target.id === 'before') return this.controller.focusOnBeforeSlide();
+      if (target.id === 'next') return this.controller.focusOnNextSlide();
     });
+
+    this.toolbar.$view.addEventListener('keyup', ({target}) => {
+      if (!target.id) return;
+      if (!target.id === 'slide-number') this.controller.focusOnNthSlide(target.value - 1);
+    });
+  }
+
+  toggleViewerMode () {
+    this.viewer.toggleViewerMode();
+    this.$slideEditor.classList.toggle('grid-mode');
   }
 }
 
