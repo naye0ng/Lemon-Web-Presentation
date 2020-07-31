@@ -1,4 +1,5 @@
 import View from './view';
+import {createCustomElement} from '../Utils/DOMConstructor';
 import Viewer from './slideEditor/viewer';
 import Editor from './slideEditor/editor';
 import Toolbar from './slideEditor/toolbar';
@@ -12,10 +13,10 @@ class SlideEditorView extends View {
     this.toolbar = new Toolbar();
     this.editor = new Editor();
 
-    this.$editorWrapper = this.createElement('div', {class: 'slide-editor'});
+    this.$editorWrapper = createCustomElement('div', {class: 'slide-editor'});
     this.$editorWrapper.append(this.toolbar.$view, this.editor.$view);
 
-    this.$slideEditor = this.createElement('div', {class: 'viewer-and-editor'});
+    this.$slideEditor = createCustomElement('div', {class: 'viewer-and-editor'});
     this.$slideEditor.append(this.viewer.$view, this.$editorWrapper);
 
     this.init();
@@ -27,35 +28,46 @@ class SlideEditorView extends View {
   }
 
   initListeners () {
-    this.editor.$view.addEventListener('keyup', ({target}) => {
-      if (!target.id) return;
-      if (target.id === 'raw-data') return this.controller.updateSlide(target.value);
-      if (target.id === 'pt-note') return this.controller.updatePTNote(target.value);
-    });
-    this.viewer.$viewModeChangeBtn.addEventListener('click', ({target}) => {
-      const {id, classList} = target;
-      if (!id) return;
-      if (id === 'editor-view-btn' && !classList.length) return this.toggleViewerMode();
-      if (id === 'grid-view-btn' && !classList.length) return this.toggleViewerMode();
-    });
-
     this.toolbar.$view.addEventListener('click', ({target}) => {
-      if (!target.id) return;
-      if (target.id === 'delete') return this.controller.deleteSlide();
-      if (target.id === 'create') return this.controller.createNextSlide();
-      if (target.id === 'before') return this.controller.focusOnBeforeSlide();
-      if (target.id === 'next') return this.controller.focusOnNextSlide();
+      this.bindCRUDButtonEvent(target);
     });
 
     this.toolbar.$view.addEventListener('keyup', ({target}) => {
-      if (!target.id) return;
-      if (!target.id === 'slide-number') this.controller.focusOnNthSlide(target.value - 1);
+      this.bindToolbarKeyboardEvent(target);
+    });
+
+    this.viewer.$viewModeChangeBtn.addEventListener('click', ({target}) => {
+      this.toggleViewerMode(target);
+    });
+    this.editor.$view.addEventListener('keyup', ({target}) => {
+      this.passOnUserInput(target);
     });
   }
 
-  toggleViewerMode () {
-    this.viewer.toggleViewerMode();
+  bindCRUDButtonEvent ({id}) {
+    if (!id) return;
+    if (id === 'delete') return this.controller.deleteSlide();
+    if (id === 'create') return this.controller.createNextSlide();
+    if (id === 'before') return this.controller.focusOnBeforeSlide();
+    if (id === 'next') return this.controller.focusOnNextSlide();
+  }
+
+  bindToolbarKeyboardEvent ({id, value}) {
+    if (!id) return;
+    if (!id === 'slide-number') this.controller.focusOnNthSlide(value - 1);
+  }
+
+  toggleViewerMode ({id, classList}) {
+    if (!id || classList.length) return;
+
+    this.viewer.toggleViewerButton();
     this.$slideEditor.classList.toggle('grid-mode');
+  }
+
+  passOnUserInput ({id, value}) {
+    if (!id) return;
+    if (id === 'raw-data') return this.controller.updateSlide(value);
+    if (id === 'pt-note') return this.controller.updatePTNote(value);
   }
 }
 
