@@ -1,3 +1,4 @@
+import {createCustomElement, createSVGElement} from '../Utils/DOMConstructor';
 import SlideEditorView from '../view/slideEditorView';
 import convertStringToDOM from '../module/converter/convertStringToDOM';
 import markupParser from '../module/parser/markupParser';
@@ -24,62 +25,25 @@ class SlideEditorController {
     return this.slides[this.slideIDList[this.currentSlideIndex]];
   }
 
-  getSVGContainer (id, contents) {
-    const SVGContainer = document.createElement('div');
-    SVGContainer.setAttribute('id', id);
-    SVGContainer.setAttribute('class', 'slide');
-    SVGContainer.setAttribute('draggable', true);
+  createDraggableSlide (id, childEl) {
+    const foreign = createSVGElement('http://www.w3.org/2000/svg', 'foreignObject', {
+      width: '1280',
+      height: '720',
+    }, childEl);
 
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', '0 0 1280 720');
-    svg.setAttribute('width', '100%');
+    const svg = createSVGElement('http://www.w3.org/2000/svg', 'svg', {
+      viewBox: '0 0 1280 720',
+      width: '100%',
+    }, foreign);
 
-    const foreign = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
-    foreign.setAttribute('width', '1280');
-    foreign.setAttribute('height', '720');
+    const draggableSlide = createCustomElement('div', {
+      id,
+      class: 'slide',
+      draggable: true,
+    }, svg);
 
-    foreign.appendChild(contents);
-    svg.append(foreign);
-    SVGContainer.append(svg);
 
-    return SVGContainer;
-  }
-
-  updateView () {
-    if (!this.slideSize) {
-      this.view.editor.$rawData.value = '';
-      this.view.toolbar.$inputNth.value = 0;
-      this.view.editor.$PTNote.value = '';
-      // TODO : 슬라이드 추가하는 버튼 깜빡깜빡 효과!!
-      return alert('슬라이드가 존재하지 않습니다.\n슬라이드를 생성해주세요!');
-    }
-
-    const currentSlide = this.getCurrentSlide();
-    this.slideActivate();
-    this.view.editor.$PTNote.value = currentSlide.PTNote;
-    this.view.toolbar.$inputNth.value = this.currentSlideIndex + 1;
-    this.view.editor.$rawData.value = currentSlide.rawData;
-  }
-  swapID (targetID, swapID) {
-    const targetIndex = this.slideIDList.indexOf(targetID);
-    const swapIndex = this.slideIDList.indexOf(swapID);
-    const temp = this.slideIDList[targetIndex];
-    this.slideIDList[targetIndex] = this.slideIDList[swapIndex];
-    this.slideIDList[swapIndex] = temp;
-    this.currentSlideIndex = swapIndex;
-    this.updateView();
-  }
-
-  createNextSlide () {
-    const ID = `${Math.random()}`;
-    const DOMTree = convertStringToDOM();
-    const slideTree = this.getSVGContainer(ID, DOMTree);
-    const slide = markupParser(DOMTree);
-
-    slideTree.addEventListener('click', () => {
-      this.focusOnNthSlide(this.slideIDList.indexOf(ID));
-    });
-    slideTree.addEventListener('drag', ({target, clientX, clientY}) => {
+    draggableSlide.addEventListener('drag', ({target, clientX, clientY}) => {
       const parentEl = target.parentNode;
       target.classList.add('drag-active');
 
@@ -91,8 +55,55 @@ class SlideEditorController {
         parentEl.insertBefore(target, swapItem);
       }
     });
-    slideTree.addEventListener('dragend', ({target}) => {
+
+    draggableSlide.addEventListener('dragend', ({target}) => {
       target.classList.remove('drag-active');
+    });
+
+    return draggableSlide;
+  }
+
+  updateView () {
+    this.view.toolbar.$inputNth.max = this.slideSize;
+    if (!this.slideSize) {
+      this.view.editor.$rawData.value = '';
+      this.view.toolbar.$inputNth.value = 0;
+      this.view.toolbar.$inputNth.min = 0;
+      this.view.editor.$PTNote.value = '';
+      // TODO : 슬라이드 추가하는 버튼 깜빡깜빡 효과!!
+      return alert('슬라이드가 존재하지 않습니다.\n슬라이드를 생성해주세요!');
+    }
+
+    const currentSlide = this.getCurrentSlide();
+    this.slideActivate();
+    this.view.editor.$PTNote.value = currentSlide.PTNote;
+    this.view.toolbar.$inputNth.value = this.currentSlideIndex + 1;
+    this.view.toolbar.$inputNth.min = 1;
+    this.view.editor.$rawData.value = currentSlide.rawData;
+  }
+  swapID (targetID, swapID) {
+    const targetIndex = this.slideIDList.indexOf(targetID);
+    const swapIndex = this.slideIDList.indexOf(swapID);
+    if (swapIndex < targetIndex) {
+      this.slideIDList.splice(targetIndex, 1);
+      this.slideIDList.splice(swapIndex, 0, targetID);
+    } else {
+      this.slideIDList.splice(swapIndex + 1, 0, targetID);
+      this.slideIDList.splice(targetIndex, 1);
+    }
+
+    this.slideDeactivate();
+    this.currentSlideIndex = swapIndex;
+    this.updateView();
+  }
+
+  createNextSlide () {
+    const ID = `${Math.random()}`;
+    const DOMTree = convertStringToDOM();
+    const slide = markupParser(DOMTree);
+    const slideTree = this.createDraggableSlide(ID, DOMTree);
+    slideTree.addEventListener('click', () => {
+      this.focusOnNthSlide(this.slideIDList.indexOf(ID));
     });
 
     this.slides[ID] = {
@@ -181,7 +192,7 @@ class SlideEditorController {
   }
 
   slideActivate () {
-    // + 현재 위치로 포커싱
+    // TODO: 현재 위치로 포커싱
     this.getCurrentSlide().slideTree.classList.add('active');
   }
 }

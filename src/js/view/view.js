@@ -4,18 +4,6 @@ class View {
     this.$app = document.querySelector('#app');
   }
 
-  // TODO : util로 빼는 것이 좋을까?
-  createElement (tag, attrs = {}, contents) {
-    const el = document.createElement(tag);
-
-    Object.entries(attrs).forEach(([key, value]) => {
-      el.setAttribute(key, value);
-    });
-
-    if (contents) el.innerHTML = contents;
-    return el;
-  }
-
   renderNthChild (childEl, parentEl, n) {
     parentEl.insertBefore(childEl, parentEl.childNodes[n]);
   }
