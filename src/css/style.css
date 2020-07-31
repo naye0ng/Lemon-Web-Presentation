@@ -193,6 +193,14 @@ button, input {
     flex-shrink: 0;
 }
 
+.slide.drag-active {
+    border: 1.2px solid #f4d569;
+}
+
+.slide svg {
+    pointer-events: none;
+}
+
 .slide-viewer .slide:hover {
     transition: .2s;
     transform: scale(1.02, 1.02);

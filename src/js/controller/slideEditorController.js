@@ -17,7 +17,6 @@ class SlideEditorController {
   }
 
   init () {
-    // TODO : 슬라이드 예
     this.createNextSlide();
   }
 
@@ -25,9 +24,11 @@ class SlideEditorController {
     return this.slides[this.slideIDList[this.currentSlideIndex]];
   }
 
-  getSVGContainer (contents) {
+  getSVGContainer (id, contents) {
     const SVGContainer = document.createElement('div');
+    SVGContainer.setAttribute('id', id);
     SVGContainer.setAttribute('class', 'slide');
+    SVGContainer.setAttribute('draggable', true);
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 1280 720');
@@ -52,22 +53,46 @@ class SlideEditorController {
       // TODO : 슬라이드 추가하는 버튼 깜빡깜빡 효과!!
       return alert('슬라이드가 존재하지 않습니다.\n슬라이드를 생성해주세요!');
     }
-    // 현재 슬라이드에 active 삽입
+
     const currentSlide = this.getCurrentSlide();
     this.slideActivate();
     this.view.editor.$PTNote.value = currentSlide.PTNote;
     this.view.toolbar.$inputNth.value = this.currentSlideIndex + 1;
     this.view.editor.$rawData.value = currentSlide.rawData;
   }
+  swapID (targetID, swapID) {
+    const targetIndex = this.slideIDList.indexOf(targetID);
+    const swapIndex = this.slideIDList.indexOf(swapID);
+    const temp = this.slideIDList[targetIndex];
+    this.slideIDList[targetIndex] = this.slideIDList[swapIndex];
+    this.slideIDList[swapIndex] = temp;
+    this.currentSlideIndex = swapIndex;
+    this.updateView();
+  }
 
   createNextSlide () {
     const ID = `${Math.random()}`;
     const DOMTree = convertStringToDOM();
-    const slideTree = this.getSVGContainer(DOMTree);
+    const slideTree = this.getSVGContainer(ID, DOMTree);
     const slide = markupParser(DOMTree);
 
-    DOMTree.addEventListener('click', () => {
+    slideTree.addEventListener('click', () => {
       this.focusOnNthSlide(this.slideIDList.indexOf(ID));
+    });
+    slideTree.addEventListener('drag', ({target, clientX, clientY}) => {
+      const parentEl = target.parentNode;
+      target.classList.add('drag-active');
+
+      let swapItem = document.elementFromPoint(clientX, clientY);
+      if (!swapItem) return;
+      if (swapItem !== target && swapItem.classList[0] === 'slide') {
+        this.swapID(target.id, swapItem.id);
+        swapItem = swapItem !== target.nextSibling ? swapItem : swapItem.nextSibling;
+        parentEl.insertBefore(target, swapItem);
+      }
+    });
+    slideTree.addEventListener('dragend', ({target}) => {
+      target.classList.remove('drag-active');
     });
 
     this.slides[ID] = {
@@ -159,7 +184,6 @@ class SlideEditorController {
     // + 현재 위치로 포커싱
     this.getCurrentSlide().slideTree.classList.add('active');
   }
-  // TODO : 드래그 이벤트로 changeSlideOrder 추가
 }
 
 
