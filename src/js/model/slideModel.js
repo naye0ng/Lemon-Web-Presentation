@@ -72,10 +72,8 @@ function SlideModel () {
     slide.note = newData;
   };
 
-  this.swapIndexOfID = function (targetID, swapID) {
-    const targetIndex = this.getSlideIndex(targetID);
-    const swapIndex = this.getSlideIndex(swapID);
-
+  this.swapIndex = function (targetIndex, swapIndex) {
+    const targetID = slideIDList[targetIndex];
     if (targetIndex < swapIndex) {
       slideIDList.splice(swapIndex + 1, 0, targetID);
       slideIDList.splice(targetIndex, 1);

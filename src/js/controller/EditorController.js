@@ -110,19 +110,23 @@ class EditorController {
     const swap = document.elementFromPoint(clientX, clientY);
     if (!swap) return;
     if (swap !== target && swap.classList[0] === 'slide') {
-      this.swapSlideID(target.id, swap.id);
-      parent.insertBefore(target, swap);
+      const targetIndex = this.model.getSlideIndex(target.id);
+      const swapIndex = this.model.getSlideIndex(swap.id);
+
+      if (targetIndex < swapIndex) {
+        parent.insertBefore(target, swap.nextSibling);
+      } else {
+        parent.insertBefore(target, swap);
+      }
+
+      this.deactivate();
+      this.model.swapIndex(targetIndex, swapIndex);
+      this.updateView();
     }
   }
 
   dragendHandler (target) {
     target.classList.remove('drag-active');
-  }
-
-  swapSlideID (targetID, swapID) {
-    this.deactivate();
-    this.model.swapIndexOfID(targetID, swapID);
-    this.updateView();
   }
 }
 
