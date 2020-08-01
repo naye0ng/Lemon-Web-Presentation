@@ -1,10 +1,10 @@
 import View from './view';
 import {createCustomElement} from '../Utils/DOMConstructor';
-import Viewer from './slideEditor/viewer';
-import Editor from './slideEditor/editor';
-import Toolbar from './slideEditor/toolbar';
+import Viewer from './editor/viewer';
+import Editor from './editor/editor';
+import Toolbar from './editor/toolbar';
 
-class SlideEditorView extends View {
+class EditorView extends View {
   constructor (controller) {
     super();
     this.controller = controller;
@@ -18,11 +18,9 @@ class SlideEditorView extends View {
 
     this.$slideEditor = createCustomElement('div', {class: 'viewer-and-editor'});
     this.$slideEditor.append(this.viewer.$view, this.$editorWrapper);
-
-    this.init();
   }
 
-  init () {
+  bind () {
     this.initListeners();
     this.render(this.$slideEditor);
   }
@@ -61,4 +59,4 @@ class SlideEditorView extends View {
   }
 }
 
-export default SlideEditorView;
+export default EditorView;

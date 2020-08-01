@@ -1,7 +1,7 @@
 import View from './view';
 import {createCustomElement} from '../Utils/DOMConstructor';
 
-class FullscreenModeView extends View {
+class FullscreenView extends View {
   constructor (controller) {
     super();
     this.controller = controller;
@@ -10,12 +10,11 @@ class FullscreenModeView extends View {
     this.$fullscreenMenu = createCustomElement('div', {id: 'fullscreen-menu'});
     this.$fullscreenContents = createCustomElement('div', {id: 'fullscreen-contents'});
     this.$fullscreen.append(this.$fullscreenMenu, this.$fullscreenContents);
-    this.init();
   }
 
-  init () {
+  bind () {
     this.render(this.$fullscreen);
   }
 }
 
-export default FullscreenModeView;
+export default FullscreenView;
