@@ -1,16 +1,16 @@
-import FullscreenView from '../view/fullscreenModeView';
+import FullscreenView from '../view/fullscreenView';
 
-class FullscreenModeController {
-  constructor () {
+class FullscreenController {
+  constructor (model) {
+    this.model = model;
     this.view = new FullscreenView(this);
 
     this.slideIndex = 0;
     this.slideSize = 0;
-
-    this.init();
   }
 
   init () {
+    this.view.bind();
     document.addEventListener('keydown', ({key}) => {
       this.arrowKeyHandler(key);
     });
@@ -27,14 +27,20 @@ class FullscreenModeController {
     }
   }
 
-  requestFullscreenMode (slides, slideIDList, startIndex = 0) {
+  startFullscreen (isStatCurrentSlide) {
+    const {slideSize, currentSlideIndex} = this.model;
+    if (!slideSize) return alert('작성된 슬라이드가 없습니다. \n슬라이드를 만들어주세요!');
+    const startSlideIndex = isStatCurrentSlide ? currentSlideIndex : 0;
+
     this.view.$fullscreenContents.innerHTML = '';
-    this.slideSize = slideIDList.length;
-    slideIDList.forEach(id => {
-      this.view.$fullscreenContents.append(slides[id].slideTree.cloneNode(true));
+    this.slideSize = slideSize;
+
+    this.model.getSlideIDList().forEach(id => {
+      const {slideDOM} = this.model.getSlideByID(id);
+      this.view.$fullscreenContents.append(slideDOM.cloneNode(true));
     });
 
-    this.slideIndex = startIndex;
+    this.slideIndex = startSlideIndex;
     this.view.$fullscreenContents.style.width = `${100 * this.slideSize}vw`;
     this.moveSlide();
 
@@ -46,4 +52,4 @@ class FullscreenModeController {
   }
 }
 
-export default FullscreenModeController;
+export default FullscreenController;

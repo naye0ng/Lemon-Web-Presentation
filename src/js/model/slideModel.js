@@ -6,12 +6,19 @@ function SlideModel () {
   const slides = {};
   const slideIDList = [];
   let slideKey = 0;
-
   this.slideSize = 0;
   this.currentSlideIndex = -1;
 
+  this.getSlideIDList = function () {
+    return slideIDList;
+  };
+
   this.getSlideIndex = function (ID) {
     return slideIDList.indexOf(ID);
+  };
+
+  this.getSlideByID = function (ID) {
+    return slides[ID];
   };
 
   this.getSlide = function () {
