@@ -1,7 +1,7 @@
 import SlideEditorView from '../view/slideEditorView';
 import convertStringToDOM from '../module/converter/convertStringToDOM';
 import markupParser from '../module/parser/markupParser';
-import updateVDOM from '../module/DOM/updateDOM';
+// import updateDOM from '../module/DOM/updateDOM';
 import {createCustomElement, createSVGElement} from '../Utils/DOMConstructor';
 
 class SlideEditorController {
@@ -117,19 +117,27 @@ class SlideEditorController {
 
   updateSlide (newValue) {
     if (!this.slideSize) return this.updateView();
-    /* 그동안 즐거웠어 안녕~! */
-    const {slide, DOMTree} = this.getSelectedSlide();
-    // 이름!!!
-    const newSlide = markupParser(convertStringToDOM(newValue));
-    const patch = updateVDOM(slide, newSlide);
+    const newDOMTree = convertStringToDOM(newValue);
+    const newSlide = markupParser(newDOMTree);
 
-    // TODO : 현재 커서 위치로 바꾸는 작업 필요(중간을 수정하는 경우에도 맨 아래를 보게됨)
-    DOMTree.scrollTop = DOMTree.scrollHeight;
 
     const targetSlide = this.getSelectedSlide();
     targetSlide.slide = newSlide;
     targetSlide.rawData = newValue;
+    targetSlide.DOMTree = newDOMTree;
+    targetSlide.slideTree.firstChild.firstChild.firstChild.replaceWith(newDOMTree);
+
+    /* 그동안 즐거웠어... 안녕!
+    const newSlide = markupParser(convertStringToDOM(newValue));
+    const patch = updateDOM(slide, newSlide);
+    const targetSlide = this.getSelectedSlide();
+    targetSlide.slide = newSlide;
+    targetSlide.rawData = newValue;
     patch(DOMTree);
+    */
+
+    // TODO : 현재 커서 위치로 바꾸는 작업 필요(중간을 수정하는 경우에도 맨 아래를 보게됨)
+    // DOMTree.scrollTop = DOMTree.scrollHeight;
   }
 
   createSlide () {
