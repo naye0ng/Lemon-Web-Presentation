@@ -57,7 +57,7 @@ class SlideEditorView extends View {
   passOnUserInput ({id, value}) {
     if (!id) return;
     if (id === 'raw-data') return this.controller.updateSlide(value);
-    if (id === 'pt-note') return this.controller.updatePTNote(value);
+    if (id === 'pt-note') return this.controller.updateNote(value);
   }
 }
 
