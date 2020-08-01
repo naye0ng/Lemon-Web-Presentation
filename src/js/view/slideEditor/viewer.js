@@ -23,9 +23,7 @@ class Viewer extends View {
   }
 
   initListeners () {
-    this.$slideContainer.addEventListener('dragover', e => {
-      e.preventDefault();
-    });
+    this.$slideContainer.addEventListener('dragover', e => e.preventDefault());
   }
 
   toggleViewerButton () {

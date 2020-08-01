@@ -4,6 +4,7 @@ import NavigationView from '../view/navigationView';
 
 const App = {
   init () {
+    // 뱌꿔!!
     this.view = new NavigationView(this);
     this.slideEditor = new SlideEditorController();
     this.fullscreen = new FullscreenModeController();
