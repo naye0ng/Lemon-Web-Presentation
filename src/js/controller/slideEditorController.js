@@ -1,28 +1,69 @@
-import {createCustomElement, createSVGElement} from '../Utils/DOMConstructor';
 import SlideEditorView from '../view/slideEditorView';
 import convertStringToDOM from '../module/converter/convertStringToDOM';
 import markupParser from '../module/parser/markupParser';
 import updateVDOM from '../module/DOM/updateDOM';
+import {createCustomElement, createSVGElement} from '../Utils/DOMConstructor';
 
 class SlideEditorController {
   constructor () {
     this.view = new SlideEditorView(this);
 
     this.slides = {};
+    this.slideSize = 0;
 
     this.slideIDList = [];
-    this.slideSize = 0;
-    this.currentSlideIndex = -1;
+    this.selectedSlideIndex = -1;
 
     this.init();
   }
 
   init () {
-    this.createNextSlide();
+    // TODO : 첫 화면 구성
+    this.createSlide();
   }
 
-  getCurrentSlide () {
-    return this.slides[this.slideIDList[this.currentSlideIndex]];
+  getSelectedSlide () {
+    return this.slides[this.slideIDList[this.selectedSlideIndex]];
+  }
+
+  getSlideIDIndex (ID) {
+    return this.slideIDList.indexOf(ID);
+  }
+
+  slideDeactivate () {
+    this.getSelectedSlide().slideTree.classList.remove('active');
+  }
+
+  slideActivate () {
+    // TODO: 현재 위치로 포커싱
+    this.getSelectedSlide().slideTree.classList.add('active');
+  }
+
+  swapSlideID (targetID, swapID) {
+    this.slideDeactivate();
+    const targetIndex = this.getSlideIDIndex(targetID);
+    const swapIndex = this.getSlideIDIndex(swapID);
+    [this.slideIDList[targetIndex], this.slideIDList[swapIndex]] =
+      [this.slideIDList[swapIndex], this.slideIDList[targetIndex]];
+    this.selectedSlideIndex = swapIndex;
+    this.updateView();
+  }
+
+  dragHandler ({target, clientX, clientY}) {
+    const parentEl = target.parentNode;
+    target.classList.add('drag-active');
+
+    let swapItem = document.elementFromPoint(clientX, clientY);
+    if (!swapItem) return;
+    if (swapItem !== target && swapItem.classList[0] === 'slide') {
+      this.swapSlideID(target.id, swapItem.id);
+      swapItem = swapItem !== target.nextSibling ? swapItem : swapItem.nextSibling;
+      parentEl.insertBefore(target, swapItem);
+    }
+  }
+
+  dragendHandler (target) {
+    target.classList.remove('drag-active');
   }
 
   createDraggableSlide (id, childEl) {
@@ -43,75 +84,68 @@ class SlideEditorController {
     }, svg);
 
 
-    draggableSlide.addEventListener('drag', ({target, clientX, clientY}) => {
-      const parentEl = target.parentNode;
-      target.classList.add('drag-active');
-
-      let swapItem = document.elementFromPoint(clientX, clientY);
-      if (!swapItem) return;
-      if (swapItem !== target && swapItem.classList[0] === 'slide') {
-        this.swapID(target.id, swapItem.id);
-        swapItem = swapItem !== target.nextSibling ? swapItem : swapItem.nextSibling;
-        parentEl.insertBefore(target, swapItem);
-      }
-    });
-
-    draggableSlide.addEventListener('dragend', ({target}) => {
-      target.classList.remove('drag-active');
-    });
+    draggableSlide.addEventListener('drag', e => this.dragHandler(e));
+    draggableSlide.addEventListener('dragend', ({target}) => this.dragendHandler(target));
 
     return draggableSlide;
   }
 
-  updateView () {
+  updateViewContents (rawData, PTNote) {
+    this.view.editor.$rawData.value = rawData || '';
+    this.view.editor.$PTNote.value = PTNote || '';
+
+    this.view.toolbar.$inputNth.value = this.slideSize ? this.selectedSlideIndex + 1 : 0;
+    this.view.toolbar.$inputNth.min = this.slideSize ? 1 : 0;
     this.view.toolbar.$inputNth.max = this.slideSize;
+  }
+
+  updateView () {
     if (!this.slideSize) {
-      this.view.editor.$rawData.value = '';
-      this.view.toolbar.$inputNth.value = 0;
-      this.view.toolbar.$inputNth.min = 0;
-      this.view.editor.$PTNote.value = '';
+      this.updateViewContents();
       // TODO : 슬라이드 추가하는 버튼 깜빡깜빡 효과!!
       return alert('슬라이드가 존재하지 않습니다.\n슬라이드를 생성해주세요!');
     }
 
-    const currentSlide = this.getCurrentSlide();
     this.slideActivate();
-    this.view.editor.$PTNote.value = currentSlide.PTNote;
-    this.view.toolbar.$inputNth.value = this.currentSlideIndex + 1;
-    this.view.toolbar.$inputNth.min = 1;
-    this.view.editor.$rawData.value = currentSlide.rawData;
-  }
-  swapID (targetID, swapID) {
-    const targetIndex = this.slideIDList.indexOf(targetID);
-    const swapIndex = this.slideIDList.indexOf(swapID);
-    if (swapIndex < targetIndex) {
-      this.slideIDList.splice(targetIndex, 1);
-      this.slideIDList.splice(swapIndex, 0, targetID);
-    } else {
-      this.slideIDList.splice(swapIndex + 1, 0, targetID);
-      this.slideIDList.splice(targetIndex, 1);
-    }
-
-    this.slideDeactivate();
-    this.currentSlideIndex = swapIndex;
-    this.updateView();
+    const {rawData, PTNote} = this.getSelectedSlide();
+    this.updateViewContents(rawData, PTNote, this.selectedSlideIndex + 1);
   }
 
-  createNextSlide () {
+  updatePTNote (newNote) {
+    this.getSelectedSlide().PTNote = newNote;
+  }
+
+  updateSlide (newValue) {
+    if (!this.slideSize) return this.updateView();
+    /* 그동안 즐거웠어 안녕~! */
+    const {slide, DOMTree} = this.getSelectedSlide();
+    // 이름!!!
+    const newSlide = markupParser(convertStringToDOM(newValue));
+    const patch = updateVDOM(slide, newSlide);
+
+    // TODO : 현재 커서 위치로 바꾸는 작업 필요(중간을 수정하는 경우에도 맨 아래를 보게됨)
+    DOMTree.scrollTop = DOMTree.scrollHeight;
+
+    const targetSlide = this.getSelectedSlide();
+    targetSlide.slide = newSlide;
+    targetSlide.rawData = newValue;
+    patch(DOMTree);
+  }
+
+  createSlide () {
     const ID = `${Math.random()}`;
     const DOMTree = convertStringToDOM();
     const slide = markupParser(DOMTree);
     const slideTree = this.createDraggableSlide(ID, DOMTree);
-    slideTree.addEventListener('click', () => {
-      this.focusOnNthSlide(this.slideIDList.indexOf(ID));
-    });
+    // 여기도 이제 안녕!!
+    slideTree.addEventListener('click', () => this.focusOnNthSlide(this.slideIDList.indexOf(ID)));
 
     this.slides[ID] = {
       rawData: '',
       PTNote: '',
+      slide, //  TODO : 버튼으로 슬라이드 속성 변경
       slideTree,
       DOMTree,
-      slide, //  TODO : 버튼으로 슬라이드 속성 변경
     };
 
 
@@ -119,81 +153,52 @@ class SlideEditorController {
       this.slideDeactivate();
     }
 
-    this.currentSlideIndex += 1;
+    this.selectedSlideIndex += 1;
     this.slideSize += 1;
 
-    this.slideIDList.splice(this.currentSlideIndex, 0, ID);
-    this.view.viewer.renderNthChild(slideTree, this.view.viewer.$slideContainer, this.currentSlideIndex);
+    this.slideIDList.splice(this.selectedSlideIndex, 0, ID);
+    this.view.viewer.renderNthChild(slideTree, this.view.viewer.$slideContainer, this.selectedSlideIndex);
     this.updateView();
-  }
-
-  updatePTNote (newNote) {
-    this.getCurrentSlide().PTNote = newNote;
-  }
-
-  updateSlide (newValue) {
-    if (!this.slideSize) return this.updateView();
-
-    const {slide, DOMTree} = this.getCurrentSlide();
-    const newSlide = markupParser(convertStringToDOM(newValue));
-    const patch = updateVDOM(slide, newSlide);
-
-    // TODO : 현재 커서 위치로 바꾸는 작업 필요(중간을 수정하는 경우에도 맨 아래를 보게됨)
-    DOMTree.scrollTop = DOMTree.scrollHeight;
-
-    const currentSlide = this.getCurrentSlide();
-    currentSlide.slide = newSlide;
-    currentSlide.rawData = newValue;
-    patch(DOMTree);
   }
 
   deleteSlide () {
     if (!this.slideSize) return;
 
-    const {slideTree} = this.getCurrentSlide();
-    slideTree.remove();
-    this.slides[this.slideIDList[this.currentSlideIndex]] = null;
-    this.slideIDList.splice(this.currentSlideIndex, 1);
+    let targetSlide = this.getSelectedSlide();
+    targetSlide.slideTree.remove();
+    targetSlide = null;
+    this.slideIDList.splice(this.selectedSlideIndex, 1);
 
     this.slideSize -= 1;
 
-    if (!this.currentSlideIndex && this.slideSize > 0) {
-      this.currentSlideIndex = 0;
+    if (!this.selectedSlideIndex && this.slideSize > 0) {
+      this.selectedSlideIndex = 0;
     } else {
-      this.currentSlideIndex -= 1;
+      this.selectedSlideIndex -= 1;
     }
 
     this.updateView();
   }
 
   focusOnBeforeSlide () {
-    if (this.currentSlideIndex <= 0) return;
+    if (this.selectedSlideIndex <= 0) return;
     this.slideDeactivate();
-    this.currentSlideIndex -= 1;
+    this.selectedSlideIndex -= 1;
     this.updateView();
   }
 
   focusOnNextSlide () {
-    if (this.currentSlideIndex >= this.slideSize - 1) return;
+    if (this.selectedSlideIndex >= this.slideSize - 1) return;
     this.slideDeactivate();
-    this.currentSlideIndex += 1;
+    this.selectedSlideIndex += 1;
     this.updateView();
   }
 
   focusOnNthSlide (n) {
     if (n < 0 || n >= this.slideSize) return;
     this.slideDeactivate();
-    this.currentSlideIndex = n;
+    this.selectedSlideIndex = n;
     this.updateView();
-  }
-
-  slideDeactivate () {
-    this.getCurrentSlide().slideTree.classList.remove('active');
-  }
-
-  slideActivate () {
-    // TODO: 현재 위치로 포커싱
-    this.getCurrentSlide().slideTree.classList.add('active');
   }
 }
 

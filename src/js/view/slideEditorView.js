@@ -28,26 +28,16 @@ class SlideEditorView extends View {
   }
 
   initListeners () {
-    this.toolbar.$view.addEventListener('click', ({target}) => {
-      this.bindCRUDButtonEvent(target);
-    });
-
-    this.toolbar.$view.addEventListener('keyup', ({target}) => {
-      this.bindToolbarKeyboardEvent(target);
-    });
-
-    this.viewer.$viewModeChangeBtn.addEventListener('click', ({target}) => {
-      this.toggleViewerMode(target);
-    });
-    this.editor.$view.addEventListener('keyup', ({target}) => {
-      this.passOnUserInput(target);
-    });
+    this.toolbar.$view.addEventListener('click', ({target}) => this.bindCRUDButtonEvent(target));
+    this.toolbar.$view.addEventListener('keyup', ({target}) => this.bindToolbarKeyboardEvent(target));
+    this.viewer.$viewModeChangeBtn.addEventListener('click', ({target}) => this.toggleViewerMode(target));
+    this.editor.$view.addEventListener('keyup', ({target}) => this.passOnUserInput(target));
   }
 
   bindCRUDButtonEvent ({id}) {
     if (!id) return;
     if (id === 'delete') return this.controller.deleteSlide();
-    if (id === 'create') return this.controller.createNextSlide();
+    if (id === 'create') return this.controller.createSlide();
     if (id === 'before') return this.controller.focusOnBeforeSlide();
     if (id === 'next') return this.controller.focusOnNextSlide();
   }
