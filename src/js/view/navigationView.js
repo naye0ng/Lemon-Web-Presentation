@@ -10,25 +10,20 @@ class NavigationView extends View {
     this.$navigation = createCustomElement('div', {class: 'navigation'});
     this.$lemon = createCustomElement('div', {class: 'lemon-logo'});
     this.$navContents = createCustomElement('div');
-    this.$fullscreenBtn = createCustomElement('button', {id: 'start-fullscreen-0', class: 'fullscreen-btn'}, '슬라이드 쇼');
-    this.$fullscreenNthSlideBtn = createCustomElement('button', {id: 'start-fullscreen-nth', class: 'fullscreen-btn'}, '현재 슬라이드부터 쇼');
+    this.$fullscreenBtn = createCustomElement('button', {class: 'fullscreen-btn'}, '슬라이드 쇼');
+    this.$fullscreenNthSlideBtn = createCustomElement('button', {class: 'fullscreen-btn'}, '현재 슬라이드부터 쇼');
     this.$navContents.append(this.$fullscreenBtn, this.$fullscreenNthSlideBtn);
     this.$navigation.append(this.$lemon, this.$navContents);
-    this.init();
   }
 
-  init () {
+  bind () {
     this.initListeners();
     this.render(this.$navigation);
   }
 
   initListeners () {
-    this.$navigation.addEventListener('click', ({target}) => this.requestFullscreen(target));
-  }
-
-  requestFullscreen ({id}) {
-    if (!id) return;
-    return this.controller.startFullscreen(id === 'start-fullscreen-nth');
+    this.$fullscreenBtn.addEventListener('click', () => this.controller.startFullscreen(false));
+    this.$fullscreenNthSlideBtn.addEventListener('click', () => this.controller.startFullscreen(true));
   }
 }
 

@@ -6,7 +6,6 @@ class Toolbar extends View {
     super();
 
     this.$view = createCustomElement('div', {class: 'toolbar'});
-
     this.$slideTitle = createCustomElement('div', {class: 'pt-title-wrap'});
     this.$inputTitle = createCustomElement('input', {id: 'pt-title', type: 'text', placeholder: '제목 없는 프레젠테이션'});
     this.$slideTitle.append(this.$inputTitle);

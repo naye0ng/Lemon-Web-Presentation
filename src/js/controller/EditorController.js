@@ -1,12 +1,13 @@
-import SlideEditorView from '../view/slideEditorView';
+import EditorView from '../view/editorView';
 
 class EditorController {
   constructor (model) {
     this.model = model;
-    this.view = new SlideEditorView(this);
+    this.view = new EditorView(this);
   }
 
   init () {
+    this.view.bind();
     this.createSlide();
   }
 
