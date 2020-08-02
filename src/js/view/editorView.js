@@ -36,13 +36,16 @@ class EditorView extends View {
     if (!id) return;
     if (id === 'delete') return this.controller.deleteSlide();
     if (id === 'create') return this.controller.createSlide();
+    if (id === 'copy') return this.controller.copySlide();
+    if (id === 'save') return this.controller.saveSlide();
     if (id === 'before') return this.controller.focusOnBeforeSlide();
     if (id === 'next') return this.controller.focusOnNextSlide();
   }
 
   bindToolbarKeyboardEvent ({id, value}) {
     if (!id) return;
-    if (!id === 'slide-number') this.controller.focusOnNthSlide(value - 1);
+    if (id === 'slide-number') this.controller.focusOnNthSlide(value - 1);
+    if (id === 'pt-title') this.controller.updateTitle(value);
   }
 
   toggleViewerMode ({id, classList}) {

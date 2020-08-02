@@ -8,7 +8,20 @@ class EditorController {
 
   init () {
     this.view.bind();
-    this.createSlide();
+    this.run();
+  }
+
+  run () {
+    if (this.model.isSavedStorage()) {
+      const response = confirm('최근 작성한 프레젠테이션을 불러올까요?');
+      if (response) return this.callSavedData();
+    }
+    return this.createSlide();
+  }
+
+  callSavedData () {
+    this.model.getStorageData();
+    this.bindSavedView();
   }
 
   deactivate () {
@@ -47,6 +60,17 @@ class EditorController {
     this.updateEditorView();
   }
 
+  bindSavedView () {
+    const slideIDList = this.model.getSlideIDList();
+    const {viewer} = this.view;
+    slideIDList.forEach(id => {
+      const {slideDOM} = this.model.getSlideByID(id);
+      viewer.$slideContainer.append(slideDOM);
+      this.addListeners(slideDOM);
+    });
+    this.updateView();
+  }
+
   bindView () {
     const {slideDOM} = this.model.getSlide();
     const {viewer} = this.view;
@@ -73,8 +97,23 @@ class EditorController {
     this.model.update(newData);
   }
 
-  updateNote (newData) {
-    this.model.updateNote(newData);
+  copySlide () {
+    if (!this.model.slideSize) return this.updateView();
+    this.deactivate();
+    this.model.copy();
+    this.bindView();
+  }
+
+  saveSlide () {
+    if (!this.model.slideSize) return this.updateView();
+    this.model.save();
+  }
+  updateNote (value) {
+    this.model.updateNote(value);
+  }
+
+  updateTitle (value) {
+    this.model.updateTitle(value);
   }
 
   focusOnBeforeSlide () {
