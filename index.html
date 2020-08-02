@@ -9,85 +9,41 @@
       box-sizing: border-box;
     }
 
-    section {
-      margin: 5% 0 0 5%;
+    body {
+      padding: 10%;
     }
 
-    .container {
-      width: 500px;
-      overflow: hidden;
-    }
-
-    #slide-input,
-    #slide-output {
+    #input,
+    #output {
       display: inline-block;
-      width: 48%;
-      height: 300px;
       float: left;
+      width: 50%;
+      height: 500px;
     }
 
-    #slide-output {
-      background-color: aliceblue;
-      margin-left: 3%;
-    }
-
-    #virtual-dom,
-    #convert-dom {
-      float: clear;
-      width: 500px;
-      height: 300px;
-      background: antiquewhite;
-    }
-
-    slide {
-      display: block;
-      padding: 10px;
-      color: red;
-      background-color: blue;
+    #output {
+      background-color: aquamarine;
     }
   </style>
   <title>Lemon Presentation🍋</title>
 </head>
+<section>
+  <textarea name="" id="input" cols="30" rows="10"></textarea>
+  <div id="output"></div>
+</section>
+<script>
+  document.querySelector('#input').addEventListener('keyup', function ({target}) {
+    converter(target)
+  })
+
+  function converter({selectionStart, value}) {
+    console.log(selectionStart)
+  }
+
+  // t.value = t.value.slice(0, t.selectionStart)+'삽입'+t.value.slice(t.selectionStart);
+</script>
 
 <body>
-  <section id="data-binding">
-    <h3>1. data binding</h3>
-    <input type="text" name="" id="bind-input" />
-    <p>this is binding: <span id="bind-output"></span></p>
-  </section>
-
-  <section id="data-binding">
-    <h3>2. create slide</h3>
-    <div class="container">
-      <textarea id="slide-input"></textarea>
-      <div id="slide-output"></div>
-    </div>
-  </section>
-  <!-- <div>
-    <img src="https://media.giphy.com/media/13CoXDiaCcCoyk/giphy.gif" alt="">
-  </div> -->
-  <section>
-    <div id="virtual-dom">
-      <div id="app"></div>
-    </div>
-  </section>
-  <section id="convert-dom">
-    <div id="target" :size="10">
-      알라리알라 알라리 알라
-      <ul>
-        <li>1</li>
-        <li>2</li>
-        <li>3</li>
-        <li>4
-          <ol>
-            <li>77</li>
-            <li>88</li>
-          </ol>
-        </li>
-      </ul>
-    </div>
-  </section>
-  <script src="./dist/js/main.js"></script>
 </body>
 
 </html>
