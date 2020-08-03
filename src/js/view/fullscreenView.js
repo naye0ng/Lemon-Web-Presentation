@@ -13,7 +13,11 @@ class FullscreenView extends View {
   }
 
   bind () {
+    this.initListeners();
     this.render(this.$fullscreen);
+  }
+  initListeners () {
+    document.addEventListener('keydown', ({key}) => this.controller.arrowKeyHandler(key));
   }
 }
 
