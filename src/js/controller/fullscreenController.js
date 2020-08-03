@@ -11,9 +11,6 @@ class FullscreenController {
 
   init () {
     this.view.bind();
-    document.addEventListener('keydown', ({key}) => {
-      this.arrowKeyHandler(key);
-    });
   }
 
   arrowKeyHandler (key) {

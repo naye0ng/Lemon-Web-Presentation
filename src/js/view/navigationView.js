@@ -5,7 +5,6 @@ import {createCustomElement} from '../Utils/DOMConstructor';
 class NavigationView extends View {
   constructor (controller) {
     super();
-    // 마크업
     this.controller = controller;
     this.$navigation = createCustomElement('div', {class: 'navigation'});
     this.$lemon = createCustomElement('div', {class: 'lemon-logo'});

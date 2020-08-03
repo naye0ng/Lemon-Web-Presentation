@@ -1,44 +1,65 @@
 import convertStringToDOM from '../module/converter/convertStringToDOM';
+import convertObjToDOM from '../module/converter/convertObjToDOM';
 import markupParser from '../module/parser/markupParser';
 import {createSlideDOM} from '../Utils/DOMConstructor';
 import {objDeepCopy} from '../Utils/objDeepCopyj';
 
 function SlideModel () {
-  const slides = {};
+  const storage = localStorage;
+
+  let slides = {};
   let slideIDList = [];
-  let slideKey = 0;
   let title = '';
+  let slideKey = 0;
 
   this.slideSize = 0;
   this.currentSlideIndex = -1;
+
+
+  this.reset = function () {
+    slides = {};
+    slideIDList = [];
+    title = '';
+    slideKey = 0;
+
+    this.slideSize = 0;
+    this.currentSlideIndex = -1;
+  };
+
+  this.getSlide = function (ID) {
+    return slides[ID || slideIDList[this.currentSlideIndex]];
+  };
 
   this.getSlideIDList = function () {
     return slideIDList;
   };
 
-  this.getSlideIndex = function (ID) {
+  this.getTitle = function () {
+    return title;
+  };
+
+  this.getSlideOrder = function (ID) {
     return slideIDList.indexOf(ID);
   };
 
-  this.getSlideByID = function (ID) {
-    return slides[ID];
+  this.setSlideIDList = function (newSlideIDList) {
+    slideIDList = newSlideIDList;
   };
 
-  this.getSlide = function () {
-    return slides[slideIDList[this.currentSlideIndex]];
+  this.setSlideKey = function (newSlideKey) {
+    slideKey = newSlideKey;
   };
 
-  this.setSlide = function (originalData, slideContentsDOM, parsedSlide) {
+  this.updateSlideContents = function (originalData, parsedSlide, slideContentsDOM) {
     const slide = this.getSlide();
     slide.parsedSlide = parsedSlide;
     slide.slideContentsDOM = slideContentsDOM;
     slide.originalData = originalData;
 
-    // TODO: 분리하자!
-    slide.slideDOM.firstChild.firstChild.firstChild.replaceWith(slideContentsDOM);
+    slide.slideDOM.querySelector('.slide-contents').replaceWith(slideContentsDOM);
   };
 
-  this.create = function () {
+  this.createSlide = function () {
     const ID = `slide-${++slideKey}`;
     const slideContentsDOM = convertStringToDOM();
     const parsedSlide = markupParser(slideContentsDOM);
@@ -51,16 +72,22 @@ function SlideModel () {
       slideContentsDOM,
       slideDOM,
     };
-
     this.slideSize += 1;
     this.currentSlideIndex += 1;
 
     slideIDList.splice(this.currentSlideIndex, 0, ID);
   };
 
-  this.remove = function () {
+  this.updateSlide = function (originalData) {
+    const newParsedSlide = markupParser(convertStringToDOM(originalData));
+    const newSlideContentsDOM = convertObjToDOM(newParsedSlide);
+    this.updateSlideContents(originalData, newParsedSlide, newSlideContentsDOM);
+  };
+
+  this.deleteSlide = function () {
     const {slideDOM} = this.getSlide();
     slideDOM.remove();
+
     slideIDList.splice(this.currentSlideIndex, 1);
     this.slideSize -= 1;
 
@@ -71,15 +98,10 @@ function SlideModel () {
     }
   };
 
-  this.update = function (value) {
-    const newSlideContentsDOM = convertStringToDOM(value);
-    const newParsedSlide = markupParser(newSlideContentsDOM);
-    this.setSlide(value, newSlideContentsDOM, newParsedSlide);
-  };
-
-  this.copy = function () {
+  this.copySlide = function () {
     const {originalData, parsedSlide, slideContentsDOM} = this.getSlide();
     const ID = `slide-${++slideKey}`;
+
     const copySlideContentsDOM = slideContentsDOM.cloneNode(true);
     const copyParsedSlide = objDeepCopy(parsedSlide);
     const copySlideDOM = createSlideDOM(ID, copySlideContentsDOM);
@@ -120,18 +142,25 @@ function SlideModel () {
     this.currentSlideIndex = swapIndex;
   };
 
-  this.isSavedStorage = function () {
-    const pt = localStorage.getItem('presentationOrder') || [];
-    return pt.length;
+
+  this.getStorageData = function (key) {
+    return JSON.parse(storage[key] || null);
   };
 
-  this.save = function () {
-    if (!title) return alert('제목을 입력해주세요.');
+  this.setStorageData = function (key, value) {
+    storage[key] = JSON.stringify(value);
+  };
 
-    const presentationOrder = JSON.parse(localStorage.getItem('presentationOrder')) || [];
-    const order = presentationOrder.indexOf(title);
-    if (order >= 0) presentationOrder.splice(order, 1);
-    presentationOrder.push(title);
+  this.isStorageEmpty = function () {
+    return !(this.getStorageData('presentationList') || []).length;
+  };
+
+  this.savePresentation = function () {
+    if (!title) return false;
+    const presentationList = this.getStorageData('presentationList') || [];
+    const order = presentationList.indexOf(title);
+    if (order >= 0) presentationList.splice(order, 1);
+    presentationList.push(title);
 
     const presentation = {
       slideIDList,
@@ -149,21 +178,20 @@ function SlideModel () {
       };
     });
 
-    localStorage.setItem('presentationOrder', JSON.stringify(presentationOrder));
-    localStorage.setItem(title, JSON.stringify(presentation));
+    this.setStorageData('presentationList', presentationList);
+    this.setStorageData(title, presentation);
+    return true;
   };
 
-  this.getStorageData = function (order) {
-    const presentationOrder = JSON.parse(localStorage.getItem('presentationOrder'));
-    title = presentationOrder[(order || presentationOrder.length - 1)];
-    const presentation = JSON.parse(localStorage.getItem(title));
+  this.getPresentation = function (selectedTitle) {
+    title = selectedTitle;
+    const PT = this.getStorageData(title);
 
-    /* eslint-disable prefer-destructuring */
-    slideKey = presentation.slideKey;
-    slideIDList = presentation.slideIDList;
+    this.setSlideIDList(PT.slideIDList);
+    this.setSlideKey(PT.slideKey);
 
     slideIDList.forEach(id => {
-      const slide = presentation.slides[id];
+      const slide = PT.slides[id];
       const slideContentsDOM = convertStringToDOM(slide.slideContents);
       const slideDOM = createSlideDOM(id, slideContentsDOM);
       slides[id] = {
