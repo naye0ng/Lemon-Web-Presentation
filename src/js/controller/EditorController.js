@@ -7,7 +7,8 @@ class EditorController {
   }
 
   init () {
-    this.view.bind();
+    this.view.init();
+    this.$slideNumber = this.view.toolbar.$view.querySelector('#slide-number');
     this.run();
   }
 
@@ -19,12 +20,31 @@ class EditorController {
     return this.createSlide();
   }
 
-  slideDeactivate () {
+  eventHandler ({id, value}) {
+    switch (id) {
+      case 'save': return this.savePresentation();
+      case 'new': return this.createPresentation();
+      case 'delete': return this.deletePresentation();
+      case 'slide-delete': return this.deleteSlide();
+      case 'slide-create': return this.createSlide();
+      case 'slide-copy': return this.copySlide();
+      case 'before': return this.focusOnBeforeSlide();
+      case 'next': return this.focusOnNextSlide();
+      case 'raw-data': return this.updateSlide(value);
+      case 'pt-note': return this.updateNote(value);
+      case 'presentation-title': return this.updateTitle(value);
+      case 'slide-number': return this.focusOnNthSlide(value - 1);
+      case 'presentation-selector': return this.selectPresentation(value);
+      default:
+    }
+  }
+
+  deactivateSlide () {
     const {slideDOM} = this.model.getSlide();
     slideDOM.classList.remove('active');
   }
 
-  slideActivate () {
+  activateSlide () {
     const {slideDOM} = this.model.getSlide();
     slideDOM.classList.add('active');
   }
@@ -42,35 +62,34 @@ class EditorController {
   }
 
   updateView () {
-    if (this.model.slideSize) this.slideActivate();
+    if (this.model.slideSize) this.activateSlide();
     this.updateEditorView();
     this.updateSelectView();
   }
 
   updateEditorView () {
-    const {$PTNote, $rawData} = this.view.editor;
-    const {$inputNth} = this.view.toolbar;
+    const {$note, $originalData} = this.view.editor;
     const {slideSize, currentSlideIndex} = this.model;
 
-    $inputNth.max = slideSize;
-
     if (!slideSize) {
-      $PTNote.value = '';
-      $rawData.value = '';
-      $inputNth.value = 0;
-      $inputNth.min = 0;
-      // return alert('슬라이드가 존재하지 않습니다.\n슬라이드를 생성해주세요!');
+      $note.value = '';
+      $originalData.value = '';
+      this.$slideNumber.value = 0;
+      this.$slideNumber.min = 0;
+      this.$slideNumber.max = 0;
       return;
     }
-    const {note, originalData} = this.model.getSlide();
-    $PTNote.value = note;
-    $rawData.value = originalData;
-    $inputNth.value = currentSlideIndex + 1;
-    $inputNth.min = 1;
+    const {note, originalData, slideDOM} = this.model.getSlide();
+    $note.value = note;
+    $originalData.value = originalData;
+    this.$slideNumber.value = currentSlideIndex + 1;
+    this.$slideNumber.min = 1;
+    this.$slideNumber.max = slideSize;
+    this.view.viewer.$slideCarousel.scrollTop = slideDOM.offsetTop;
   }
 
   updateSelectView () {
-    const presentations = this.model.getStorageData('presentationList');
+    const presentations = this.model.getStorageData('presentationList') || [];
     const {$selectSavedFile} = this.view.titlebar;
     let selectOptions = '<option value="">저장된 프레젠테이션 목록</option>';
     presentations.forEach(title => {
@@ -110,10 +129,9 @@ class EditorController {
   }
 
   createSlide () {
-    if (this.model.slideSize) this.slideDeactivate();
+    if (this.model.slideSize) this.deactivateSlide();
     this.model.createSlide();
     this.renderSlide();
-    // TODO: 현재 슬라이드 위치에 스크롤 포커싱!
   }
 
   deleteSlide () {
@@ -129,7 +147,7 @@ class EditorController {
 
   copySlide () {
     if (!this.model.slideSize) return this.updateView();
-    this.slideDeactivate();
+    this.deactivateSlide();
     this.model.copySlide();
     this.renderSlide();
   }
@@ -168,7 +186,7 @@ class EditorController {
     this.resetView();
   }
 
-  selectPresentation ({value}) {
+  selectPresentation (value) {
     if (!value || value === this.model.getTitle()) return;
     this.model.reset();
     this.resetPreview();
@@ -179,19 +197,19 @@ class EditorController {
 
   focusOnBeforeSlide () {
     if (this.model.currentSlideIndex <= 0) return;
-    this.slideDeactivate();
+    this.deactivateSlide();
     this.model.currentSlideIndex -= 1;
     this.updateView();
   }
   focusOnNextSlide () {
     if (this.model.currentSlideIndex >= this.model.slideSize - 1) return;
-    this.slideDeactivate();
+    this.deactivateSlide();
     this.model.currentSlideIndex += 1;
     this.updateView();
   }
   focusOnNthSlide (n) {
     if (n < 0 || n >= this.model.slideSize) return;
-    this.slideDeactivate();
+    this.deactivateSlide();
     this.model.currentSlideIndex = n;
     this.updateView();
   }
@@ -221,7 +239,7 @@ class EditorController {
         parent.insertBefore(target, swap);
       }
 
-      this.slideDeactivate();
+      this.deactivateSlide();
       this.model.swapIndex(targetIndex, swapIndex);
       this.updateView();
     }
