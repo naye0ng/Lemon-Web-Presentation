@@ -64,7 +64,7 @@ class EditorController {
   updateView () {
     if (this.model.slideSize) this.activateSlide();
     this.updateEditorView();
-    this.updateSelectView();
+    this.updateSelectedOptions();
   }
 
   updateEditorView () {
@@ -88,7 +88,7 @@ class EditorController {
     this.view.viewer.$slideCarousel.scrollTop = slideDOM.offsetTop;
   }
 
-  updateSelectView () {
+  updateSelectedOptions () {
     const presentations = this.model.getStorageData('presentationList') || [];
     const {$selectSavedFile} = this.view.titlebar;
     let selectOptions = '<option value="">저장된 프레젠테이션 목록</option>';

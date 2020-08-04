@@ -152,7 +152,7 @@ button, input {
 .viewer-and-editor {
     display: flex;
     width: 100vw;
-    height: calc(100vh - 45px);
+    height: calc(100vh - 85px);
     flex-flow: row wrap;
     border-top: 1.5px solid #d8d8d8;
 }
@@ -240,6 +240,7 @@ button, input {
 }
 
 .slide-viewer .slide-container {
+    position: relative;
     display: flex;
     width: 100%;
     min-height: 100%;
@@ -279,6 +280,7 @@ button, input {
 .slide.active {
     width: 30vw;
     height: calc(30vw * 9 / 16);
+    border: 1.3px solid #f4d569;
     box-shadow: 0 5px 10px rgba(244, 213, 105, .25);
 }
 
@@ -448,13 +450,97 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 /* fullscreen */
 
 #fullscreen {
+    position: relative;
+    display: flex;
     width: 100vw;
     height: 100vh;
-    display: flex;
     align-items: center;
 }
 
+#fullscreen.mouse-pointer-active {
+    cursor: none;
+}
+
+#fullscreen.mouse-pointer-active #mouse-pointer {
+    display: block;
+}
+
+#mouse-pointer {
+    display: none;
+    position: absolute;
+    content: '';
+    bottom: -10px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+}
+
+#fullscreen-menu {
+    z-index: 10;
+    position: absolute;
+    left: 3%;
+    bottom: 3%;
+    height: 50px;
+}
+
+#fullscreen-menu.active .fullscreen-toolber {
+    display: block;
+}
+
+.fullscreen-toolber {
+    display: none;
+    overflow: hidden;
+    width: 100%;
+    height: 50px;
+    padding: 0 15px 0 5px;
+    color: #cecece;
+    background-color: #323232;
+    border-radius: 2px;
+}
+
+.fullscreen-toolber button, .fullscreen-toolber div {
+    display: inline-block;
+    float: left;
+}
+
+.fullscreen-toolber button, .fullscreen-toolber input {
+    min-width: 50px;
+    height: 50px;
+    padding: 0 10px;
+    margin: 0;
+    background-color: #323232;
+    text-align: center;
+    font-size: .7rem;
+    color: #cecece;
+}
+
+.slide-toolber {
+    margin-right: 20px;
+}
+
+.slide-toolber::after {
+    content: "";
+    position: absolute;
+    height: 30px;
+    top: 10px;
+    border-right: 1.2px solid #cecece;
+}
+
+.fullscreen-toolber button:hover, .fullscreen-toolber input:hover, #pointer.active {
+    color: #ffffff;
+}
+
+.slide-toolber, #pointer, #helper {
+    display: inline-block;
+}
+
+#pointer, #helper {
+    margin-right: 10px;
+}
+
 #fullscreen-contents {
+    /* cursor: none; */
     transition: .3s;
     transition-timing-function: ease-in;
     height: calc(100vw * 9 / 16);
