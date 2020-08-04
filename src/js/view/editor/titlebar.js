@@ -10,12 +10,9 @@ class Titlebar extends View {
     this.$inputTitle = createCustomElement('input', {id: 'presentation-title', type: 'text', placeholder: '제목 없는 프레젠테이션'});
     this.$presentationTitle.append(this.$inputTitle);
 
-    this.$selectSavedFile = createCustomElement('select', {name: 'presentation'});
+    this.$selectSavedFile = createCustomElement('select', {id: 'presentation-selector', name: 'presentation'});
     this.$presntationCRUDButton = createCustomElement('div', {class: 'presentation-btn'});
-    this.$presntationCRUDButton.innerHTML =
-      '<button id="new">새 프레젠테이션</button>' +
-      '<button id="delete">저장 기록 삭제</button>' +
-      '<button id="save">저장</button>';
+    this.$presntationCRUDButton.innerHTML = '<button id="new">새 프레젠테이션</button><button id="delete">저장 기록 삭제</button><button id="save">저장</button>';
 
     this.$presentationMenu = createCustomElement('div', {class: 'presenteation-menu'});
     this.$presentationMenu.append(this.$selectSavedFile, this.$presntationCRUDButton);
