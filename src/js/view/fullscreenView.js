@@ -7,17 +7,17 @@ class FullscreenView extends View {
     this.controller = controller;
 
     this.$fullscreen = createCustomElement('div', {id: 'fullscreen'});
-    this.$fullscreenMenu = createCustomElement('div', {id: 'fullscreen-menu'});
-    this.$fullscreenContents = createCustomElement('div', {id: 'fullscreen-contents'});
-    this.$fullscreen.append(this.$fullscreenMenu, this.$fullscreenContents);
+    this.$fullscreen.innerHTML = '<div id="fullscreen-menu" class="active"><div class="fullscreen-toolber"><div class="slide-toolber"><button id="before"></button><div class="input-slide-number"><input id="show-slide-number" type="number" max="1" min="1" value="1"></div><button id="next"></button></div><button id="pointer">포인터</button><button id="helper">발표자 노트</button></div></div><div id="fullscreen-contents"></div>';
   }
 
-  bind () {
+  init () {
     this.initListeners();
     this.render(this.$fullscreen);
   }
+
   initListeners () {
     document.addEventListener('keydown', ({key}) => this.controller.arrowKeyHandler(key));
+    this.$fullscreen.addEventListener('click', ({target}) => this.controller.eventHandler(target));
   }
 }
 
