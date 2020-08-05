@@ -17,14 +17,14 @@ class EditorView extends View {
     this.$editorWrapper = createCustomElement('div', {class: 'slide-editor'});
     this.$editorWrapper.append(this.toolbar.$view, this.editor.$view);
 
-    this.$slideEditor = createCustomElement('div', {class: 'viewer-and-editor'});
-    this.$slideEditor.append(this.viewer.$view, this.$editorWrapper);
+    this.$editor = createCustomElement('div', {class: 'viewer-and-editor'});
+    this.$editor.append(this.viewer.$view, this.$editorWrapper);
   }
 
   init () {
     this.initListeners();
     this.render(this.titlebar.$view);
-    this.render(this.$slideEditor);
+    this.render(this.$editor);
   }
 
   initListeners () {
@@ -36,11 +36,12 @@ class EditorView extends View {
     this.editor.$view.addEventListener('keyup', ({target}) => this.controller.eventHandler(target));
   }
 
+
   toggleViewerMode ({id, classList}) {
     if (!id || classList.length) return;
 
     this.viewer.toggleViewerButton();
-    this.$slideEditor.classList.toggle('grid-mode');
+    this.$editor.classList.toggle('grid-mode');
   }
 }
 
