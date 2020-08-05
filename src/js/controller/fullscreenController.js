@@ -1,45 +1,58 @@
 import NavigationView from '../view/navigationView';
 import FullscreenView from '../view/fullscreenView';
+import Popup from '../view/fullscreen/popup';
 
 class FullscreenController {
   constructor (model) {
     this.model = model;
+
+    // TODO: 이 부분 묶기
     this.view = new FullscreenView(this);
+    this.popupView = new Popup(this);
     this.navigationView = new NavigationView(this);
 
     this.slideIndex = 0;
     this.slideSize = 0;
 
     this.isActivateMousePointer = false;
-  }
-
-  init () {
-    this.view.init();
-    this.$fullscreenContents = this.view.$fullscreen.querySelector('#fullscreen-contents');
-    this.$slideNumber = this.view.$fullscreen.querySelector('#show-slide-number');
-    this.$mousePointer = this.view.$fullscreen.querySelector('#mouse-pointer');
-    this.$pointerButton = this.view.$fullscreen.querySelector('#pointer');
+    this.presentationHelperPopup = null;
   }
 
   initNavigationView () {
     this.navigationView.init();
   }
 
-  eventHandler ({id, value}) {
-    switch (id) {
-      case 'current-slide': return this.startFullscreen(true);
-      case 'first-slide': return this.startFullscreen(false);
-      case 'before': return this.showBeforeSlide();
-      case 'next': return this.showNextSlide();
-      case 'show-slide-number': return this.showNthSlide(value);
-      case 'pointer': return this.toggleMousePointer();
-      default:
-    }
+  init () {
+    this.view.init();
+    this.$slideNumber = document.querySelector('#pt-number');
+    this.$pointerButton = document.querySelector('#pointer');
+    this.addDocumentListener();
   }
 
-  documentEventHandler (e) {
+  addDocumentListener () {
+    document.addEventListener('keyup', e => this.controller.eventHandler(e));
+    document.addEventListener('fullscreenchange', this.resetFullscreen.bind(this));
+  }
+
+  eventHandler (e) {
+    const {type, target} = e;
+    if (type === 'click') {
+      const {id, value} = target;
+      switch (id) {
+        case 'current-slide': return this.startFullscreen(true);
+        case 'first-slide': return this.startFullscreen(false);
+        case 'pt-helper': return this.openPresentationHelperPopup();
+        case 'before': return this.showBeforeSlide();
+        case 'next': return this.showNextSlide();
+        case 'pt-number': return this.showNthSlide(value);
+        case 'pointer': return this.toggleMousePointer();
+        case 'helper': return this.openPresentationHelper();
+        default:
+      }
+    }
+
     if (!document.fullscreen) return;
-    switch (e.type) {
+    switch (type) {
       case 'mousemove': return this.renderMousePointer(e);
       case 'mouseenter': return this.activeMousePointer();
       case 'mouseleave': return this.deactiveMousePointer();
@@ -56,6 +69,15 @@ class FullscreenController {
     }
   }
 
+  resetFullscreen () {
+    if (document.fullscreen) return;
+    if (this.presentationHelperPopup) {
+      this.presentationHelperPopup.close();
+      this.presentationHelperPopup = null;
+    }
+    this.view.$fullscreenContents.innerHTML = '';
+  }
+
   toggleMousePointer () {
     this.isActivateMousePointer = !this.isActivateMousePointer;
     this.view.$fullscreen.classList.toggle('mouse-pointer-active');
@@ -65,8 +87,8 @@ class FullscreenController {
   renderMousePointer (e) {
     if (!this.isActivateMousePointer) return;
     const {clientX, clientY} = e;
-    this.$mousePointer.style.left = `${clientX}px`;
-    this.$mousePointer.style.top = `${clientY}px`;
+    this.view.$mousePointer.style.left = `${clientX}px`;
+    this.view.$mousePointer.style.top = `${clientY}px`;
   }
 
   deactiveMousePointer () {
@@ -74,7 +96,7 @@ class FullscreenController {
     this.view.$fullscreen.classList.remove('mouse-pointer-active');
   }
 
-  activeMousePointer (e) {
+  activeMousePointer () {
     if (!this.isActivateMousePointer) return;
     this.view.$fullscreen.classList.add('mouse-pointer-active');
   }
@@ -84,23 +106,33 @@ class FullscreenController {
     this.moveSlide();
   }
 
+  openPresentationHelperPopup () {
+    if (this.presentationHelperPopup) return;
+    this.presentationHelperPopup = window.open('', '_blank', 'width=400, height=300, left=100, top=50');
+    this.presentationHelperPopup.document.title = '발표자 도구 모음 창';
+    this.presentationHelperPopup.document.body.append(this.popupView.$popup);
+  }
+
   startFullscreen (isStatCurrentSlide) {
     const {slideSize, currentSlideIndex} = this.model;
     if (!slideSize) return alert('작성된 슬라이드가 없습니다. \n슬라이드를 만들어주세요!');
-    const startSlideIndex = isStatCurrentSlide ? currentSlideIndex : 0;
-
-    this.$fullscreenContents.innerHTML = '';
-    this.slideSize = slideSize;
 
     this.model.getSlideIDList().forEach(id => {
       const {slideDOM} = this.model.getSlide(id);
-      this.$fullscreenContents.append(slideDOM.cloneNode(true));
+      this.view.$fullscreenContents.append(slideDOM.cloneNode(true));
     });
 
+    const startSlideIndex = isStatCurrentSlide ? currentSlideIndex : 0;
+    this.slideSize = slideSize;
     this.slideIndex = startSlideIndex;
-    this.$fullscreenContents.style.width = `${100 * this.slideSize}vw`;
+
+    this.view.$fullscreenContents.style.width = `${100 * this.slideSize}vw`;
     this.$slideNumber.max = this.slideSize;
+
     this.updatePresentationToolbar();
+
+    // 이렇게 두개가 한번에 요청이 안됨
+    // this.openPresentationHelperPopup();
     this.view.$fullscreen.requestFullscreen();
   }
 
@@ -124,7 +156,7 @@ class FullscreenController {
   }
 
   moveSlide () {
-    this.$fullscreenContents.style.marginLeft = `${-100 * this.slideIndex}vw`;
+    this.view.$fullscreenContents.style.marginLeft = `${-100 * this.slideIndex}vw`;
   }
 }
 

@@ -482,6 +482,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
     left: 3%;
     bottom: 3%;
     height: 50px;
+    min-width: 100px;
 }
 
 #fullscreen-menu.active .fullscreen-toolber {
@@ -489,7 +490,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 }
 
 .fullscreen-toolber {
-    display: none;
+    /* display: none; */
     overflow: hidden;
     width: 100%;
     height: 50px;
