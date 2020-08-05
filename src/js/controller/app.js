@@ -1,19 +1,19 @@
-import SlideEditorController from './SlideEditorController';
-import FullscreenModeController from './fullscreenModeController';
-import NavigationView from '../view/navigationView';
+import SlideModel from '../model/slideModel';
+import EditorController from './editorController';
+import FullscreenController from './fullscreenController';
 
 const App = {
   init () {
-    this.view = new NavigationView(this);
-    this.slideEditor = new SlideEditorController();
-    this.fullscreen = new FullscreenModeController();
-  },
+    this.model = new SlideModel();
+    this.editorController = new EditorController(this.model);
+    this.fullscreenController = new FullscreenController(this.model);
 
-  startFullscreen (isStatCurrentSlide) {
-    const {slides, slideIDList, slideSize, currentSlideIndex} = this.slideEditor;
-    if (slideSize === 0) return alert('작성된 슬라이드가 없습니다. \n슬라이드를 만들어주세요!');
-    if (!isStatCurrentSlide) return this.fullscreen.requestFullscreenMode(slides, slideIDList);
-    return this.fullscreen.requestFullscreenMode(slides, slideIDList, currentSlideIndex);
+    this.run();
+  },
+  run () {
+    this.fullscreenController.initNavigationView();
+    this.editorController.init();
+    this.fullscreenController.init();
   },
 };
 

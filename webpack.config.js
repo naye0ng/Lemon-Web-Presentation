@@ -22,7 +22,7 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              publicPath: './dist/',
+              publicPath: './',
               name: '[name].[ext]?[hash]',
               limit: 10000,
             },
@@ -45,3 +45,4 @@ module.exports = {
     }),
   ],
 };
+

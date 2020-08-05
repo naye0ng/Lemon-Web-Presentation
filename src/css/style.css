@@ -31,6 +31,10 @@ button, input {
     background: #ffffff;
 }
 
+input {
+    background-color: #fff5d1;
+}
+
 body, textarea {
     font-size: 16px;
     line-height: 1.6;
@@ -82,6 +86,67 @@ button, input {
     background-color: #f4d569;
 }
 
+/* titlebar */
+
+.titlebar {
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    height: 40px;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-items: center;
+    font-size: .7rem;
+    background-color: #fff5d1;
+}
+
+.presentation-info, .presentation-menu {
+    height: 40px;
+}
+
+.presentation-info {
+    overflow: hidden;
+    width: 60%;
+}
+
+#presentation-title {
+    width: 100%;
+    height: 100%;
+    padding: 0 5%;
+    line-height: 1.2;
+}
+
+.presenteation-menu {
+    display: flex;
+    width: 40%;
+    height: 100%;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.presenteation-menu select {
+    height: 100%;
+    /* margin-right: 10px; */
+    padding: 0 10px;
+    font-size: .7rem;
+    border-left: 1.2px solid #d8d8d8;
+}
+
+.presentation-btn {
+    height: 100%;
+}
+
+.presentation-btn button {
+    padding: 0 10px;
+    height: 100%;
+    float: right;
+    border-left: 1.2px solid #d8d8d8;
+}
+
+.presentation-btn button:hover {
+    background-color: #f4d569;
+}
+
 /* viewer & editor */
 
 .viewer-and-editor {
@@ -89,6 +154,7 @@ button, input {
     width: 100vw;
     height: calc(100vh - 45px);
     flex-flow: row wrap;
+    border-top: 1.5px solid #d8d8d8;
 }
 
 /* grid */
@@ -220,22 +286,9 @@ button, input {
 
 .toolbar {
     overflow: hidden;
-    height: 120px;
+    height: 130px;
     background-color: #f1f1f1;
     border-bottom: 1.2px solid #d8d8d8;
-}
-
-.pt-title-wrap {
-    overflow: hidden;
-    height: 40px;
-    border-bottom: 1.2px solid #d8d8d8;
-}
-
-#pt-title {
-    width: 100%;
-    height: 100%;
-    padding: 0 5%;
-    background-color: #ffffff;
 }
 
 .slide-controller {
@@ -245,7 +298,7 @@ button, input {
     flex-flow: row nowrap;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1.2px solid #d8d8d8;
+    border-bottom: 1.5px solid #d8d8d8;
 }
 
 .focus-btn, .crud-btn {
@@ -257,6 +310,7 @@ button, input {
     display: inline-block;
     width: 40px;
     height: 40px;
+    border-right: 1.2px solid #d8d8d8;
 }
 
 .crud-btn button {
@@ -264,10 +318,11 @@ button, input {
     height: 40px;
     padding: 0 10px;
     font-size: .7rem;
+    border-left: 1.2px solid #d8d8d8;
 }
 
 .focus-btn button:hover, #slide-number:hover, .crud-btn button:hover {
-    background-color: rgba(244, 213, 105, .25);
+    background-color: #f4d569;
 }
 
 #before, #next {
@@ -296,12 +351,87 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
     margin: 0;
 }
 
+.editor-tool {
+    height: 90px;
+}
+
+.tag-helper {
+    overflow: hidden;
+    height: 30px;
+    border-bottom: 1.2px solid #d8d8d8;
+}
+
+.tag-helper button {
+    height: 30px;
+    padding: 0 12px;
+    font-size: .7rem;
+    border-right: 1.2px solid #d8d8d8;
+}
+
+.tag-helper button:hover {
+    background-color: #f4d569;
+}
+
+.tag-helper button.active {
+    border-bottom: none;
+    background-color: #f4d569;
+}
+
+.attrs-editor {
+    overflow: hidden;
+    display: flex;
+    flex-flow: column nowrap;
+    height: 60px;
+    font-size: .7rem;
+    justify-content: space-between;
+}
+
+.attrs-editor section {
+    display: inline-flex;
+    height: 30px;
+}
+
+.attrs-editor section:nth-child(2) {
+    border-top: 1.2px solid #d8d8d8;
+}
+
+.attrs-editor * {
+    height: 100%;
+    text-align: center;
+}
+
+.attrs-editor input {
+    width: 30px;
+    border-left: 1.2px solid #d8d8d8;
+}
+
+.attrs-editor button {
+    min-width: 30px;
+    padding: 0 8px;
+}
+
+.attrs-editor button:hover {
+    background-color: #f4d569;
+}
+
+.attrs-editor button, .attrs-editor div {
+    border-right: 1.2px solid #d8d8d8;
+}
+
+.attrs-editor div p {
+    display: inline-block;
+    height: 100%;
+    padding: 8px 15px 0;
+    float: left;
+}
+
 .editor {
     overflow: hidden;
-    height: calc(100% - 120px);
+    height: calc(100% - 130px);
 }
 
 .text-editor {
+    display: block;
     width: 100%;
     height: 80%;
     padding: 15px;
@@ -347,7 +477,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
     width: 100%;
     height: 100%;
     padding: 4%;
-    font-size: 2.0rem;
+    font-size: 2rem;
 }
 
 .slide-viewer .slide-contents {
@@ -359,27 +489,27 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 }
 
 .slide-contents h1, .head-1 {
-    font-size: 6rem;
-}
-
-.slide-contents h2, .head-2 {
     font-size: 5rem;
 }
 
-.slide-contents h3, .head-3 {
-    font-size: 4.2rem;
+.slide-contents h2, .head-2 {
+    font-size: 4.3rem;
 }
 
-.slide-contents h4, .head-4 {
+.slide-contents h3, .head-3 {
     font-size: 3.7rem;
 }
 
+.slide-contents h4, .head-4 {
+    font-size: 3.4rem;
+}
+
 .slide-contents h5, .head-5 {
-    font-size: 3.5rem;
+    font-size: 3rem;
 }
 
 .slide-contents h6, .head-6 {
-    font-size: 3rem;
+    font-size: 2rem;
 }
 
 .slide ul.list-style-number li {
@@ -407,6 +537,21 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
     .navigation {
         height: 35px;
     }
+    .titlebar {
+        height: 50px;
+        flex-flow: column nowrap;
+        background-color: #ffffff;
+    }
+    .presentation-info, .presenteation-menu {
+        width: 100%;
+        height: 25px;
+    }
+    .presentation-info {
+        border-bottom: 1px dotted #d8d8d8;
+    }
+    #presentation-title, .presentation-btn button {
+        font-size: .5rem;
+    }
     .fullscreen-btn {
         height: 20px;
         margin: 10px 5px;
@@ -415,6 +560,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
         background: #f1f1f1;
     }
     .viewer-and-editor {
+        height: calc(100vh - 85px);
         flex-flow: column nowrap;
     }
     /* grid */
@@ -463,7 +609,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
     .slide-editor {
         border-top: 1.5px solid #f4d569;
         width: 100%;
-        height: calc(65vh - 35px);
+        height: calc(100% - 35vh);
     }
     .toolbar {
         height: 90px;
@@ -484,6 +630,8 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
     }
     .text-editor {
         height: 70%;
+        padding: 2%;
+        font-size: 12px;
     }
     .text-editor:nth-child(2) {
         height: 30%;
@@ -492,6 +640,21 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 }
 
 @media(min-width:768px) and (max-width:1025px) {
+    .titlebar {
+        height: 50px;
+        flex-flow: column nowrap;
+        background-color: #ffffff;
+    }
+    .presentation-info, .presenteation-menu {
+        width: 100%;
+        height: 25px;
+    }
+    .presentation-info {
+        border-bottom: 1px dotted #d8d8d8;
+    }
+    .viewer-and-editor {
+        height: calc(100vh - 95px);
+    }
     .grid-mode .slide-viewer .slide {
         display: inline-block;
         width: 19vw;
