@@ -26,12 +26,20 @@ function SlideModel () {
     this.currentSlideIndex = -1;
   };
 
+  this.getSlideByIndex = function (index) {
+    return this.getSlide(this.getSlideID(index));
+  };
+
   this.getSlide = function (ID) {
     return slides[ID || slideIDList[this.currentSlideIndex]];
   };
 
   this.getSlideIDList = function () {
     return slideIDList;
+  };
+
+  this.getSlideID = function (index) {
+    return slideIDList[index];
   };
 
   this.getTitle = function () {
@@ -50,6 +58,7 @@ function SlideModel () {
     slideKey = newSlideKey;
   };
 
+  // 여기서부터 빼자!
   this.updateSlideContents = function (originalData, parsedSlide, slideContentsDOM) {
     const slide = this.getSlide();
     slide.parsedSlide = parsedSlide;
