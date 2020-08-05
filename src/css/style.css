@@ -86,6 +86,11 @@ button, input {
     background-color: #f4d569;
 }
 
+#helper-popup.active {
+    background-color: #705aff;
+    color: #ffffff;
+}
+
 /* titlebar */
 
 .titlebar {
