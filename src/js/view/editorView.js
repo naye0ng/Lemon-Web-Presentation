@@ -5,6 +5,11 @@ const editorView = () => {
   const $toolbar = createElement('div', {class: 'toolbar'});
   const $editor = createElement('div', {class: 'editor'});
 
+  const $textarea = createElement('textarea', {id: 'raw-data', class: 'text-editor', placeholder: '슬라이드를 작성하세요!'});
+  const $noteTextarea = createElement('textarea', {id: 'pt-note', class: 'text-editor', placeholder: '발표자 노트를 추가하려면 클릭하세요.'});
+
+  let $slideNumber = null;
+
   const render = function () {
     $editorContainer.append($toolbar, $editor);
 
@@ -20,9 +25,7 @@ const editorView = () => {
         </div>
       </div>`;
 
-    $editor.innerHTML = `
-      <textarea id="raw-data" class="text-editor"></textarea>
-      <textarea id="pt-note" class="text-editor" placeholder="발표자 노트를 추가하려면 클릭하세요."></textarea>`;
+    $editor.append($textarea, $noteTextarea);
   };
 
   const bindToolbarEvent = (type, handler) => {
@@ -33,11 +36,28 @@ const editorView = () => {
     $editor.addEventListener(type, ({target}) => handler(target));
   };
 
+  // 이 아래부터는 util로 뺄 수 있을 듯!
+  const updateNoteTextarea = value => {
+    $noteTextarea.value = value;
+  };
+  const updateTextarea = value => {
+    $textarea.value = value;
+  };
+
+  const updateSlideNumber = ({value, min, max}) => {
+    if (!$slideNumber) $slideNumber = document.querySelector('#slide-number');
+    if (value) $slideNumber.value = value;
+    if (min) $slideNumber.min = min;
+    if (max) $slideNumber.max = max;
+  };
 
   return {
     render,
     bindToolbarEvent,
     bindEditorEvent,
+    updateNoteTextarea,
+    updateTextarea,
+    updateSlideNumber,
   };
 };
 

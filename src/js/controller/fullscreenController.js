@@ -4,6 +4,14 @@ class FullscreenController {
     this.navigationView = view.navigation;
     this.fullscreenView = view.fullscreen;
     this.popupView = view.popup;
+
+    this.slideIndex = 0;
+    this.slideSize = 0;
+
+    this.isActivateMousePointer = false;
+    this.popupWindow = null;
+    this.timer = null;
+    this.$timerView = null;
   }
 
   init () {
@@ -16,7 +24,6 @@ class FullscreenController {
       type => this.fullscreenView.bindFullscreenEvent(type, this.eventHandler.bind(this))
     );
     this.navigationView.bindButtonEvent('click', this.eventHandler.bind(this));
-    this.popupView.bindPopupEvent('click', this.eventHandler.bind(this));
   }
 
   bindDocumentEvent () {
@@ -24,19 +31,18 @@ class FullscreenController {
     document.addEventListener('fullscreenchange', this.resetFullscreen.bind(this));
   }
 
+  // 얘는 분리하기
   eventHandler (e) {
     const {type, target} = e;
     if (type === 'click') {
-      const {id, value} = target;
+      const {id} = target;
       switch (id) {
         case 'current-slide': return this.startFullscreen(true);
         case 'first-slide': return this.startFullscreen(false);
         case 'helper-popup': return this.createPopup();
         case 'before': return this.showBeforeSlide();
         case 'next': return this.showNextSlide();
-        case 'pt-number': return this.showNthSlide(value);
         case 'pointer': return this.toggleMousePointer();
-        // case 'helper': return this.openPresentationHelper();
         case 'start-timer': return;
         case 'stop-timer': return;
         case 'reset-timer': return;
@@ -48,11 +54,12 @@ class FullscreenController {
       case 'mousemove': return this.renderMousePointer(e);
       case 'mouseenter': return this.activeMousePointer();
       case 'mouseleave': return this.deactiveMousePointer();
-      case 'keyup': return this.arrowKeyHandler(e);
+      case 'keyup':
+        if (e.target.id === 'pt-number') return this.showNthSlide(e.target.value);
+        return this.arrowKeyHandler(e);
       default:
     }
   }
-
 
   arrowKeyHandler ({key}) {
     switch (key) {
@@ -64,25 +71,24 @@ class FullscreenController {
 
   toggleMousePointer () {
     this.isActivateMousePointer = !this.isActivateMousePointer;
-    this.view.$fullscreen.classList.toggle('mouse-pointer-active');
-    this.$pointerButton.classList.toggle('active');
+    this.fullscreenView.$fullscreen.classList.toggle('mouse-pointer-active');
+    this.fullscreenView.toggleMousePointer();
   }
 
   renderMousePointer (e) {
     if (!this.isActivateMousePointer) return;
     const {clientX, clientY} = e;
-    this.view.$mousePointer.style.left = `${clientX}px`;
-    this.view.$mousePointer.style.top = `${clientY}px`;
+    this.fullscreenView.renderMousePointer(clientX, clientY);
   }
 
   deactiveMousePointer () {
     if (!this.isActivateMousePointer) return;
-    this.view.$fullscreen.classList.remove('mouse-pointer-active');
+    this.fullscreenView.$fullscreen.classList.remove('mouse-pointer-active');
   }
 
   activeMousePointer () {
     if (!this.isActivateMousePointer) return;
-    this.view.$fullscreen.classList.add('mouse-pointer-active');
+    this.fullscreenView.$fullscreen.classList.add('mouse-pointer-active');
   }
 
   resetFullscreen () {
@@ -90,18 +96,18 @@ class FullscreenController {
     if (this.popupWindow) this.popupWindow.close();
     this.slideIndex = 0;
     this.slideSize = 0;
-    this.view.$fullscreenContents.innerHTML = '';
+    this.fullscreenView.reset();
   }
 
   resetPopup () {
     this.popupWindow = null;
     this.timer = null;
     this.$timerView = null;
-    this.$popupButton.classList.remove('active');
+    // this.$popupButton.classList.remove('active');
   }
 
   updatePresentationToolbar () {
-    this.$slideNumber.value = this.slideIndex + 1;
+    this.fullscreenView.updateSlideNumber({value: this.slideIndex + 1});
     this.moveSlide();
     this.updatePopup();
   }
@@ -114,7 +120,6 @@ class FullscreenController {
     const $currentSlide = popupDocumnet.querySelector('#total');
     const $presenTationNote = popupDocumnet.querySelector('#presentation-note');
     const $slideViewer = popupDocumnet.querySelector('#viewer');
-
     $currentSlide.innerHTML = `슬라이드 ${this.slideIndex + 1} / ${this.slideSize || this.model.slideSize}`;
     $presenTationNote.innerHTML = note;
     $slideViewer.innerHTML = '';
@@ -123,11 +128,11 @@ class FullscreenController {
 
   createPopup () {
     if (this.popupWindow) return this.popupWindow.close();
-    // this.$popupButton.classList.add('active');
-    this.popupWindow = window.open('', '_blank', 'width=500, height=300, left=100, top=50');
+    this.$popupButton.classList.add('active');
+    this.popupWindow = window.open('popup.html', '_blank', 'width=500, height=300, left=100, top=50');
     this.popupWindow.document.title = '발표자 도구 모음 창';
     this.popupWindow.addEventListener('unload', this.resetPopup.bind(this));
-
+    this.popupView.bindPopupEvent('click', this.eventHandler.bind(this));
     // [Q] 한번 생성해두고 clone하는 것과 매번 new로 생성해주는 것의 차이가 있음?
     // const popupView = new Popup(this);
     this.popupWindow.document.body.append(this.popupView.style, this.popupView.$popup);
@@ -141,21 +146,21 @@ class FullscreenController {
 
     this.model.getSlideIDList().forEach(id => {
       const {slideDOM} = this.model.getSlide(id);
-      this.view.$fullscreenContents.append(slideDOM.cloneNode(true));
+      this.fullscreenView.renderSlide(slideDOM.cloneNode(true));
     });
 
     const startSlideIndex = isStatCurrentSlide ? currentSlideIndex : 0;
     this.slideSize = slideSize;
     this.slideIndex = startSlideIndex;
 
-    this.view.$fullscreenContents.style.width = `${100 * this.slideSize}vw`;
-    this.$slideNumber.max = this.slideSize;
+    this.fullscreenView.updateSlideContentsStyle('width', `${100 * this.slideSize}vw`);
+    this.fullscreenView.updateSlideNumber({max: this.slideSize});
 
     this.updatePresentationToolbar();
 
     // 이렇게 두개가 한번에 요청이 안됨
     // this.createPopup();
-    this.view.$fullscreen.requestFullscreen();
+    this.fullscreenView.$fullscreen.requestFullscreen();
     this.updatePopup();
   }
 
@@ -181,7 +186,7 @@ class FullscreenController {
   }
 
   moveSlide () {
-    this.view.$fullscreenContents.style.marginLeft = `${-100 * this.slideIndex}vw`;
+    this.fullscreenView.updateSlideContentsStyle('marginLeft', `${-100 * this.slideIndex}vw`);
   }
 
 
