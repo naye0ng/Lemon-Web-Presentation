@@ -1,25 +1,30 @@
+// import NavigationView from '../view/navigationView';
+// import FullscreenView from '../view/fullscreenView';
+// import Popup from '../view/popup/popup';
+import Popup from '../view';
+
+// TODO : popup 창
 class FullscreenController {
   constructor (model, view) {
     this.model = model;
-    this.navigationView = view.navigation;
-    this.fullscreenView = view.fullscreen;
-    this.popupView = view.popup;
-  }
+    this.view = view;
 
+    this.slideIndex = 0;
+    this.slideSize = 0;
+
+    this.isActivateMousePointer = false;
+    this.popupWindow = null;
+    this.timer = null;
+    this.$timerView = null;
+  }
   init () {
-    this.bindEventHandler();
-    this.bindDocumentEvent();
+    this.addDocumentListener();
+    // this.$slideNumber = document.querySelector('#pt-number');
+    // this.$pointerButton = document.querySelector('#pointer');
+    // this.$popupButton = this.navigationView.$navigation.querySelector('#helper-popup');
   }
 
-  bindEventHandler () {
-    ['click', 'keyup', 'mousemove', 'mouseenter', 'mouseleave'].forEach(
-      type => this.fullscreenView.bindFullscreenEvent(type, this.eventHandler.bind(this))
-    );
-    this.navigationView.bindButtonEvent('click', this.eventHandler.bind(this));
-    this.popupView.bindPopupEvent('click', this.eventHandler.bind(this));
-  }
-
-  bindDocumentEvent () {
+  addDocumentListener () {
     document.addEventListener('keyup', e => this.eventHandler(e));
     document.addEventListener('fullscreenchange', this.resetFullscreen.bind(this));
   }
@@ -36,10 +41,10 @@ class FullscreenController {
         case 'next': return this.showNextSlide();
         case 'pt-number': return this.showNthSlide(value);
         case 'pointer': return this.toggleMousePointer();
-        // case 'helper': return this.openPresentationHelper();
-        case 'start-timer': return;
-        case 'stop-timer': return;
-        case 'reset-timer': return;
+        case 'helper': return this.openPresentationHelper();
+        case 'start-time': return;
+        case 'stop-time': return;
+        case 'reset-time': return;
         default:
       }
     }
@@ -52,7 +57,6 @@ class FullscreenController {
       default:
     }
   }
-
 
   arrowKeyHandler ({key}) {
     switch (key) {
@@ -123,14 +127,14 @@ class FullscreenController {
 
   createPopup () {
     if (this.popupWindow) return this.popupWindow.close();
-    // this.$popupButton.classList.add('active');
+    this.$popupButton.classList.add('active');
     this.popupWindow = window.open('', '_blank', 'width=500, height=300, left=100, top=50');
     this.popupWindow.document.title = '발표자 도구 모음 창';
     this.popupWindow.addEventListener('unload', this.resetPopup.bind(this));
 
     // [Q] 한번 생성해두고 clone하는 것과 매번 new로 생성해주는 것의 차이가 있음?
-    // const popupView = new Popup(this);
-    this.popupWindow.document.body.append(this.popupView.style, this.popupView.$popup);
+    const popupView = new Popup(this);
+    this.popupWindow.document.body.append(popupView.style, popupView.$popup);
     this.$timerView = this.popupWindow.document.querySelector('#time-view');
     this.updatePopup();
   }
