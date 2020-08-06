@@ -1,15 +1,22 @@
-import EditorView from '../view/editorView';
+// import EditorView from '../view/editorView';
 
 class EditorController {
-  constructor (model) {
+  constructor (model, view) {
     this.model = model;
-    this.view = new EditorView(this);
+    this.titlebarView = view.titlebar;
+    this.viewerView = view.viewer;
+    this.editorView = view.editor;
   }
 
   init () {
-    this.view.init();
-    this.$slideNumber = this.view.toolbar.$view.querySelector('#slide-number');
-    this.run();
+    // this.$slideNumber = this.view.toolbar.$view.querySelector('#slide-number');
+    // this.run();
+    this.bindEventHandler();
+  }
+
+  bindEventHandler () {
+    ['click', 'change'].forEach(
+      type => this.titlebarView.bindTitlebarEvent(type, this.eventHandler.bind(this)));
   }
 
   run () {
@@ -90,12 +97,8 @@ class EditorController {
 
   updateSelectedOptions () {
     const presentations = this.model.getStorageData('presentationList') || [];
-    const {$selectSavedFile} = this.view.titlebar;
-    let selectOptions = '<option value="">저장된 프레젠테이션 목록</option>';
-    presentations.forEach(title => {
-      selectOptions += `<option value="${title}">${title}</option>`;
-    });
-    $selectSavedFile.innerHTML = selectOptions;
+    const {titlebar} = this.view;
+    titlebar.updateSelectOption(presentations);
   }
 
   updateTitleView () {
@@ -123,6 +126,7 @@ class EditorController {
   renderSlide () {
     const {slideDOM} = this.model.getSlide();
     const {viewer} = this.view;
+    // TODO : 이 부분도 쀼어로 뺴내기
     viewer.renderNthChild(slideDOM, viewer.$slideContainer, this.model.currentSlideIndex);
     this.setDraggerbleSlide(slideDOM);
     this.updateView();

@@ -4,10 +4,10 @@ const publicPath = process.env.PUBLIC_URL || '/';
 
 module.exports = {
   mode: 'development',
-  entry: './src/js/main.js',
+  entry: './src/js/app.js',
   output: {
     path: path.resolve(__dirname, './dist'),
-    filename: '[name].js',
+    filename: 'app.js',
     publicPath,
   },
   module: {

@@ -1,48 +1,45 @@
-import View from './view';
-import {createCustomElement} from '../Utils/DOMConstructor';
-import Titlebar from './editor/titlebar';
-import Viewer from './editor/viewer';
-import Editor from './editor/editor';
-import Toolbar from './editor/toolbar';
+import {createElement} from '../Utils/DOMConstructor';
 
-class EditorView extends View {
-  constructor (controller) {
-    super();
-    this.controller = controller;
-    this.titlebar = new Titlebar();
-    this.viewer = new Viewer();
-    this.toolbar = new Toolbar();
-    this.editor = new Editor();
+const editorView = () => {
+  const $editorContainer = document.querySelector('.slide-editor');
+  const $toolbar = createElement('div', {class: 'toolbar'});
+  const $editor = createElement('div', {class: 'editor'});
 
-    this.$editorWrapper = createCustomElement('div', {class: 'slide-editor'});
-    this.$editorWrapper.append(this.toolbar.$view, this.editor.$view);
+  const render = function () {
+    $editorContainer.append($toolbar, $editor);
 
-    this.$editor = createCustomElement('div', {class: 'viewer-and-editor'});
-    this.$editor.append(this.viewer.$view, this.$editorWrapper);
-  }
+    $toolbar.innerHTML = `
+      <div class="slide-controller">
+        <div class="focus-btn">
+          <button id="before"></button><div class="slide-number-wrap">
+            <input id="slide-number" type="number" max="1" min="1">
+          </div><button id="next"></button>
+        </div>
+        <div class="crud-btn">
+          <button id="slide-create">새 슬라이드</button><button id="slide-copy">복사</button><button id="slide-delete">삭제</button>
+        </div>
+      </div>`;
 
-  init () {
-    this.initListeners();
-    this.render(this.titlebar.$view);
-    this.render(this.$editor);
-  }
+    $editor.innerHTML = `
+      <textarea id="raw-data" class="text-editor"></textarea>
+      <textarea id="pt-note" class="text-editor" placeholder="발표자 노트를 추가하려면 클릭하세요."></textarea>`;
+  };
 
-  initListeners () {
-    this.viewer.$viewModeChangeButton.addEventListener('click', ({target}) => this.toggleViewerMode(target));
-    this.titlebar.$view.addEventListener('change', ({target}) => this.controller.eventHandler(target));
-    this.titlebar.$view.addEventListener('click', ({target}) => this.controller.eventHandler(target));
-    this.toolbar.$view.addEventListener('keyup', ({target}) => this.controller.eventHandler(target));
-    this.toolbar.$view.addEventListener('click', ({target}) => this.controller.eventHandler(target));
-    this.editor.$view.addEventListener('keyup', ({target}) => this.controller.eventHandler(target));
-  }
+  const bindToolbarEvent = (type, handler) => {
+    $toolbar.addEventListener(type, ({target}) => handler(target));
+  };
+
+  const bindEditorEvent = (type, handler) => {
+    $editor.addEventListener(type, ({target}) => handler(target));
+  };
 
 
-  toggleViewerMode ({id, classList}) {
-    if (!id || classList.length) return;
+  return {
+    render,
+    bindToolbarEvent,
+    bindEditorEvent,
+  };
+};
 
-    this.viewer.toggleViewerButton();
-    this.$editor.classList.toggle('grid-mode');
-  }
-}
 
-export default EditorView;
+export default editorView;

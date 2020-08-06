@@ -1,23 +1,24 @@
+const navigationView = () => {
+  const $navigation = document.querySelector('.navigation');
 
-import View from './view';
-import {createCustomElement} from '../Utils/DOMConstructor';
+  const render = () => {
+    $navigation.innerHTML = `
+    <div class="lemon-logo"></div>
+    <div>
+      <button id="first-slide" class="fullscreen-btn">슬라이드 쇼</button>
+      <button id="current-slide" class="fullscreen-btn">현재 슬라이드부터 쇼</button>
+      <button id="helper-popup" class="fullscreen-btn">발표자 노트</button>
+    </div>`;
+  };
 
-class NavigationView extends View {
-  constructor (controller) {
-    super();
-    this.controller = controller;
-    this.$navigation = createCustomElement('div', {class: 'navigation'});
-    this.$navigation.innerHTML = '<div class="lemon-logo"></div><div><button id="first-slide" class="fullscreen-btn">슬라이드 쇼</button><button id="current-slide" class="fullscreen-btn">현재 슬라이드부터 쇼</button><button id="helper-popup" class="fullscreen-btn">발표자 노트</button></div>';
-  }
+  const bindButtonEvent = (type, handler) => {
+    $navigation.addEventListener(type, e => handler(e));
+  };
 
-  init () {
-    this.initListeners();
-    this.render(this.$navigation);
-  }
+  return {
+    render,
+    bindButtonEvent,
+  };
+};
 
-  initListeners () {
-    this.$navigation.addEventListener('click', e => this.controller.eventHandler(e));
-  }
-}
-
-export default NavigationView;
+export default navigationView;

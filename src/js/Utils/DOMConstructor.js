@@ -1,4 +1,4 @@
-export const createCustomElement = (tag, attrs = {}, child) => {
+export const createElement = (tag, attrs = {}, child) => {
   const el = document.createElement(tag);
 
   Object.entries(attrs).forEach(([key, value]) => {
@@ -29,7 +29,7 @@ export const createSlideDOM = (id, contents) => {
     width: '100%',
   }, foreign);
 
-  const slideDOM = createCustomElement('div', {
+  const slideDOM = createElement('div', {
     id,
     class: 'slide',
     draggable: true,
