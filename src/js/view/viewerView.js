@@ -34,10 +34,30 @@ const viewerView = () => {
     document.querySelector('.viewer-and-editor').classList.toggle('grid-mode');
   };
 
+  const renderNthChild = (child, n) => {
+    $slideContainer.insertBefore(child, $slideContainer.childNodes[n]);
+  };
+
+  const renderSlide = slide => {
+    $slideContainer.append(slide);
+  };
+
+  const focusOnSlide = scrollTop => {
+    $slideCarousel.scrollTop = scrollTop;
+  };
+
+  const reset = () => {
+    $slideContainer.innerHTML = '';
+  };
+
   return {
     render,
     toogleViewerMode,
     bindViewerModeChangeEvent,
+    renderNthChild,
+    focusOnSlide,
+    reset,
+    renderSlide,
   };
 };
 

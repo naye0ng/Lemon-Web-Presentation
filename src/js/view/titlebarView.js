@@ -1,6 +1,6 @@
 const titlebarView = () => {
   const $titlebar = document.body.querySelector('.titlebar');
-
+  let $title = null;
   const render = function () {
     $titlebar.innerHTML = `
     <div class="presentation-info">
@@ -21,7 +21,7 @@ const titlebarView = () => {
     $titlebar.addEventListener(type, ({target}) => handler(target));
   };
 
-  const updateSelectOption = function (options) {
+  const updateSelectOption = options => {
     const titleSelector = document.body.querySelector('#presentation-selector');
 
     let selectOptions = '<option value="">저장된 프레젠테이션 목록</option>';
@@ -32,11 +32,16 @@ const titlebarView = () => {
     titleSelector.innerHTML = selectOptions;
   };
 
+  const updateTitle = value => {
+    if (!$title) $title = document.querySelector('#presentation-title');
+    $title.value = value;
+  };
 
   return {
     render,
     bindTitlebarEvent,
     updateSelectOption,
+    updateTitle,
   };
 };
 
