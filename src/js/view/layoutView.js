@@ -10,7 +10,7 @@ const containerView = () => {
       <div class="slide-editor"></div>
     </div>
     <div class="slide-editor"></div>
-    <div class="fullscreen"></div>`;
+    <div id="fullscreen"></div>`;
   };
 
   return {render};

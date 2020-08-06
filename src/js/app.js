@@ -1,5 +1,5 @@
 import '../css/style.css';
-import {containerView, navigationView, titlebarView, viewerView, editorView, fullscreenView, popupView} from './view';
+import {layoutView, navigationView, titlebarView, viewerView, editorView, fullscreenView, popupView} from './view';
 import EditorController from './controller/EditorController';
 import FullscreenController from './controller/fullscreenController';
 import SlideModel from './model/slideModel';
@@ -8,7 +8,7 @@ const App = {
   init () {
     this.model = new SlideModel();
 
-    containerView().render();
+    layoutView().render();
     this.view = {
       navigation: navigationView(),
       fullscreen: fullscreenView(),
