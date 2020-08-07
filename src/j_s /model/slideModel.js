@@ -108,13 +108,12 @@ function SlideModel () {
   };
 
   this.copySlide = function () {
-    const {originalData, parsedSlide, slideContentsDOM, slideDOM} = this.getSlide();
+    const {originalData, parsedSlide, slideContentsDOM} = this.getSlide();
     const ID = `slide-${++slideKey}`;
 
     const copySlideContentsDOM = slideContentsDOM.cloneNode(true);
     const copyParsedSlide = objDeepCopy(parsedSlide);
     const copySlideDOM = createSlideDOM(ID, copySlideContentsDOM);
-    copySlideDOM.style.cssText = slideDOM.style.cssText;
 
     slides[ID] = {
       note: '',
