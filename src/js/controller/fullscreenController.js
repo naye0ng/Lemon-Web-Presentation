@@ -1,11 +1,10 @@
-import {navigationView, fullscreenView, popupView} from '../view';
+import {navigationView, fullscreenView, popupView, modalView} from '../view';
 
 class FullscreenController {
   constructor (model) {
     this.model = model;
     this.navigationView = navigationView();
     this.fullscreenView = fullscreenView();
-    // render는 나중에
 
     this.slideIndex = 0;
     this.slideSize = 0;
@@ -23,7 +22,6 @@ class FullscreenController {
     this.renderView();
     this.bindEventHandler();
     this.bindDocumentEvent();
-    // this.run();
   }
 
   renderView () {
@@ -41,6 +39,7 @@ class FullscreenController {
   bindDocumentEvent () {
     document.addEventListener('keyup', e => this.eventHandler(e));
     document.addEventListener('fullscreenchange', this.resetFullscreen.bind(this));
+    document.querySelector('#modal-wrapper').addEventListener('click', this.closePresentationModal.bind(this));
   }
 
   // 얘는 분리하기
@@ -49,8 +48,9 @@ class FullscreenController {
     if (type === 'click') {
       const {id} = target;
       switch (id) {
-        case 'current-slide': return this.startFullscreen(true);
-        case 'first-slide': return this.startFullscreen(false);
+        case 'show-modal': return this.renderPresentationModal();
+        case 'cancel': return this.closePresentationModal();
+        case 'start-show': return this.startFullscreen();
         case 'helper-popup': return this.createPopup();
         case 'before': return this.showBeforeSlide();
         case 'next': return this.showNextSlide();
@@ -120,6 +120,7 @@ class FullscreenController {
   }
 
   updatePresentationToolbar () {
+    console.log(this.slideIndex + 1);
     this.fullscreenView.updateSlideNumber({value: this.slideIndex + 1});
     this.moveSlide();
     this.updatePopup();
@@ -161,18 +162,49 @@ class FullscreenController {
     this.popupWindow.addEventListener('unload', this.resetPopup.bind(this));
   }
 
-  startFullscreen (isStatCurrentSlide) {
-    const {slideSize, currentSlideIndex} = this.model;
+  updatePresentationModal (n) {
+    const {slideDOM} = this.model.getSlideByIndex(n - 1);
+    const slidePreview = this.modalView.$modal.querySelector('.pt-slide-viewer');
+    slidePreview.innerHTML = '';
+    slidePreview.append(slideDOM.cloneNode(true));
+  }
+
+  renderPresentationModal () {
+    const {slideSize} = this.model;
     if (!slideSize) return alert('작성된 슬라이드가 없습니다. \n슬라이드를 만들어주세요!');
+    this.slideSize = slideSize;
+
+    this.modalView = modalView();
+    this.modalView.renderPresentaionModal(this.slideSize);
+
+    const {$modal} = this.modalView;
+    $modal.classList.add('active');
+    $modal.classList.add('dark-model');
+
+    $modal.querySelector('#start-slide-number').addEventListener('keyup', ({target}) => this.updatePresentationModal(target.value));
+    $modal.querySelector('.modal').addEventListener('click', e => {
+      e.stopPropagation();
+      this.eventHandler(e);
+    });
+    this.updatePresentationModal(1);
+  }
+
+  closePresentationModal () {
+    const {$modal} = this.modalView;
+    $modal.classList.remove('active');
+    $modal.classList.remove('dark-model');
+  }
+
+  startFullscreen () {
+    const {slideSize} = this.model;
 
     this.model.getSlideIDList().forEach(id => {
       const {slideDOM} = this.model.getSlide(id);
       this.fullscreenView.renderSlide(slideDOM.cloneNode(true));
     });
 
-    const startSlideIndex = isStatCurrentSlide ? currentSlideIndex : 0;
     this.slideSize = slideSize;
-    this.slideIndex = startSlideIndex;
+    this.slideIndex = this.modalView.$modal.querySelector('#start-slide-number').value - 1;
 
     this.fullscreenView.updateSlideContentsStyle('width', `${100 * this.slideSize}vw`);
     this.fullscreenView.updateSlideNumber({max: this.slideSize});
@@ -183,6 +215,7 @@ class FullscreenController {
     // this.createPopup();
     this.fullscreenView.$fullscreen.requestFullscreen();
     this.updatePopup();
+    this.closePresentationModal();
   }
 
   showBeforeSlide () {
