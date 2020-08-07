@@ -19,6 +19,5 @@ const App = {
   },
 };
 
-
 App.init();
 // export default App;

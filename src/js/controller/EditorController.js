@@ -39,7 +39,6 @@ class EditorController {
   }
 
   eventHandler (target) {
-    // 타겟으로 넘겨 받는게 편할 듯
     const {id, value} = target;
     switch (id) {
       case 'save': return this.savePresentation();
@@ -196,7 +195,9 @@ class EditorController {
   }
 
   createPresentation () {
+    // TODO : 새프레젠테이션 취소가 안됨
     const response = confirm('프레젠테이션을 새로 생성하면 현재 작업이 저장되지 않습니다.\n작업중인 슬라이드를 저장하겠습니까?');
+    // reset 하기전에 취소하겠냐고 물어봐야함
     if (!response) return this.resetPresentation();
     this.savePresentation(true);
   }
