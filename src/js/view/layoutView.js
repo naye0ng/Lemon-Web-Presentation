@@ -1,4 +1,4 @@
-const containerView = () => {
+const layoutView = () => {
   const render = function () {
     const $app = document.querySelector('#app');
 
@@ -13,11 +13,12 @@ const containerView = () => {
       </div>
     </div>
     <div class="slide-editor"></div>
-    <div id="fullscreen"></div>`;
+    <div id="fullscreen"></div>
+    <div id="modal-wrapper"></div>`;
   };
 
   return {render};
 };
 
 
-export default containerView;
+export default layoutView;
