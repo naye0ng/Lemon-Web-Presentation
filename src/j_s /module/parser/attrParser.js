@@ -2,8 +2,8 @@ export default (name, value) => {
   if (name === ':color') return ['style', `color: ${value};`];
   if (name === ':background-color') return ['style', `background-color: ${value};`];
   if (name === ':size') return ['class', `head-${value}`];
-  if (name === ':bold') return ['style', value === 'true' ? 'font-weight: 600;' : ''];
-  if (name === ':italic') return ['style', value === 'true' ? 'font-style: italic; ' : ''];
+  if (name === ':bold') return ['style', value ? 'font-weight: 600;' : ''];
+  if (name === ':italic') return ['style', value ? 'font-style: italic; ' : ''];
   if (name === ':width') return ['style', `width: ${value};`];
   if (name === ':height') return ['style', `height: ${value};`];
   if (name === ':float') return ['style', `float: ${value};`];

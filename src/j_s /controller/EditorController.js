@@ -1,33 +1,15 @@
-import {titlebarView, viewerView, editorView, toolbarView} from '../view';
+import EditorView from '../view/editorView';
 
 class EditorController {
   constructor (model) {
     this.model = model;
-    this.titlebarView = titlebarView();
-    this.viewerView = viewerView();
-    this.editorView = editorView();
-    this.toolbarView = toolbarView();
+    this.view = new EditorView(this);
   }
 
   init () {
-    this.renderView();
-    this.bindEventHandler();
+    this.view.init();
+    this.$slideNumber = this.view.toolbar.$view.querySelector('#slide-number');
     this.run();
-  }
-
-  renderView () {
-    this.titlebarView.render();
-    this.viewerView.render();
-    this.editorView.render();
-    this.toolbarView.render();
-  }
-
-  bindEventHandler () {
-    ['click', 'change'].forEach(
-      type => this.titlebarView.bindTitlebarEvent(type, this.eventHandler.bind(this)));
-    ['click', 'input'].forEach(type => this.toolbarView.bindToolbarEvent(type, this.eventHandler.bind(this)));
-
-    this.editorView.bindEditorEvent('input', this.eventHandler.bind(this));
   }
 
   run () {
@@ -38,9 +20,7 @@ class EditorController {
     return this.createSlide();
   }
 
-  eventHandler (target) {
-    // 타겟으로 넘겨 받는게 편할 듯
-    const {id, value} = target;
+  eventHandler ({id, value}) {
     switch (id) {
       case 'save': return this.savePresentation();
       case 'new': return this.createPresentation();
@@ -55,28 +35,8 @@ class EditorController {
       case 'presentation-title': return this.updateTitle(value);
       case 'slide-number': return this.focusOnNthSlide(value - 1);
       case 'presentation-selector': return this.selectPresentation(value);
-      case 'background-color':
-      case 'color':
-        return this.updateAttribute(target);
-      case 'float':
-      case 'left':
-      case 'middle':
-      case 'right':
-        return this.toggleAttributeButton(target);
       default:
     }
-  }
-
-  toggleAttributeButton (target) {
-    if (target.classList[0] === 'active') return;
-    document.querySelector('.align-btn > button.active').classList.remove('active');
-    target.classList.add('active');
-    this.updateAttribute(target);
-  }
-
-  updateAttribute ({name, value}) {
-    const {slideDOM} = this.model.getSlide();
-    slideDOM.style[name] = value;
   }
 
   deactivateSlide () {
@@ -90,7 +50,8 @@ class EditorController {
   }
 
   resetPreview () {
-    this.viewerView.reset();
+    const {$slideContainer} = this.view.viewer;
+    $slideContainer.innerHTML = '';
     this.updateView();
   }
 
@@ -107,32 +68,39 @@ class EditorController {
   }
 
   updateEditorView () {
+    const {$note, $originalData} = this.view.editor;
     const {slideSize, currentSlideIndex} = this.model;
-    const {updateNoteTextarea, updateTextarea} = this.editorView;
-    const {updateSlideNumber} = this.toolbarView;
 
     if (!slideSize) {
-      updateNoteTextarea('');
-      updateTextarea('');
-      updateSlideNumber({value: 0, min: 0, max: 0});
+      $note.value = '';
+      $originalData.value = '';
+      this.$slideNumber.value = 0;
+      this.$slideNumber.min = 0;
+      this.$slideNumber.max = 0;
       return;
     }
     const {note, originalData, slideDOM} = this.model.getSlide();
-    updateNoteTextarea(note);
-    updateTextarea(originalData);
-    updateSlideNumber({value: currentSlideIndex + 1, min: 1, max: slideSize});
-
-    this.viewerView.focusOnSlide(slideDOM.offsetTop);
+    $note.value = note;
+    $originalData.value = originalData;
+    this.$slideNumber.value = currentSlideIndex + 1;
+    this.$slideNumber.min = 1;
+    this.$slideNumber.max = slideSize;
+    this.view.viewer.$slideCarousel.scrollTop = slideDOM.offsetTop;
   }
 
   updateSelectedOptions () {
     const presentations = this.model.getStorageData('presentationList') || [];
-    this.titlebarView.updateSelectOption(presentations);
+    const {$selectSavedFile} = this.view.titlebar;
+    let selectOptions = '<option value="">저장된 프레젠테이션 목록</option>';
+    presentations.forEach(title => {
+      selectOptions += `<option value="${title}">${title}</option>`;
+    });
+    $selectSavedFile.innerHTML = selectOptions;
   }
 
   updateTitleView () {
-    const title = this.model.getTitle();
-    this.titlebarView.updateTitle(title);
+    const {$inputTitle} = this.view.titlebar;
+    $inputTitle.value = this.model.getTitle();
   }
 
   bindStorageSlide (value) {
@@ -142,9 +110,10 @@ class EditorController {
 
   renderStorageSlide () {
     const slideIDList = this.model.getSlideIDList();
+    const {viewer} = this.view;
     slideIDList.forEach(id => {
       const {slideDOM} = this.model.getSlide(id);
-      this.viewerView.renderSlide(slideDOM);
+      viewer.$slideContainer.append(slideDOM);
       this.setDraggerbleSlide(slideDOM);
     });
     this.updateTitleView();
@@ -153,7 +122,8 @@ class EditorController {
 
   renderSlide () {
     const {slideDOM} = this.model.getSlide();
-    this.viewerView.renderNthChild(slideDOM, this.model.currentSlideIndex);
+    const {viewer} = this.view;
+    viewer.renderNthChild(slideDOM, viewer.$slideContainer, this.model.currentSlideIndex);
     this.setDraggerbleSlide(slideDOM);
     this.updateView();
   }
@@ -223,6 +193,7 @@ class EditorController {
     this.updateTitleView();
     this.bindStorageSlide(value);
   }
+
 
   focusOnBeforeSlide () {
     if (this.model.currentSlideIndex <= 0) return;

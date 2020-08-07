@@ -2,7 +2,6 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    color: #333;
     font-weight: normal;
     border: 0;
 }
@@ -41,7 +40,7 @@ body, textarea {
     font-family: 'SF Pro Text Regular', 'AppleSDGothicNeo', sans-serif;
 }
 
-button, input {
+button, input, select {
     font-size: .8rem;
 }
 
@@ -74,15 +73,19 @@ button, input {
     background-image: url("../src/assets/lemon.png");
 }
 
-.fullscreen-btn {
-    height: 30px;
-    margin: 10px;
-    padding: 0 20px;
-    border-radius: 40px;
-    background-color: #f1f1f1;
+.fullscreen-btn-wrapper {
+    height: 43px;
+    display: flex;
+    justify-content: flex-end;
 }
 
-.fullscreen-btn:hover {
+.fullscreen-btn, #animation-selector {
+    height: 100%;
+    padding: 0 10px;
+    border-left: 1.2px solid #d8d8d8;
+}
+
+.fullscreen-btn:hover, #animation-selector:hover {
     background-color: #f4d569;
 }
 
@@ -129,10 +132,13 @@ button, input {
     justify-content: flex-end;
 }
 
+.presenteation-menu * {
+    background-color: #fff5d1;
+}
+
 .presenteation-menu select {
     height: 100%;
-    /* margin-right: 10px; */
-    padding: 0 10px;
+    padding: 0 10.5px;
     font-size: .7rem;
     border-left: 1.2px solid #d8d8d8;
 }
@@ -142,13 +148,13 @@ button, input {
 }
 
 .presentation-btn button {
-    padding: 0 10px;
+    padding: 0 10.5px;
     height: 100%;
     float: right;
     border-left: 1.2px solid #d8d8d8;
 }
 
-.presentation-btn button:hover {
+.presentation-btn button:hover, .presenteation-menu select:hover {
     background-color: #f4d569;
 }
 
@@ -358,79 +364,59 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
     margin: 0;
 }
 
-.editor-tool {
-    height: 90px;
-}
+/* here */
 
-.tag-helper {
+.attribute-controller {
     overflow: hidden;
-    height: 30px;
-    border-bottom: 1.2px solid #d8d8d8;
+    display: flex;
+    width: 100%;
+    height: 40px;
+    align-items: center;
+    flex-flow: row nowrap;
+    border-bottom: 1px solid red;
 }
 
-.tag-helper button {
-    height: 30px;
-    padding: 0 12px;
-    font-size: .7rem;
+.attribute-controller div {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: .8rem;
     border-right: 1.2px solid #d8d8d8;
 }
 
-.tag-helper button:hover {
-    background-color: #f4d569;
+.attribute-controller div:nth-last-child(1) {
+    border: none;
 }
 
-.tag-helper button.active {
-    border-bottom: none;
-    background-color: #f4d569;
+.attribute-controller label {
+    margin-right: 10px;
 }
 
-.attrs-editor {
-    overflow: hidden;
-    display: flex;
-    flex-flow: column nowrap;
-    height: 60px;
-    font-size: .7rem;
-    justify-content: space-between;
+.attribute-controller input {
+    width: 35px;
+    height: 35px;
 }
 
-.attrs-editor section {
-    display: inline-flex;
-    height: 30px;
+.attribute-controller button {
+    width: 40px;
+    height: 40px;
+    border-right: 1.2px solid #d8d8d8;
 }
 
-.attrs-editor section:nth-child(2) {
-    border-top: 1.2px solid #d8d8d8;
-}
-
-.attrs-editor * {
-    height: 100%;
-    text-align: center;
-}
-
-.attrs-editor input {
-    width: 30px;
+.attribute-controller #left {
     border-left: 1.2px solid #d8d8d8;
 }
 
-.attrs-editor button {
-    min-width: 30px;
-    padding: 0 8px;
-}
-
-.attrs-editor button:hover {
+.attribute-controller button:hover {
     background-color: #f4d569;
 }
 
-.attrs-editor button, .attrs-editor div {
-    border-right: 1.2px solid #d8d8d8;
+.attribute-controller button.active {
+    background-color: #705aff;
+    color: #ffffff;
 }
 
-.attrs-editor div p {
-    display: inline-block;
-    height: 100%;
-    padding: 8px 15px 0;
-    float: left;
-}
+/* here */
 
 .editor {
     overflow: hidden;
@@ -623,7 +609,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 }
 
 @media(max-width:768px) {
-    button, input {
+    button, input, select, .presenteation-menu select {
         font-size: .5rem;
     }
     .navigation {
@@ -644,12 +630,15 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
     #presentation-title, .presentation-btn button {
         font-size: .5rem;
     }
-    .fullscreen-btn {
+    /* .fullscreen-btn {
         height: 20px;
         margin: 10px 5px;
         padding: 0 5px;
         border-radius: 40px;
         background: #f1f1f1;
+    } */
+    .fullscreen-btn-wrapper {
+        height: 32px;
     }
     .viewer-and-editor {
         height: calc(100vh - 85px);
@@ -694,7 +683,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
         flex-flow: row nowrap;
     }
     .slide-viewer .slide {
-        width: calc((25vh) / 9 * 16);
+        width: calc((25vh - 30px) / 9 * 16);
         height: calc(25vh - 30px);
         margin: 0 15px;
     }
