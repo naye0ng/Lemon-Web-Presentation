@@ -1,12 +1,9 @@
-import '../../public/style.css';
-import {layoutView} from './view';
-import {EditorController, FullscreenController} from './controller';
-import SlideModel from './model/slideModel';
+import SlideModel from '../model/slideModel';
+import EditorController from './editorController';
+import FullscreenController from './fullscreenController';
 
 const App = {
   init () {
-    layoutView().render();
-
     this.model = new SlideModel();
     this.editorController = new EditorController(this.model);
     this.fullscreenController = new FullscreenController(this.model);
@@ -14,11 +11,10 @@ const App = {
     this.run();
   },
   run () {
+    this.fullscreenController.initNavigationView();
     this.editorController.init();
     this.fullscreenController.init();
   },
 };
 
-
-App.init();
-// export default App;
+export default App;
