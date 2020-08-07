@@ -71,7 +71,7 @@ button, input {
     background-size: 60% 60%;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url("../assets/lemon.png");
+    background-image: url("../src/assets/lemon.png");
 }
 
 .fullscreen-btn {
@@ -339,11 +339,11 @@ button, input {
 }
 
 #before {
-    background-image: url("../assets/before.svg");
+    background-image: url("../src/assets/before.svg");
 }
 
 #next {
-    background-image: url("../assets/next.svg");
+    background-image: url("../src/assets/next.svg");
 }
 
 #slide-number {

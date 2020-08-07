@@ -1,9 +1,11 @@
+import {navigationView, fullscreenView, popupView} from '../view';
+
 class FullscreenController {
-  constructor (model, view) {
+  constructor (model) {
     this.model = model;
-    this.navigationView = view.navigation;
-    this.fullscreenView = view.fullscreen;
-    this.popupView = view.popup;
+    this.navigationView = navigationView();
+    this.fullscreenView = fullscreenView();
+    // render는 나중에
 
     this.slideIndex = 0;
     this.slideSize = 0;
@@ -15,8 +17,15 @@ class FullscreenController {
   }
 
   init () {
+    this.renderView();
     this.bindEventHandler();
     this.bindDocumentEvent();
+    // this.run();
+  }
+
+  renderView () {
+    this.navigationView.render();
+    this.fullscreenView.render();
   }
 
   bindEventHandler () {
@@ -115,7 +124,7 @@ class FullscreenController {
   updatePopup () {
     if (!this.popupWindow) return;
     const {slideDOM, note} = this.model.getSlideByIndex(this.slideIndex);
-
+    // TODO : 중복 코드 제거 및 분리!!!
     const popupDocumnet = this.popupWindow.document;
     const $currentSlide = popupDocumnet.querySelector('#total');
     const $presenTationNote = popupDocumnet.querySelector('#presentation-note');
@@ -128,16 +137,23 @@ class FullscreenController {
 
   createPopup () {
     if (this.popupWindow) return this.popupWindow.close();
-    this.$popupButton.classList.add('active');
+    // this.$popupButton.classList.add('active');
     this.popupWindow = window.open('popup.html', '_blank', 'width=500, height=300, left=100, top=50');
-    this.popupWindow.document.title = '발표자 도구 모음 창';
+    this.popupWindow.addEventListener('DOMContentLoaded', this.renderPopup.bind(this));
+  }
+
+  renderPopup () {
+    const {slideDOM, note} = this.model.getSlideByIndex(this.slideIndex);
+    const {body} = this.popupWindow.document;
+    body.innerHTML = popupView().render({
+      timer: '00:00:00',
+      slideNumber: this.slideSize,
+      slideSize: this.model.slideSize,
+      note,
+    });
+    body.querySelector('#viewer').append(slideDOM.cloneNode(true));
+    this.popupWindow.addEventListener('click', e => this.eventHandler(e));
     this.popupWindow.addEventListener('unload', this.resetPopup.bind(this));
-    this.popupView.bindPopupEvent('click', this.eventHandler.bind(this));
-    // [Q] 한번 생성해두고 clone하는 것과 매번 new로 생성해주는 것의 차이가 있음?
-    // const popupView = new Popup(this);
-    this.popupWindow.document.body.append(this.popupView.style, this.popupView.$popup);
-    this.$timerView = this.popupWindow.document.querySelector('#time-view');
-    this.updatePopup();
   }
 
   startFullscreen (isStatCurrentSlide) {

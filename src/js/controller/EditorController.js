@@ -1,15 +1,26 @@
+import {titlebarView, viewerView, editorView} from '../view';
+
 class EditorController {
-  constructor (model, view) {
+  constructor (model) {
     this.model = model;
-    this.titlebarView = view.titlebar;
-    this.viewerView = view.viewer;
-    this.editorView = view.editor;
+    this.titlebarView = titlebarView();
+    this.viewerView = viewerView();
+    this.editorView = editorView();
   }
 
   init () {
-    this.run();
+    this.renderView();
     this.bindEventHandler();
+    // this.run();
   }
+
+  renderView () {
+    this.titlebarView.render();
+    this.viewerView.render();
+    this.editorView.render();
+  }
+
+  // 아래부턴 바꿀테야!!!!!!
 
   bindEventHandler () {
     ['click', 'change'].forEach(
