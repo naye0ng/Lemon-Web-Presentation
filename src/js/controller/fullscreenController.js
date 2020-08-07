@@ -14,6 +14,9 @@ class FullscreenController {
     this.popupWindow = null;
     this.timer = null;
     this.$timerView = null;
+    this.second = 0;
+    this.minute = 0;
+    this.hour = 0;
   }
 
   init () {
@@ -52,9 +55,9 @@ class FullscreenController {
         case 'before': return this.showBeforeSlide();
         case 'next': return this.showNextSlide();
         case 'pointer': return this.toggleMousePointer();
-        case 'start-timer': return;
-        case 'stop-timer': return;
-        case 'reset-timer': return;
+        case 'start-timer': return this.startTimer();
+        case 'stop-timer': return this.stopTimer();
+        case 'reset-timer': return this.resetTimer();
         default:
       }
     }
@@ -112,6 +115,7 @@ class FullscreenController {
     this.popupWindow = null;
     this.timer = null;
     this.$timerView = null;
+    this.resetTimer();
     // this.$popupButton.classList.remove('active');
   }
 
@@ -152,6 +156,7 @@ class FullscreenController {
       note,
     });
     body.querySelector('#viewer').append(slideDOM.cloneNode(true));
+    this.$timerView = body.querySelector('#time-view');
     this.popupWindow.addEventListener('click', e => this.eventHandler(e));
     this.popupWindow.addEventListener('unload', this.resetPopup.bind(this));
   }
@@ -205,29 +210,43 @@ class FullscreenController {
     this.fullscreenView.updateSlideContentsStyle('marginLeft', `${-100 * this.slideIndex}vw`);
   }
 
+  getTimeText (time) {
+    return time < 10 ? `0${time}` : time;
+  }
 
-  // startTimer () {
-  //   if (!this.$timerView) return;
-  //   // TODO : 시작 버튼 활성화
-  //   const T = 60;
-  //   let sec = 0;
-  //   let min = 0;
-  //   let time = 0;
+  updateTimer () {
+    this.$timerView.innerHTML = `${this.getTimeText(this.hour)}:${this.getTimeText(this.minute)}:${this.getTimeText(this.second)}`;
+  }
 
-  //   this.timer = setInterval(() => {
-  //     let isOver = parseInt(sec / T);
-  //     if (isOver > 0) min += isOver;
-  //     sec = parseInt(sec % T);
+  startTimer () {
+    const T = 60;
+    this.timer = setInterval(() => {
+      this.second++;
+      let isOver = parseInt(this.second / T);
+      if (isOver > 0) this.minute += isOver;
+      this.second = parseInt(this.second % T);
 
-  //     isOver = parseInt(min / T);
-  //     if (isOver > 0) time += isOver;
-  //     min = parseInt(min % T);
-  //     time = parseInt(time % T);
+      isOver = parseInt(this.minute / T);
+      if (isOver > 0) this.hour += isOver;
+      this.minute = parseInt(this.minute % T);
+      this.hour = parseInt(this.hour % T);
+      this.updateTimer();
+    }, 1000);
+  }
 
-  //     this.$timerView.innerHTML = `${sec}:${min}:${time}`;
-  //     sec++;
-  //   }, 1000);
-  // }
+  stopTimer () {
+    if (!this.timer) return;
+    clearInterval(this.timer);
+  }
+
+  resetTimer () {
+    if (!this.timer) return;
+    clearInterval(this.timer);
+    this.second = 0;
+    this.minute = 0;
+    this.hour = 0;
+    this.updateTimer();
+  }
 }
 
 export default FullscreenController;
