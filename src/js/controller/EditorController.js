@@ -11,7 +11,7 @@ class EditorController {
   init () {
     this.renderView();
     this.bindEventHandler();
-    // this.run();
+    this.run();
   }
 
   renderView () {
@@ -19,8 +19,6 @@ class EditorController {
     this.viewerView.render();
     this.editorView.render();
   }
-
-  // 아래부턴 바꿀테야!!!!!!
 
   bindEventHandler () {
     ['click', 'change'].forEach(
