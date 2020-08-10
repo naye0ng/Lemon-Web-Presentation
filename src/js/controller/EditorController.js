@@ -1,267 +1,322 @@
-import {titlebarView, viewerView, editorView, toolbarView} from '../view';
+import {headerView, viewerView, toolbarView, editorView, archiveView} from '../view';
 
-class EditorController {
-  constructor (model) {
-    this.model = model;
-    this.titlebarView = titlebarView();
-    this.viewerView = viewerView();
-    this.editorView = editorView();
-    this.toolbarView = toolbarView();
-  }
+const editorController = model => {
+  const header = headerView();
+  const viewer = viewerView();
+  const toolbar = toolbarView();
+  const editor = editorView();
+  const archive = archiveView();
 
-  init () {
-    this.renderView();
-    this.bindEventHandler();
-    this.run();
-  }
+  const init = () => {
+    renderView();
+    bindEventHandler();
+    createSlide();
+  };
 
-  renderView () {
-    this.titlebarView.render();
-    this.viewerView.render();
-    this.editorView.render();
-    this.toolbarView.render();
-  }
+  const renderView = () => {
+    header.render();
+    viewer.render();
+    toolbar.render();
+    editor.render();
+    archive.render();
+  };
 
-  bindEventHandler () {
-    ['click', 'change'].forEach(
-      type => this.titlebarView.bindTitlebarEvent(type, this.eventHandler.bind(this)));
-    ['click', 'input'].forEach(type => this.toolbarView.bindToolbarEvent(type, this.eventHandler.bind(this)));
+  const bindEventHandler = () => {
+    header.$header.addEventListener('click', ({target}) => headerEvent(target));
+    header.$header.addEventListener('input', ({target}) => headerEvent(target));
 
-    this.editorView.bindEditorEvent('input', this.eventHandler.bind(this));
-  }
+    viewer.$viewer.addEventListener('click', ({target}) => viewerEvent(target));
+    viewer.$viewer.querySelector('#slide-container').addEventListener('dragover', e => e.preventDefault());
 
-  run () {
-    // if (!this.model.isStorageEmpty()) {
-    //   const response = confirm('최근 작성한 프레젠테이션을 불러올까요?');
-    //   if (response) return this.bindStorageSlide();
-    // }
-    return this.createSlide();
-  }
+    toolbar.$toolbar.addEventListener('click', ({target}) => toolbarClickEvent(target));
+    toolbar.$toolbar.addEventListener('input', ({target}) => toolbarInputEvent(target));
 
-  eventHandler (target) {
+    editor.$editor.addEventListener('input', ({target}) => editorEvent(target));
+
+    archive.$archive.querySelector('.archive-list').addEventListener('click', ({target}) => archiveEvent(target));
+  };
+
+  const archiveEvent = target => {
+    const title = target.getAttribute('title');
+    const {id} = target;
+    if (!title) return;
+    if (!id) return renderPresentation(title);
+    return deletePresentation(title);
+  };
+
+  const headerEvent = target => {
     const {id, value} = target;
     switch (id) {
-      case 'save': return this.savePresentation();
-      case 'new': return this.createPresentation();
-      case 'delete': return this.deletePresentation();
-      case 'slide-delete': return this.deleteSlide();
-      case 'slide-create': return this.createSlide();
-      case 'slide-copy': return this.copySlide();
-      case 'before': return this.focusOnBeforeSlide();
-      case 'next': return this.focusOnNextSlide();
-      case 'raw-data': return this.updateSlide(value);
-      case 'pt-note': return this.updateNote(value);
-      case 'presentation-title': return this.updateTitle(value);
-      case 'slide-number': return this.focusOnNthSlide(value - 1);
-      case 'presentation-selector': return this.selectPresentation(value);
-      case 'background-color':
-      case 'color':
-        return this.updateAttribute(target);
-      case 'float':
+      case 'save-btn': return savePresentation();
+      case 'archive-btn': return openPresentationList(target); // x
+      case 'reset-btn': return createPresentation();
+      case 'title-input': return updateTitle(value);
+      default:
+    }
+  };
+
+  const viewerEvent = ({id, classList}) => {
+    switch (id) {
+      case 'editor-view-btn':
+      case 'grid-view-btn':
+        return toggleViewerMode(id, classList);
+      default:
+    }
+  };
+
+  const toolbarClickEvent = target => {
+    switch (target.id) {
+      case 'before': return focusOnBeforeSlide();
+      case 'next': return focusOnNextSlide();
+      case 'create': return createSlide();
+      case 'copy': return copySlide();
+      case 'delete': return deleteSlide();
       case 'left':
       case 'middle':
       case 'right':
-        return this.toggleAttributeButton(target);
+        return updateAttribute(target);
       default:
     }
-  }
+  };
 
-  toggleAttributeButton (target) {
-    if (target.classList[0] === 'active') return;
-    document.querySelector('.align-btn > button.active').classList.remove('active');
-    target.classList.add('active');
-    this.updateAttribute(target);
-  }
+  const toolbarInputEvent = target => {
+    switch (target.id) {
+      case 'slide-number': return focusOnNthSlide(target.value - 1);
+      case 'color':
+      case 'background-color':
+        return updateAttribute(target);
+      default:
+    }
+  };
 
-  updateAttribute ({name, value}) {
-    const {slideDOM} = this.model.getSlide();
-    slideDOM.style[name] = value;
-  }
+  const editorEvent = ({id, value}) => {
+    switch (id) {
+      case 'slide-text': return updateSlide(value);
+      case 'slide-note': return updateNote(value);
+      default:
+    }
+  };
 
-  deactivateSlide () {
-    const {slideDOM} = this.model.getSlide();
-    slideDOM.classList.remove('active');
-  }
+  const toggleViewerMode = (id, classList) => {
+    if (classList.length === 2) return;
+    viewer.$viewer.querySelector('#editor-view-btn').classList.toggle('active');
+    viewer.$viewer.querySelector('#grid-view-btn').classList.toggle('active');
+    document.querySelector('#main').classList.toggle('grid-mode');
+  };
 
-  activateSlide () {
-    const {slideDOM} = this.model.getSlide();
+  const activateSlide = () => {
+    const {slideDOM} = model.getSlide();
     slideDOM.classList.add('active');
-  }
+  };
 
-  resetPreview () {
-    this.viewerView.reset();
-    this.updateView();
-  }
+  const deactivateSlide = () => {
+    const {slideDOM} = model.getSlide();
+    slideDOM.classList.remove('active');
+  };
 
-  resetView () {
-    this.model.reset();
-    this.resetPreview();
-    this.updateTitleView();
-  }
+  const rgbToHex = rgbText => {
+    if (!rgbText) return;
+    const rgb = rgbText.replace(/[^%,.\d]/g, '').split(',');
+    const hex = rgb.map(dec => parseInt(dec).toString(16));
+    return `#${hex.join('')}`;
+  };
 
-  updateView () {
-    if (this.model.slideSize) this.activateSlide();
-    this.updateEditorView();
-    this.updateSelectedOptions();
-  }
+  const updateToolbarView = (backgroundColor, color) => {
+    toolbar.renderSlideAttribute(rgbToHex(backgroundColor), rgbToHex(color));
+  };
 
-  updateEditorView () {
-    const {slideSize, currentSlideIndex} = this.model;
-    const {updateNoteTextarea, updateTextarea} = this.editorView;
-    const {updateSlideNumber} = this.toolbarView;
+  const updateViewerView = () => {
+    const {slideSize, currentSlideIndex} = model;
+    const {updateSlide, updateNote} = editor;
+    const {updateSlideNumber} = toolbar;
 
     if (!slideSize) {
-      updateNoteTextarea('');
-      updateTextarea('');
+      updateSlide();
+      updateNote();
       updateSlideNumber({value: 0, min: 0, max: 0});
+      toolbar.resetSlideAttribute();
       return;
     }
-    const {note, originalData, slideDOM} = this.model.getSlide();
-    updateNoteTextarea(note);
-    updateTextarea(originalData);
+    const {note, originalData, slideDOM} = model.getSlide();
+    updateSlide(note);
+    updateNote(originalData);
     updateSlideNumber({value: currentSlideIndex + 1, min: 1, max: slideSize});
+    const {backgroundColor, color} = slideDOM.style;
+    updateToolbarView(backgroundColor, color);
+    viewer.focusOnSlide(slideDOM.offsetTop, slideDOM.offsetBottom);
+  };
 
-    this.viewerView.focusOnSlide(slideDOM.offsetTop);
-  }
+  const resetView = () => {
+    model.reset();
+    viewer.reset();
+    updateTitle('');
+    updateView();
+  };
 
-  updateSelectedOptions () {
-    const presentations = this.model.getStorageData('presentationList') || [];
-    this.titlebarView.updateSelectOption(presentations);
-  }
+  const updateView = () => {
+    if (model.slideSize) activateSlide();
+    updateViewerView();
+    updatePresentationList();
+  };
 
-  updateTitleView () {
-    const title = this.model.getTitle();
-    this.titlebarView.updateTitle(title);
-  }
+  const renderSlide = () => {
+    const {slideDOM} = model.getSlide();
+    viewer.renderNthChild(slideDOM, model.currentSlideIndex);
+    setDraggerbleSlide(slideDOM);
+    updateView();
+  };
 
-  bindStorageSlide (value) {
-    this.model.getPresentation(value);
-    this.renderStorageSlide();
-  }
+  const createSlide = () => {
+    if (model.slideSize) deactivateSlide();
+    model.createSlide();
+    renderSlide();
+  };
 
-  renderStorageSlide () {
-    const slideIDList = this.model.getSlideIDList();
-    slideIDList.forEach(id => {
-      const {slideDOM} = this.model.getSlide(id);
-      this.viewerView.renderSlide(slideDOM);
-      this.setDraggerbleSlide(slideDOM);
-    });
-    this.updateTitleView();
-    this.updateView();
-  }
+  const updateSlide = value => {
+    // alert
+    if (!model.slideSize) return updateView();
+    model.updateSlide(value);
+  };
 
-  renderSlide () {
-    const {slideDOM} = this.model.getSlide();
-    this.viewerView.renderNthChild(slideDOM, this.model.currentSlideIndex);
-    this.setDraggerbleSlide(slideDOM);
-    this.updateView();
-  }
+  const copySlide = () => {
+    if (!model.slideSize) return alert('복사할 수 있는 슬라이드가 존재하지 않습니다.');
+    deactivateSlide();
+    model.copySlide();
+    renderSlide();
+  };
 
-  createSlide () {
-    if (this.model.slideSize) this.deactivateSlide();
-    this.model.createSlide();
-    this.renderSlide();
-  }
+  const deleteSlide = () => {
+    if (!model.slideSize) return;
+    model.deleteSlide();
+    updateView();
+  };
 
-  deleteSlide () {
-    if (!this.model.slideSize) return;
-    this.model.deleteSlide();
-    this.updateView();
-  }
+  const updateNote = value => {
+    // alert
+    if (!model.slideSize) return updateView();
+    model.updateNote(value);
+  };
 
-  updateSlide (newData) {
-    if (!this.model.slideSize) return this.updateView();
-    this.model.updateSlide(newData);
-  }
+  const updateAttribute = ({name, value}) => {
+    if (!model.slideSize) return;
+    const {slideDOM} = model.getSlide();
+    slideDOM.style[name] = value;
+  };
 
-  copySlide () {
-    if (!this.model.slideSize) return this.updateView();
-    this.deactivateSlide();
-    this.model.copySlide();
-    this.renderSlide();
-  }
+  const focusOnBeforeSlide = () => {
+    if (model.currentSlideIndex <= 0) return;
+    deactivateSlide();
+    model.currentSlideIndex -= 1;
+    updateView();
+  };
 
-  updateNote (value) {
-    this.model.updateNote(value);
-  }
+  const focusOnNextSlide = () => {
+    if (model.currentSlideIndex >= model.slideSize - 1) return;
+    deactivateSlide();
+    model.currentSlideIndex += 1;
+    updateView();
+  };
 
-  updateTitle (value) {
-    this.model.updateTitle(value);
-  }
+  const focusOnNthSlide = n => {
+    if (n < 0 || n >= model.slideSize) return;
+    deactivateSlide();
+    model.currentSlideIndex = n;
+    updateView();
+  };
 
-  resetPresentation () {
-    this.resetView();
-    this.createSlide();
-  }
+  const updateTitle = value => {
+    model.updateTitle(value);
+  };
 
-  createPresentation () {
-    // TODO : 새프레젠테이션 취소가 안됨
+  const createPresentation = () => {
     const response = confirm('프레젠테이션을 새로 생성하면 현재 작업이 저장되지 않습니다.\n작업중인 슬라이드를 저장하겠습니까?');
-    // reset 하기전에 취소하겠냐고 물어봐야함
-    if (!response) return this.resetPresentation();
-    this.savePresentation(true);
-  }
+    if (!response) {
+      const res = confirm('슬라이드를 저장하지 않고 프레젠테이션을 새로 생성합니다.');
+      if (res) return resetPresentation();
+      return;
+    }
+    savePresentation(true);
+  };
 
-  savePresentation (reset) {
-    if (!this.model.slideSize) return this.updateView();
-    if (!this.model.savePresentation()) return alert('제목을 입력해주세요.');
+  const savePresentation = reset => {
+    // alert 발생
+    if (!model.slideSize) return updateView();
+    if (!model.savePresentation()) return alert('제목을 입력해주세요.');
     alert('프레젠테이션이 저장되었습니다.');
-    if (reset) return this.resetPresentation();
-    this.updateView();
-  }
+    if (reset) return resetPresentation();
+    updateView();
+  };
 
-  deletePresentation () {
-    const response = confirm('저장된 기록이 모두 삭제됩니다. 정말 삭제하시겠습니까?');
+  const deletePresentation = title => {
+    const response = confirm(`${title}을 삭제하시겠습니까?`);
     if (!response) return;
-    localStorage.clear();
-    this.resetView();
-  }
+    model.deletePresentation(title);
+    updatePresentationList();
+  };
 
-  selectPresentation (value) {
-    if (!value || value === this.model.getTitle()) return;
-    this.model.reset();
-    this.resetPreview();
-    this.updateTitleView();
-    this.bindStorageSlide(value);
-  }
 
-  focusOnBeforeSlide () {
-    if (this.model.currentSlideIndex <= 0) return;
-    this.deactivateSlide();
-    this.model.currentSlideIndex -= 1;
-    this.updateView();
-  }
-  focusOnNextSlide () {
-    if (this.model.currentSlideIndex >= this.model.slideSize - 1) return;
-    this.deactivateSlide();
-    this.model.currentSlideIndex += 1;
-    this.updateView();
-  }
-  focusOnNthSlide (n) {
-    if (n < 0 || n >= this.model.slideSize) return;
-    this.deactivateSlide();
-    this.model.currentSlideIndex = n;
-    this.updateView();
-  }
+  const renderPresentation = title => {
+    if (!title || title === model.getTitle()) return;
+    resetView();
+    // 스토리지 데이터 가져와서 바인딩
+    model.getPresentation(title);
+    renderStorageSlide(title);
+  };
 
-  setDraggerbleSlide (DOM) {
-    // TODO: 이벤트 위임
-    DOM.addEventListener('drag', e => this.dragHandler(e));
-    DOM.addEventListener('dragend', ({target}) => this.dragendHandler(target));
-    DOM.addEventListener('click', ({target}) => {
-      this.focusOnNthSlide(this.model.getSlideOrder(target.id));
+  const renderStorageSlide = title => {
+    const slideIDList = model.getSlideIDList();
+    slideIDList.forEach(id => {
+      const {slideDOM} = model.getSlide(id);
+      viewer.renderSlide(slideDOM);
+      setDraggerbleSlide(slideDOM);
     });
-  }
 
-  dragHandler ({target, clientX, clientY}) {
+    updateView();
+    updateTitleView();
+  };
+
+  const updateTitleView = () => {
+    const title = model.getTitle();
+    header.$header.querySelector('#title-input').value = title;
+  };
+
+
+  const resetPresentation = () => {
+    resetView();
+    createSlide();
+  };
+
+  const updatePresentationList = () => {
+    if (!archive.$archive.classList.contains('active')) return;
+    archive.resetArchiveItem();
+    const presentations = model.getStorageData('presentationList') || [];
+    presentations.forEach(title => archive.renderArchiveItem(title));
+  };
+
+  const openPresentationList = target => {
+    target.classList.toggle('active');
+    archive.$archive.classList.toggle('active');
+    updatePresentationList();
+  };
+
+  const setDraggerbleSlide = DOM => {
+    // TODO: 이벤트 위임
+    DOM.addEventListener('drag', e => dragHandler(e));
+    DOM.addEventListener('dragend', ({target}) => dragendHandler(target));
+    DOM.addEventListener('click', ({target}) => {
+      focusOnNthSlide(model.getSlideOrder(target.id));
+    });
+  };
+
+  const dragHandler = ({target, clientX, clientY}) => {
     target.classList.add('drag-active');
     const parent = target.parentNode;
 
     const swap = document.elementFromPoint(clientX, clientY);
     if (!swap) return;
     if (swap !== target && swap.classList[0] === 'slide') {
-      const targetIndex = this.model.getSlideOrder(target.id);
-      const swapIndex = this.model.getSlideOrder(swap.id);
+      const targetIndex = model.getSlideOrder(target.id);
+      const swapIndex = model.getSlideOrder(swap.id);
 
       if (targetIndex < swapIndex) {
         parent.insertBefore(target, swap.nextSibling);
@@ -269,16 +324,19 @@ class EditorController {
         parent.insertBefore(target, swap);
       }
 
-      this.deactivateSlide();
-      this.model.swapIndex(targetIndex, swapIndex);
-      this.updateView();
+      deactivateSlide();
+      model.swapIndex(targetIndex, swapIndex);
+      updateView();
     }
-  }
+  };
 
-  dragendHandler (target) {
+  const dragendHandler = target => {
     target.classList.remove('drag-active');
-  }
-}
+  };
 
+  return {
+    init,
+  };
+};
 
-export default EditorController;
+export default editorController;

@@ -1,48 +1,31 @@
 const editorView = () => {
-  const $editor = document.querySelector('.editor');
+  const $editor = document.querySelector('#text-editor');
+  let $note = null;
+  let $slide = null;
 
-  let $textarea = null;
-  let $noteTextarea = null;
-
-
-  const render = function () {
+  const render = () => {
     $editor.innerHTML = `
-      <textarea id="raw-data" class="text-editor" placeholder="슬라이드를 작성하세요!"></textarea>
-      <textarea id="pt-note" class="text-editor" placeholder="발표자 노트를 추가하려면 클릭하세요."></textarea>
-      `;
+    <textarea name="slide" id="slide-text" placeholder="슬라이드를 입력하세요!" onkeydown="if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;}"></textarea>
+    <textarea name="note" id="slide-note" placeholder="발표자 노트를 추가하려면 클릭하세요."></textarea>`;
+
+    $note = $editor.querySelector('#slide-text');
+    $slide = $editor.querySelector('#slide-note');
   };
 
-  const bindEditorEvent = (type, handler) => {
-    $editor.addEventListener(type, ({target}) => handler(target));
+  const updateNote = value => {
+    $note.value = value || '';
   };
 
-  const getNoteTextarea = () => {
-    if ($noteTextarea) return;
-    $noteTextarea = document.querySelector('#pt-note');
+  const updateSlide = value => {
+    $slide.value = value || '';
   };
-
-  const getTextarea = () => {
-    if ($textarea) return;
-    $textarea = document.querySelector('#raw-data');
-  };
-
-  const updateNoteTextarea = value => {
-    getNoteTextarea();
-    $noteTextarea.value = value;
-  };
-  const updateTextarea = value => {
-    getTextarea();
-    $textarea.value = value;
-  };
-
 
   return {
+    $editor,
     render,
-    bindEditorEvent,
-    updateNoteTextarea,
-    updateTextarea,
+    updateNote,
+    updateSlide,
   };
 };
-
 
 export default editorView;

@@ -165,6 +165,13 @@ function SlideModel () {
     return !(this.getStorageData('presentationList') || []).length;
   };
 
+  this.deletePresentation = function (key) {
+    storage.removeItem(key);
+    const presentationList = this.getStorageData('presentationList');
+    presentationList.splice(presentationList.indexOf(key), 1);
+    this.setStorageData('presentationList', presentationList);
+  };
+
   this.savePresentation = function () {
     if (!title) return false;
     const presentationList = this.getStorageData('presentationList') || [];
