@@ -3,6 +3,7 @@ import {ALLOW_TAGS, TAGS} from './constants';
 
 
 const isNode = ({nodeName, nodeValue}, isSlideChild) => {
+  console.log(nodeName);
   if (!ALLOW_TAGS.includes(nodeName)) return false;
   if (nodeName === '#text' && nodeValue.trim() === '') return false;
   if (isSlideChild && nodeName === 'SLIDE') return false;
