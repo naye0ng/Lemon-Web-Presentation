@@ -23,6 +23,7 @@ const popupView = () => {
       <div id="presentation-note">${note}</div>
     </div>
     </div>`;
+
   return {render};
 };
 
