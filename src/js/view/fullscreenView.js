@@ -1,83 +1,59 @@
 const fullscreenView = () => {
   const $fullscreen = document.querySelector('#fullscreen');
   let $fullscreenContents = null;
-  let $mousePointer = null;
   let $slideNumber = null;
+  let $mousePointer = null;
 
-  const render = function () {
-    $fullscreen.innerHTML =
-      `<div id="fullscreen-menu">
-      <div class="fullscreen-toolber">
-        <div class="slide-toolber"><button id="before"></button>
-          <div class="input-slide-number"><input id="pt-number" type="number" max="1" min="1" value="1"></div><button
-            id="next"></button>
-          </div><button id="pointer">포인터</button>
+  const render = () => {
+    $fullscreen.innerHTML = `
+      <div id="fullscreen-menu">
+        <div class="fullscreenn-controller">
+            <button id="before2" class="before-btn"></button>
+            <input id="slide-number2" type="number" max="1" min="1" value="1">
+            <button id="next2" class="next-btn"></button>
         </div>
+        <button id="pointer">포인터</button>
       </div>
       <div id="fullscreen-contents"></div>
       <div id="mouse-pointer"></div>`;
-  };
 
-  const bindFullscreenEvent = (type, handler) => {
-    $fullscreen.addEventListener(type, e => {
-      e.stopPropagation();
-      handler(e);
-    });
-  };
-
-  const getFullscreenContents = () => {
-    if ($fullscreenContents) return;
-    $fullscreenContents = document.querySelector('#fullscreen-contents');
-  };
-
-  const getMousePointer = () => {
-    if ($mousePointer) return;
-    $mousePointer = document.querySelector('#mouse-pointer');
+    $fullscreenContents = $fullscreen.querySelector('#fullscreen-contents');
+    $slideNumber = $fullscreen.querySelector('#slide-number2');
+    $mousePointer = $fullscreen.querySelector('#mouse-pointer');
   };
 
   const renderSlide = slide => {
-    getFullscreenContents();
     $fullscreenContents.append(slide);
   };
 
   const updateSlideContentsStyle = (type, value) => {
-    getFullscreenContents();
     $fullscreenContents.style[type] = value;
   };
 
-  const toggleMousePointer = () => {
-    getMousePointer();
-    $mousePointer.classList.toggle('active');
-  };
-
-  const renderMousePointer = (x, y) => {
-    getMousePointer();
-    $mousePointer.style.left = `${x}px`;
-    $mousePointer.style.top = `${y}px`;
-  };
-
-  const reset = () => {
-    getFullscreenContents();
-    $fullscreenContents.innerHTML = '';
-  };
-
   const updateSlideNumber = ({value, min, max}) => {
-    if (!$slideNumber) $slideNumber = document.querySelector('#pt-number');
     if (value) $slideNumber.value = value;
     if (min) $slideNumber.min = min;
     if (max) $slideNumber.max = max;
   };
 
+  const renderMousePointer = (x, y) => {
+    $mousePointer.style.left = `${x}px`;
+    $mousePointer.style.top = `${y}px`;
+  };
+
+  const reset = () => {
+    $fullscreenContents.innerHTML = '';
+    $fullscreenContents.classList = '';
+  };
+
   return {
     $fullscreen,
     render,
-    bindFullscreenEvent,
     renderSlide,
     updateSlideContentsStyle,
-    toggleMousePointer,
-    reset,
-    renderMousePointer,
     updateSlideNumber,
+    renderMousePointer,
+    reset,
   };
 };
 
