@@ -226,6 +226,7 @@ const editorController = model => {
 
   const updateTitle = value => {
     model.updateTitle(value);
+    updateTitleView();
   };
 
   const createPresentation = () => {
@@ -289,8 +290,8 @@ const editorController = model => {
   const updatePresentationList = () => {
     if (!archive.$archive.classList.contains('active')) return;
     archive.resetArchiveItem();
-    const presentations = model.getStorageData('presentationList') || [];
-    presentations.forEach(title => archive.renderArchiveItem(title));
+    const presentations = model.getStorageData('lemon_presentationList') || [];
+    presentations.forEach(title => archive.renderArchiveItem(title.split('_')[1]));
   };
 
   const openPresentationList = target => {

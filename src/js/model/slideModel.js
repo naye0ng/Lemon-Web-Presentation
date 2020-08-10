@@ -1,4 +1,4 @@
-import convertStringToDOM from '../module/converter/convertStringToDOM';
+import {convertStringToDOM, convertslideStrToSlideDOM} from '../module/converter/convertStringToDOM';
 import convertObjToDOM from '../module/converter/convertObjToDOM';
 import markupParser from '../module/parser/markupParser';
 import {createSlideDOM} from '../Utils/DOMConstructor';
@@ -162,22 +162,22 @@ function SlideModel () {
   };
 
   this.isStorageEmpty = function () {
-    return !(this.getStorageData('presentationList') || []).length;
+    return !(this.getStorageData('lemon_presentationList') || []).length;
   };
 
   this.deletePresentation = function (key) {
     storage.removeItem(key);
-    const presentationList = this.getStorageData('presentationList');
+    const presentationList = this.getStorageData('lemon_presentationList');
     presentationList.splice(presentationList.indexOf(key), 1);
-    this.setStorageData('presentationList', presentationList);
+    this.setStorageData('lemon_presentationList', presentationList);
   };
 
   this.savePresentation = function () {
     if (!title) return false;
-    const presentationList = this.getStorageData('presentationList') || [];
-    const order = presentationList.indexOf(title);
+    const presentationList = this.getStorageData('lemon_presentationList') || [];
+    const order = presentationList.indexOf(`lemon_${title}`);
     if (order >= 0) presentationList.splice(order, 1);
-    presentationList.push(title);
+    presentationList.push(`lemon_${title}`);
 
     const presentation = {
       slideIDList,
@@ -186,31 +186,32 @@ function SlideModel () {
     };
 
     slideIDList.forEach(id => {
-      const {note, originalData, parsedSlide, slideContentsDOM} = slides[id];
+      const {note, originalData, parsedSlide, slideDOM} = slides[id];
       presentation.slides[id] = {
         note,
         originalData,
         parsedSlide,
-        slideContents: slideContentsDOM.innerHTML,
+        slideDOM: slideDOM.outerHTML,
       };
     });
 
-    this.setStorageData('presentationList', presentationList);
-    this.setStorageData(title, presentation);
+    this.setStorageData('lemon_presentationList', presentationList);
+    this.setStorageData(`lemon_${title}`, presentation);
     return true;
   };
 
   this.getPresentation = function (selectedTitle) {
     title = selectedTitle;
-    const PT = this.getStorageData(title);
+    const PT = this.getStorageData(`lemon_${title}`);
 
     this.setSlideIDList(PT.slideIDList);
     this.setSlideKey(PT.slideKey);
 
     slideIDList.forEach(id => {
       const slide = PT.slides[id];
-      const slideContentsDOM = convertStringToDOM(slide.slideContents);
-      const slideDOM = createSlideDOM(id, slideContentsDOM);
+      const slideDOM = convertslideStrToSlideDOM(slide.slideDOM);
+      const slideContentsDOM = slideDOM.querySelector('.slide-contents');
+
       slides[id] = {
         note: slide.note,
         originalData: slide.originalData,
