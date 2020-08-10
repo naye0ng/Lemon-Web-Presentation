@@ -1,4 +1,4 @@
-import {headerView, viewerView, toolbarView, editorView, archiveView} from '../view';
+import {headerView, viewerView, toolbarView, editorView, archiveView, modalView} from '../view';
 
 const editorController = model => {
   const header = headerView();
@@ -48,8 +48,9 @@ const editorController = model => {
     const {id, value} = target;
     switch (id) {
       case 'save-btn': return savePresentation();
-      case 'archive-btn': return openPresentationList(target); // x
+      case 'archive-btn': return openPresentationList(target);
       case 'reset-btn': return createPresentation();
+      case 'usage-btn': return openUsageModal();
       case 'title-input': return updateTitle(value);
       default:
     }
@@ -95,6 +96,14 @@ const editorController = model => {
       case 'slide-note': return updateNote(value);
       default:
     }
+  };
+
+
+  const openUsageModal = () => {
+    modalView().renderUsageModal();
+    const $modal = document.querySelector('#modal');
+    $modal.classList.add('active');
+    $modal.classList.add('dark');
   };
 
   const toggleViewerMode = (id, classList) => {
@@ -257,6 +266,7 @@ const editorController = model => {
     if (!response) return;
     model.deletePresentation(title);
     updatePresentationList();
+    // TODO : 현재 프레젠테이션이 삭제된 경우?(제목이 같으면) 리셋!
   };
 
 

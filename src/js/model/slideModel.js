@@ -152,7 +152,6 @@ function SlideModel () {
     this.currentSlideIndex = swapIndex;
   };
 
-
   this.getStorageData = function (key) {
     return JSON.parse(storage[key] || null);
   };
@@ -166,9 +165,9 @@ function SlideModel () {
   };
 
   this.deletePresentation = function (key) {
-    storage.removeItem(key);
+    storage.removeItem(`lemon_${key}`);
     const presentationList = this.getStorageData('lemon_presentationList');
-    presentationList.splice(presentationList.indexOf(key), 1);
+    presentationList.splice(presentationList.indexOf(`lemon_${key}`), 1);
     this.setStorageData('lemon_presentationList', presentationList);
   };
 
