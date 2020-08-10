@@ -1,22 +1,21 @@
 import '../../public/style.css';
 import {layoutView} from './view';
-import {EditorController, FullscreenController} from './controller';
+import {editorController, fullscreenController} from './controller';
 import SlideModel from './model/slideModel';
 
-const App = {
+window.App = {
   init () {
     layoutView().render();
 
     this.model = new SlideModel();
-    this.editorController = new EditorController(this.model);
-    this.fullscreenController = new FullscreenController(this.model);
+    this.editorController = editorController(this.model);
+    this.fullscreenController = fullscreenController(this.model);
 
     this.run();
   },
+
   run () {
     this.editorController.init();
     this.fullscreenController.init();
   },
 };
-
-export default App;

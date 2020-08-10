@@ -1,65 +1,31 @@
-import {createElement} from '../Utils/DOMConstructor';
-
 const editorView = () => {
-  const $editorContainer = document.querySelector('.slide-editor');
-  const $toolbar = createElement('div', {class: 'toolbar'});
-  const $editor = createElement('div', {class: 'editor'});
+  const $editor = document.querySelector('#text-editor');
+  let $note = null;
+  let $slide = null;
 
-  const $textarea = createElement('textarea', {id: 'raw-data', class: 'text-editor', placeholder: '슬라이드를 작성하세요!'});
-  const $noteTextarea = createElement('textarea', {id: 'pt-note', class: 'text-editor', placeholder: '발표자 노트를 추가하려면 클릭하세요.'});
+  const render = () => {
+    $editor.innerHTML = `
+    <textarea name="slide" id="slide-text" placeholder="슬라이드를 입력하세요!" onkeydown="if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;}"></textarea>
+    <textarea name="note" id="slide-note" placeholder="발표자 노트를 추가하려면 클릭하세요."></textarea>`;
 
-  let $slideNumber = null;
-
-  const render = function () {
-    $editorContainer.append($toolbar, $editor);
-
-    $toolbar.innerHTML = `
-      <div class="slide-controller">
-        <div class="focus-btn">
-          <button id="before"></button><div class="slide-number-wrap">
-            <input id="slide-number" type="number" max="1" min="1">
-          </div><button id="next"></button>
-        </div>
-        <div class="crud-btn">
-          <button id="slide-create">새 슬라이드</button><button id="slide-copy">복사</button><button id="slide-delete">삭제</button>
-        </div>
-      </div>`;
-
-    $editor.append($textarea, $noteTextarea);
+    $note = $editor.querySelector('#slide-text');
+    $slide = $editor.querySelector('#slide-note');
   };
 
-  const bindToolbarEvent = (type, handler) => {
-    $toolbar.addEventListener(type, ({target}) => handler(target));
+  const updateNote = value => {
+    $note.value = value || '';
   };
 
-  const bindEditorEvent = (type, handler) => {
-    $editor.addEventListener(type, ({target}) => handler(target));
-  };
-
-  // 이 아래부터는 util로 뺄 수 있을 듯!
-  const updateNoteTextarea = value => {
-    $noteTextarea.value = value;
-  };
-  const updateTextarea = value => {
-    $textarea.value = value;
-  };
-
-  const updateSlideNumber = ({value, min, max}) => {
-    if (!$slideNumber) $slideNumber = document.querySelector('#slide-number');
-    if (value) $slideNumber.value = value;
-    if (min) $slideNumber.min = min;
-    if (max) $slideNumber.max = max;
+  const updateSlide = value => {
+    $slide.value = value || '';
   };
 
   return {
+    $editor,
     render,
-    bindToolbarEvent,
-    bindEditorEvent,
-    updateNoteTextarea,
-    updateTextarea,
-    updateSlideNumber,
+    updateNote,
+    updateSlide,
   };
 };
-
 
 export default editorView;

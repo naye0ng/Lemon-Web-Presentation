@@ -1,63 +1,49 @@
-import {createElement} from '../Utils/DOMConstructor';
-
 const viewerView = () => {
-  const $viewer = document.body.querySelector('.slide-viewer');
-  const $viewerModeChangeBtns = createElement('div', {class: 'view-type-btns'});
-  const $slideCarousel = createElement('div', {class: 'slide-carousel'});
-  const $slideContainer = createElement('div', {class: 'slide-container'});
-  const $editorViewBtn = createElement('button', {id: 'editor-view-btn', class: 'active'}, '에디터 뷰');
-  const $gridViewBtn = createElement('button', {id: 'grid-view-btn'}, '그리드 뷰');
+  const $viewer = document.querySelector('#viewer');
+  let $slideContainer = null;
+  let $slideViewer = null;
 
-  const render = function () {
-    $viewerModeChangeBtns.append($editorViewBtn, $gridViewBtn);
+  const render = () => {
+    $viewer.innerHTML = `
+    <div class="mode-change-btns">
+      <button id="editor-view-btn" class="mode-change-btn active">에디터뷰</button>
+      <button id="grid-view-btn" class="mode-change-btn">그리드뷰</button>
+    </div>
+    <div class="slide-viewer">
+        <div id="slide-container"></div>
+    </div>`;
 
-    $slideCarousel.append($slideContainer);
-    $viewer.append($viewerModeChangeBtns, $slideCarousel);
-
-
-    bindDropEvent();
-    bindViewerModeChangeEvent();
-  };
-
-  const bindDropEvent = () => {
-    $slideContainer.addEventListener('dragover', e => e.preventDefault());
-  };
-
-  const bindViewerModeChangeEvent = () => {
-    $viewerModeChangeBtns.addEventListener('click', ({target}) => toogleViewerMode(target));
-  };
-
-  const toogleViewerMode = ({id, classList}) => {
-    if (!id || classList.length) return;
-    $editorViewBtn.classList.toggle('active');
-    $gridViewBtn.classList.toggle('active');
-    document.querySelector('.viewer-and-editor').classList.toggle('grid-mode');
+    $slideContainer = $viewer.querySelector('#slide-container');
+    $slideViewer = $viewer.querySelector('.slide-viewer');
   };
 
   const renderNthChild = (child, n) => {
     $slideContainer.insertBefore(child, $slideContainer.childNodes[n]);
   };
 
-  const renderSlide = slide => {
-    $slideContainer.append(slide);
-  };
-
-  const focusOnSlide = scrollTop => {
-    $slideCarousel.scrollTop = scrollTop;
-  };
-
   const reset = () => {
     $slideContainer.innerHTML = '';
   };
 
+  // storage data render
+  const renderSlide = slide => {
+    $slideContainer.append(slide);
+  };
+
+  const focusOnSlide = (scrollTop, scrollBottom) => {
+    const viewerScrollTop = $slideViewer.scrollTop;
+    const viewerScrollHeight = $slideViewer.offsetHeight;
+    if (viewerScrollTop <= scrollTop && scrollBottom <= viewerScrollTop + viewerScrollHeight) return;
+    $slideViewer.scrollTop = scrollTop - ($slideViewer.offsetHeight / 3);
+  };
+
   return {
+    $viewer,
     render,
-    toogleViewerMode,
-    bindViewerModeChangeEvent,
     renderNthChild,
+    renderSlide,
     focusOnSlide,
     reset,
-    renderSlide,
   };
 };
 
