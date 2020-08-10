@@ -1,47 +1,65 @@
-import View from './view';
-import {createCustomElement} from '../Utils/DOMConstructor';
-import Titlebar from './editor/titlebar';
-import Viewer from './editor/viewer';
-import Editor from './editor/editor';
-import Toolbar from './editor/toolbar';
+import {createElement} from '../Utils/DOMConstructor';
 
-class EditorView extends View {
-  constructor (controller) {
-    super();
-    this.controller = controller;
-    this.titlebar = new Titlebar();
-    this.viewer = new Viewer();
-    this.toolbar = new Toolbar();
-    this.editor = new Editor();
+const editorView = () => {
+  const $editorContainer = document.querySelector('.slide-editor');
+  const $toolbar = createElement('div', {class: 'toolbar'});
+  const $editor = createElement('div', {class: 'editor'});
 
-    this.$editorWrapper = createCustomElement('div', {class: 'slide-editor'});
-    this.$editorWrapper.append(this.toolbar.$view, this.editor.$view);
+  const $textarea = createElement('textarea', {id: 'raw-data', class: 'text-editor', placeholder: '슬라이드를 작성하세요!'});
+  const $noteTextarea = createElement('textarea', {id: 'pt-note', class: 'text-editor', placeholder: '발표자 노트를 추가하려면 클릭하세요.'});
 
-    this.$slideEditor = createCustomElement('div', {class: 'viewer-and-editor'});
-    this.$slideEditor.append(this.viewer.$view, this.$editorWrapper);
-  }
+  let $slideNumber = null;
 
-  init () {
-    this.initListeners();
-    this.render(this.titlebar.$view);
-    this.render(this.$slideEditor);
-  }
+  const render = function () {
+    $editorContainer.append($toolbar, $editor);
 
-  initListeners () {
-    this.viewer.$viewModeChangeButton.addEventListener('click', ({target}) => this.toggleViewerMode(target));
-    this.titlebar.$view.addEventListener('change', ({target}) => this.controller.eventHandler(target));
-    this.titlebar.$view.addEventListener('click', ({target}) => this.controller.eventHandler(target));
-    this.toolbar.$view.addEventListener('keyup', ({target}) => this.controller.eventHandler(target));
-    this.toolbar.$view.addEventListener('click', ({target}) => this.controller.eventHandler(target));
-    this.editor.$view.addEventListener('keyup', ({target}) => this.controller.eventHandler(target));
-  }
+    $toolbar.innerHTML = `
+      <div class="slide-controller">
+        <div class="focus-btn">
+          <button id="before"></button><div class="slide-number-wrap">
+            <input id="slide-number" type="number" max="1" min="1">
+          </div><button id="next"></button>
+        </div>
+        <div class="crud-btn">
+          <button id="slide-create">새 슬라이드</button><button id="slide-copy">복사</button><button id="slide-delete">삭제</button>
+        </div>
+      </div>`;
 
-  toggleViewerMode ({id, classList}) {
-    if (!id || classList.length) return;
+    $editor.append($textarea, $noteTextarea);
+  };
 
-    this.viewer.toggleViewerButton();
-    this.$slideEditor.classList.toggle('grid-mode');
-  }
-}
+  const bindToolbarEvent = (type, handler) => {
+    $toolbar.addEventListener(type, ({target}) => handler(target));
+  };
 
-export default EditorView;
+  const bindEditorEvent = (type, handler) => {
+    $editor.addEventListener(type, ({target}) => handler(target));
+  };
+
+  // 이 아래부터는 util로 뺄 수 있을 듯!
+  const updateNoteTextarea = value => {
+    $noteTextarea.value = value;
+  };
+  const updateTextarea = value => {
+    $textarea.value = value;
+  };
+
+  const updateSlideNumber = ({value, min, max}) => {
+    if (!$slideNumber) $slideNumber = document.querySelector('#slide-number');
+    if (value) $slideNumber.value = value;
+    if (min) $slideNumber.min = min;
+    if (max) $slideNumber.max = max;
+  };
+
+  return {
+    render,
+    bindToolbarEvent,
+    bindEditorEvent,
+    updateNoteTextarea,
+    updateTextarea,
+    updateSlideNumber,
+  };
+};
+
+
+export default editorView;

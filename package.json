@@ -2,7 +2,7 @@
   "name": "lemon-presentation",
   "version": "1.0.0",
   "description": "Lemon Presentation🍋, 2020 Kakao Internship Project",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "lint": "eslint ./src --fix",
     "watch": "PUBLIC_URL='./' webpack -w",

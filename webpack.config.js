@@ -4,10 +4,10 @@ const publicPath = process.env.PUBLIC_URL || '/';
 
 module.exports = {
   mode: 'development',
-  entry: './src/js/main.js',
+  entry: './src/js/app.js',
   output: {
     path: path.resolve(__dirname, './dist'),
-    filename: '[name].js',
+    filename: 'app.js',
     publicPath,
   },
   module: {
@@ -22,7 +22,7 @@ module.exports = {
           {
             loader: 'url-loader',
             options: {
-              publicPath: './',
+              publicPath: '.',
               name: '[name].[ext]?[hash]',
               limit: 10000,
             },
@@ -41,7 +41,12 @@ module.exports = {
       base: publicPath,
       title: 'Lemon Presentation🍋',
       filename: 'index.html',
-      template: './index.html',
+      template: './public/index.html',
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'popup.html',
+      template: './public/popup.html',
+      inject: false,
     }),
   ],
 };

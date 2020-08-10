@@ -1,24 +1,84 @@
-import View from './view';
-import {createCustomElement} from '../Utils/DOMConstructor';
+const fullscreenView = () => {
+  const $fullscreen = document.querySelector('#fullscreen');
+  let $fullscreenContents = null;
+  let $mousePointer = null;
+  let $slideNumber = null;
 
-class FullscreenView extends View {
-  constructor (controller) {
-    super();
-    this.controller = controller;
+  const render = function () {
+    $fullscreen.innerHTML =
+      `<div id="fullscreen-menu">
+      <div class="fullscreen-toolber">
+        <div class="slide-toolber"><button id="before"></button>
+          <div class="input-slide-number"><input id="pt-number" type="number" max="1" min="1" value="1"></div><button
+            id="next"></button>
+          </div><button id="pointer">포인터</button>
+        </div>
+      </div>
+      <div id="fullscreen-contents"></div>
+      <div id="mouse-pointer"></div>`;
+  };
 
-    this.$fullscreen = createCustomElement('div', {id: 'fullscreen'});
-    this.$fullscreen.innerHTML = '<div id="fullscreen-menu" class="active"><div class="fullscreen-toolber"><div class="slide-toolber"><button id="before"></button><div class="input-slide-number"><input id="show-slide-number" type="number" max="1" min="1" value="1"></div><button id="next"></button></div><button id="pointer">포인터</button><button id="helper">발표자 노트</button></div></div><div id="fullscreen-contents"></div>';
-  }
+  const bindFullscreenEvent = (type, handler) => {
+    $fullscreen.addEventListener(type, e => {
+      e.stopPropagation();
+      handler(e);
+    });
+  };
 
-  init () {
-    this.initListeners();
-    this.render(this.$fullscreen);
-  }
+  const getFullscreenContents = () => {
+    if ($fullscreenContents) return;
+    $fullscreenContents = document.querySelector('#fullscreen-contents');
+  };
 
-  initListeners () {
-    document.addEventListener('keydown', ({key}) => this.controller.arrowKeyHandler(key));
-    this.$fullscreen.addEventListener('click', ({target}) => this.controller.eventHandler(target));
-  }
-}
+  const getMousePointer = () => {
+    if ($mousePointer) return;
+    $mousePointer = document.querySelector('#mouse-pointer');
+  };
 
-export default FullscreenView;
+  const renderSlide = slide => {
+    getFullscreenContents();
+    $fullscreenContents.append(slide);
+  };
+
+  const updateSlideContentsStyle = (type, value) => {
+    getFullscreenContents();
+    $fullscreenContents.style[type] = value;
+  };
+
+  const toggleMousePointer = () => {
+    getMousePointer();
+    $mousePointer.classList.toggle('active');
+  };
+
+  const renderMousePointer = (x, y) => {
+    getMousePointer();
+    $mousePointer.style.left = `${x}px`;
+    $mousePointer.style.top = `${y}px`;
+  };
+
+  const reset = () => {
+    getFullscreenContents();
+    $fullscreenContents.innerHTML = '';
+  };
+
+  const updateSlideNumber = ({value, min, max}) => {
+    if (!$slideNumber) $slideNumber = document.querySelector('#pt-number');
+    if (value) $slideNumber.value = value;
+    if (min) $slideNumber.min = min;
+    if (max) $slideNumber.max = max;
+  };
+
+  return {
+    $fullscreen,
+    render,
+    bindFullscreenEvent,
+    renderSlide,
+    updateSlideContentsStyle,
+    toggleMousePointer,
+    reset,
+    renderMousePointer,
+    updateSlideNumber,
+  };
+};
+
+export default fullscreenView;
