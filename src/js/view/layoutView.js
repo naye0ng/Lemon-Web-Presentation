@@ -3,7 +3,6 @@ const layoutView = () => {
     const $app = document.querySelector('#app');
     $app.innerHTML = `
       <div id="header"></div>
-      <div id="archive"></div>
       <div id="main">
           <div id="viewer"></div>
           <div id="editor">

@@ -9,6 +9,7 @@ export default (name, value) => {
   if (name === ':float') return ['style', `float: ${value};`];
   if (name === ':decorator') return ['class', `list-style-${value}`];
   if (name === ':path') return ['style', `content:url('${value}');`];
+  if (name === ':align') return ['style', `text-align:${value};`];
 
   // TODO : animation class 추가
   return [name, value];

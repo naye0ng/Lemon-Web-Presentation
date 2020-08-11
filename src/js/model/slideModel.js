@@ -88,6 +88,7 @@ function SlideModel () {
   };
 
   this.updateSlide = function (originalData) {
+    // console.log(originalData)
     const newParsedSlide = markupParser(convertStringToDOM(originalData));
     const newSlideContentsDOM = convertObjToDOM(newParsedSlide);
     this.updateSlideContents(originalData, newParsedSlide, newSlideContentsDOM);
