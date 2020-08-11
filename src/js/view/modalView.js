@@ -33,10 +33,13 @@ const modalView = () => {
   const renderUsageModal = () => {
     $modal.innerHTML = `
     <div id="usage-modal" class="modal">
-      <div class="title">👩🏻‍💻프레젠테이션 사용법</div>
+      <div class="title">
+        👩🏻‍💻프레젠테이션 사용법
+      </div>
       <div class="subtitle">제목, 텍스트, 이미지, 리스트 태그를 기본적으로 제공하며, html을 모르는 일반 사용자들을 위해 새롭게 정의한 직관적인 마크업 태그를
         지원합니다.</div>
       <div class="usage-viewer"></div>
+      <button id="github">+ 더 자세한 설명을 보려면 여기를 클릭하세요!</button>
     </div>`;
 
     renderUsageItem();
@@ -59,7 +62,7 @@ const modalView = () => {
       tag: '<image :float="left" :width="30" :path="https://bit.ly/3fDSLso"></image>',
     },
     {
-      name: '④리스트와 아이템',
+      name: '④ 리스트와 아이템',
       description: '<span class="badge">decorator</span> 속성을 이용하면, <span class="badge">ol</span> 및 <span class="badge">ul</span>태그와 같은 리스트를 만들 수 있습니다.',
       tag: `<list :decorator="circle"> \n\t<item>아메리카노</item> \n\t<item :color="red">카페라떼</item>\n\t<list :decorator="number">\n\t\t<item>아이스</item>\n\t\t<item>핫</item>\n\t</list>\n</list>`,
     },
