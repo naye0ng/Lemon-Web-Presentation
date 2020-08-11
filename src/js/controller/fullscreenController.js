@@ -120,6 +120,7 @@ const fullscreenController = model => {
     PTIndex = 0;
     PTSize = 0;
     fullscreen.reset();
+    closeModal({id: 'modal'});
   };
 
   const updateFullscreenView = () => {
@@ -167,7 +168,7 @@ const fullscreenController = model => {
 
     updateFullscreenView();
     fullscreen.$fullscreen.requestFullscreen();
-    closeModal();
+    closeModal({id: 'modal'});
   };
 
   // popup
@@ -182,10 +183,10 @@ const fullscreenController = model => {
   };
 
   const closePopup = () => {
+    destroyTimer();
     popupWindow = null;
     timer = null;
     $timerView = null;
-    resetTimer();
     document.querySelector('#popup').classList.remove('active');
   };
 
@@ -281,12 +282,16 @@ const fullscreenController = model => {
     clearInterval(timer);
   };
 
-  const resetTimer = () => {
-    if (!timer) return;
+  const destroyTimer = () => {
     clearInterval(timer);
     second = 0;
     minute = 0;
     hour = 0;
+  };
+
+  const resetTimer = () => {
+    if (!timer) return;
+    destroyTimer();
     updateTimer();
   };
 
