@@ -206,8 +206,6 @@ span.badge {
     pointer-events: none;
 }
 
-/* slide contents */
-
 .slide {
     overflow: hidden;
     background-color: #ffffff;
@@ -233,6 +231,8 @@ span.badge {
 .slide-viewer .slide-contents::-webkit-scrollbar {
     display: none;
 }
+
+/* slide contents */
 
 .slide-contents h1, .head-1 {
     font-size: 5rem;
@@ -260,30 +260,47 @@ span.badge {
 }
 
 .slide-contents h6, .head-6 {
-    font-size: 2rem;
+    font-size: 2.6rem;
     font-weight: normal;
 }
 
+.slide p {
+    display: inline-block;
+    margin: 5px;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+
 .slide ul {
-    margin: 0 3%;
+    display: inline-block;
+    padding-left: 15px;
+    margin: 2px;
+    line-height: 2.5;
 }
 
 .slide ul li {
-    list-style: disc inside;
+    width: 100%;
+    list-style: none;
     line-height: 2;
+    padding: 3px;
+    margin: 5px 8px;
 }
 
 .slide ul.list-style-circle>li {
     list-style: disc inside;
 }
 
-.slide ul.list-style-check>li {
-    list-style: none;
-    position: relative;
+.slide ul.list-style-disk>li {
+    list-style: disc inside;
 }
 
 .slide ul.list-style-number>li {
     list-style: decimal inside;
+}
+
+.slide ul.list-style-check>li {
+    list-style: none;
+    position: relative;
 }
 
 .slide ul.list-style-check li::before {
@@ -295,9 +312,15 @@ span.badge {
 }
 
 .slide img {
-    display: flex;
+    display: inline-block;
     width: 50%;
     margin: auto;
+}
+
+.slide pre {
+    font-family: monospace;
+    color: #ffffff;
+    background-color: #a0a0a0;
 }
 
 /* grid-mode */
@@ -382,12 +405,28 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
     background-position: center;
 }
 
-.before-btn {
-    background-image: url("../src/assets/before.svg");
+#before {
+    background-image: url("../src/assets/before.png");
 }
 
-.next-btn {
-    background-image: url("../src/assets/next.svg");
+#next {
+    background-image: url("../src/assets/next.png");
+}
+
+#before2 {
+    background-image: url("../src/assets/before_g.png");
+}
+
+#next2 {
+    background-image: url("../src/assets/next_g.png");
+}
+
+#before2:hover {
+    background-image: url("../src/assets/before_w.png");
+}
+
+#next2:hover {
+    background-image: url("../src/assets/next_w.png");
 }
 
 .crud-btns button {
@@ -396,8 +435,6 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
     background-color: #ffffff;
     border-left: 1.2px solid #d8d8d8;
 }
-
-/* .editor-controller {} */
 
 .attribute-controller {
     display: inline-flex;
@@ -412,6 +449,24 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
     height: 100%;
     border-right: 1.2px solid #d8d8d8;
     background-color: #e9ecee;
+}
+
+.align-btns #left, .align-btns #right, .align-btns #middle {
+    background-size: 30% 30%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.align-btns #left {
+    background-image: url("../src/assets/align-left.png");
+}
+
+.align-btns #middle {
+    background-image: url("../src/assets/align-center.png");
+}
+
+.align-btns #right {
+    background-image: url("../src/assets/align-right.png");
 }
 
 .attribute-controller label {
@@ -460,15 +515,16 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
     right: 30px;
     width: 50px;
     height: 50px;
-    background-size: 60% 60%;
+    background-size: 50% 50%;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url("../src/assets/lemon.png");
+    background-image: url("../src/assets/show.png");
     background-color: #f4d569;
     border-radius: 50%;
 }
 
 #fullscreen-btn:hover {
+    background-image: url("../src/assets/show_hover.png");
     background-color: #705aff;
 }
 
@@ -495,6 +551,13 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
     color: #cecece;
     background-color: #323232;
     border-radius: 3px;
+    opacity: .1;
+    transition: opacity .5s ease-in-out;
+}
+
+#fullscreen-menu:hover {
+    transition: opacity .5s ease-in-out;
+    opacity: 1;
 }
 
 #fullscreen-menu button, #fullscreen-menu input {
@@ -547,6 +610,10 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 
 #fullscreen.mouse-pointer-active {
     cursor: none;
+}
+
+#fullscreen.mouse-pointer-active #pointer {
+    color: #ffffff;
 }
 
 #fullscreen.mouse-pointer-active #mouse-pointer {
