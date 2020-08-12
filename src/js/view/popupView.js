@@ -5,7 +5,6 @@ const popupView = () => {
         <div id="time-view">${timer}</div>
         <div class="buttons">
           <button id="start-timer">시작</button>
-          <button id="stop-timer">정지</button>
           <button id="reset-timer">초기화</button>
         </div>
       </div>
