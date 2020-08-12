@@ -57,8 +57,8 @@ const modalView = () => {
     },
     {
       name: '③ 이미지',
-      description: '<span class="badge">img</span> 태그도 사용이 가능합니다. 가운데 정렬이 기본입니다. \n<span class="badge">width</span> 및 <span class="badge">height</span> 속성의 단위는 <span class="badge">%</span>입니다.',
-      tag: '<image :float="left" :width="30" :path="https://bit.ly/3fDSLso"></image>',
+      description: '<span class="badge">img</span> 태그도 사용이 가능합니다. 가운데 정렬이 기본입니다.',
+      tag: '<image :float="left" :width="30%" :path="https://bit.ly/3fDSLso"></image>',
     },
     {
       name: '④ 리스트와 아이템',
