@@ -11,6 +11,7 @@ const editorController = model => {
     renderView();
     bindEventHandler();
     createSlide();
+    model.initPresentation();
   };
 
   const renderView = () => {

@@ -3,6 +3,7 @@ import convertObjToDOM from '../module/converter/convertObjToDOM';
 import markupParser from '../module/parser/markupParser';
 import {createSlideDOM} from '../Utils/DOMConstructor';
 import {objDeepCopy} from '../Utils/objDeepCopyj';
+import {kelleyT, kelleyC} from './lemon';
 
 function SlideModel () {
   const storage = localStorage;
@@ -170,6 +171,15 @@ function SlideModel () {
     const presentationList = this.getStorageData('lemon_presentationList');
     presentationList.splice(presentationList.indexOf(`lemon_${key}`), 1);
     this.setStorageData('lemon_presentationList', presentationList);
+  };
+
+  // 초기화 부분
+  this.initPresentation = function () {
+    const presentationList = this.getStorageData('lemon_presentationList') || [];
+    if (presentationList.length === 0) {
+      this.setStorageData('lemon_presentationList', [`lemon_${kelleyT}`]);
+      this.setStorageData(`lemon_${kelleyT}`, kelleyC);
+    }
   };
 
   this.savePresentation = function () {
