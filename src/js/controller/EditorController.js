@@ -1,11 +1,11 @@
-import {headerView, viewerView, toolbarView, editorView, archiveView} from '../view';
+import {headerView, viewerView, toolbarView, editorView, archiveView, modalView} from '../view';
 
 const editorController = model => {
   const header = headerView();
   const viewer = viewerView();
   const toolbar = toolbarView();
   const editor = editorView();
-  const archive = archiveView();
+  let archive = null;
 
   const init = () => {
     renderView();
@@ -18,7 +18,6 @@ const editorController = model => {
     viewer.render();
     toolbar.render();
     editor.render();
-    archive.render();
   };
 
   const bindEventHandler = () => {
@@ -32,8 +31,6 @@ const editorController = model => {
     toolbar.$toolbar.addEventListener('input', ({target}) => toolbarInputEvent(target));
 
     editor.$editor.addEventListener('input', ({target}) => editorEvent(target));
-
-    archive.$archive.querySelector('.archive-list').addEventListener('click', ({target}) => archiveEvent(target));
   };
 
   const archiveEvent = target => {
@@ -48,8 +45,9 @@ const editorController = model => {
     const {id, value} = target;
     switch (id) {
       case 'save-btn': return savePresentation();
-      case 'archive-btn': return openPresentationList(target); // x
+      case 'archive-btn': return openPresentationList(target);
       case 'reset-btn': return createPresentation();
+      case 'usage-btn': return openUsageModal();
       case 'title-input': return updateTitle(value);
       default:
     }
@@ -97,6 +95,21 @@ const editorController = model => {
     }
   };
 
+  const activateModal = () => {
+    const $modal = document.querySelector('#modal');
+    $modal.classList.add('active');
+    $modal.classList.add('dark');
+  };
+
+  const openUsageModal = () => {
+    modalView().renderUsageModal();
+    document.querySelector('#github').addEventListener('click', ({target}) => {
+      if (target.id !== 'github') return;
+      window.open('https://github.daumkakao.com/kelley-j/Lemon-Presentation', '_blank');
+    });
+    activateModal();
+  };
+
   const toggleViewerMode = (id, classList) => {
     if (classList.length === 2) return;
     viewer.$viewer.querySelector('#editor-view-btn').classList.toggle('active');
@@ -129,7 +142,7 @@ const editorController = model => {
     toolbar.renderSlideAttribute(rgbToHex(backgroundColor), rgbToHex(color));
   };
 
-  const updateViewerView = () => {
+  const updateViewerView = notMoveScroll => {
     const {slideSize, currentSlideIndex} = model;
     const {updateSlide, updateNote} = editor;
     const {updateSlideNumber} = toolbar;
@@ -147,7 +160,8 @@ const editorController = model => {
     updateSlideNumber({value: currentSlideIndex + 1, min: 1, max: slideSize});
     const {backgroundColor, color} = slideDOM.style;
     updateToolbarView(backgroundColor, color);
-    viewer.focusOnSlide(slideDOM.offsetTop, slideDOM.offsetBottom);
+
+    if (!notMoveScroll) viewer.focusOnSlide(slideDOM.offsetTop, slideDOM.offsetBottom);
   };
 
   const resetView = () => {
@@ -157,9 +171,9 @@ const editorController = model => {
     updateView();
   };
 
-  const updateView = () => {
+  const updateView = (notMoveScroll = false) => {
     if (model.slideSize) activateSlide();
-    updateViewerView();
+    updateViewerView(notMoveScroll);
     updatePresentationList();
   };
 
@@ -221,11 +235,11 @@ const editorController = model => {
     updateView();
   };
 
-  const focusOnNthSlide = n => {
+  const focusOnNthSlide = (n, notMoveScroll = false) => {
     if (n < 0 || n >= model.slideSize) return;
     deactivateSlide();
     model.currentSlideIndex = n;
-    updateView();
+    updateView(notMoveScroll);
   };
 
   const updateTitle = value => {
@@ -234,13 +248,9 @@ const editorController = model => {
   };
 
   const createPresentation = () => {
-    const response = confirm('프레젠테이션을 새로 생성하면 현재 작업이 저장되지 않습니다.\n작업중인 슬라이드를 저장하겠습니까?');
-    if (!response) {
-      const res = confirm('슬라이드를 저장하지 않고 프레젠테이션을 새로 생성합니다.');
-      if (res) return resetPresentation();
-      return;
-    }
-    savePresentation(true);
+    const response = confirm('새로운 프레젠테이션을 생성하시겠습니까?\n(현재 작업이 저장되지 않습니다.)');
+    if (!response) return;
+    resetPresentation();
   };
 
   const savePresentation = reset => {
@@ -257,6 +267,7 @@ const editorController = model => {
     if (!response) return;
     model.deletePresentation(title);
     updatePresentationList();
+    // TODO : 현재 프레젠테이션이 삭제된 경우?(제목이 같으면) 리셋!
   };
 
 
@@ -292,15 +303,17 @@ const editorController = model => {
   };
 
   const updatePresentationList = () => {
-    if (!archive.$archive.classList.contains('active')) return;
+    if (!document.querySelector('.archive-list')) return;
     archive.resetArchiveItem();
     const presentations = model.getStorageData('lemon_presentationList') || [];
     presentations.forEach(title => archive.renderArchiveItem(title.split('_')[1]));
   };
 
-  const openPresentationList = target => {
-    target.classList.toggle('active');
-    archive.$archive.classList.toggle('active');
+  const openPresentationList = () => {
+    archive = archiveView();
+    archive.render();
+    activateModal();
+    document.querySelector('.archive-list').addEventListener('click', ({target}) => archiveEvent(target));
     updatePresentationList();
   };
 
@@ -309,7 +322,7 @@ const editorController = model => {
     DOM.addEventListener('drag', e => dragHandler(e));
     DOM.addEventListener('dragend', ({target}) => dragendHandler(target));
     DOM.addEventListener('click', ({target}) => {
-      focusOnNthSlide(model.getSlideOrder(target.id));
+      focusOnNthSlide(model.getSlideOrder(target.id), true);
     });
   };
 

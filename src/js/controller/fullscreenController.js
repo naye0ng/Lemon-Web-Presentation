@@ -6,7 +6,7 @@ const fullscreenController = model => {
   let PTIndex = 0;
   let PTSize = 0;
 
-  let modal = null;
+  // let modal = null;
   let isActivateMousePointer = false;
   let popupWindow = null;
   let timer = null;
@@ -36,7 +36,8 @@ const fullscreenController = model => {
   const bindDocumentEvent = () => {
     document.addEventListener('keyup', e => fullscreenEventHandler(e));
     document.addEventListener('fullscreenchange', resetFullscreen.bind(this));
-    document.querySelector('#modal').addEventListener('click', closeFullscreenModal.bind(this));
+    // TODO : 모달 부분은 editorController와 공통적임!! >> 나중에 분리할 것!
+    document.querySelector('#modal').addEventListener('click', ({target}) => closeModal(target));
   };
 
   const popupEventHandler = ({id}) => {
@@ -55,7 +56,7 @@ const fullscreenController = model => {
     switch (id) {
       case 'show': return startFullscreen();
       case 'popup': return createPopup();
-      case 'cancel': return closeFullscreenModal();
+      case 'cancel': return closeModal({id: 'modal'});
       default:
     }
   };
@@ -119,6 +120,7 @@ const fullscreenController = model => {
     PTIndex = 0;
     PTSize = 0;
     fullscreen.reset();
+    closeModal({id: 'modal'});
   };
 
   const updateFullscreenView = () => {
@@ -166,7 +168,7 @@ const fullscreenController = model => {
 
     updateFullscreenView();
     fullscreen.$fullscreen.requestFullscreen();
-    closeFullscreenModal();
+    closeModal({id: 'modal'});
   };
 
   // popup
@@ -181,11 +183,11 @@ const fullscreenController = model => {
   };
 
   const closePopup = () => {
+    destroyTimer();
     popupWindow = null;
     timer = null;
     $timerView = null;
-    resetTimer();
-    modal.$modal.querySelector('#popup').classList.remove('active');
+    document.querySelector('#popup').classList.remove('active');
   };
 
   const bindPopupEventHandler = () => {
@@ -209,14 +211,15 @@ const fullscreenController = model => {
 
   const createPopup = () => {
     if (popupWindow) return popupWindow.close();
-    popupWindow = window.open('popup.html', '_blank', 'width=500, height=300, left=100, top=50');
+    popupWindow = window.open('popup.html', '_blank', 'width=600, height=300, left=100, top=50');
     popupWindow.addEventListener('DOMContentLoaded', renderPopup.bind(this));
-    modal.$modal.querySelector('#popup').classList.add('active');
+    document.querySelector('#popup').classList.add('active');
   };
 
   // modal
-  const closeFullscreenModal = () => {
-    const {$modal} = modal;
+  const closeModal = ({id}) => {
+    if (id !== 'modal') return;
+    const $modal = document.querySelector('#modal');
     $modal.classList.remove('active');
     $modal.classList.remove('dark');
   };
@@ -224,7 +227,7 @@ const fullscreenController = model => {
   const updateFullscreenModal = n => {
     PTIndex = n - 1;
     const {slideDOM} = model.getSlideByIndex(PTIndex);
-    const $slidePreview = modal.$modal.querySelector('.pt-slide-viewer');
+    const $slidePreview = document.querySelector('.pt-slide-viewer');
     $slidePreview.innerHTML = '';
     $slidePreview.append(slideDOM.cloneNode(true));
     updatePopupView();
@@ -235,10 +238,9 @@ const fullscreenController = model => {
     if (!slideSize) return alert('작성된 슬라이드가 없습니다. \n슬라이드를 만들어주세요!');
     PTSize = slideSize;
 
-    modal = modalView();
-    modal.renderFullscreenModal(PTSize);
+    modalView().renderFullscreenModal(PTSize);
 
-    const {$modal} = modal;
+    const $modal = document.querySelector('#modal');
     $modal.classList.add('active');
     $modal.classList.add('dark');
 
@@ -247,7 +249,7 @@ const fullscreenController = model => {
   };
 
   const bindModalEventHandler = () => {
-    const {$modal} = modal;
+    const $modal = document.querySelector('#modal');
     $modal.querySelector('#slide-number3').addEventListener('keyup', ({target}) => updateFullscreenModal(target.value));
     $modal.querySelector('.modal').addEventListener('click', e => {
       e.stopPropagation();
@@ -280,12 +282,16 @@ const fullscreenController = model => {
     clearInterval(timer);
   };
 
-  const resetTimer = () => {
-    if (!timer) return;
+  const destroyTimer = () => {
     clearInterval(timer);
     second = 0;
     minute = 0;
     hour = 0;
+  };
+
+  const resetTimer = () => {
+    if (!timer) return;
+    destroyTimer();
     updateTimer();
   };
 

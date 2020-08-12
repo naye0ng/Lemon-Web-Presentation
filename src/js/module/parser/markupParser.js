@@ -2,14 +2,13 @@ import attrParser from './attrParser';
 import {ALLOW_TAGS, TAGS} from './constants';
 
 
-const isNode = ({nodeName, nodeValue}, isSlideChild) => {
+const isNode = ({nodeName, nodeValue}) => {
   if (!ALLOW_TAGS.includes(nodeName)) return false;
   if (nodeName === '#text' && nodeValue.trim() === '') return false;
-  if (isSlideChild && nodeName === 'SLIDE') return false;
   return true;
 };
 
-const markupParser = ({nodeName, nodeValue, tagName, attributes, childNodes}, isSlideChild = false) => {
+const markupParser = ({nodeName, nodeValue, tagName, attributes, childNodes}) => {
   if (nodeName === '#text') {
     if (nodeValue[0] === '\n') return nodeValue.slice(1);
     return nodeValue;
@@ -22,15 +21,9 @@ const markupParser = ({nodeName, nodeValue, tagName, attributes, childNodes}, is
     },
   };
 
-  if (tagName === 'SLIDE') {
-    parsedObj.attrs.class = 'slide ';
-    // eslint-disable-next-line no-param-reassign
-    isSlideChild = true;
-  }
-
   parsedObj.children = Array.from(childNodes)
-    .filter(child => isNode(child, isSlideChild))
-    .map(child => markupParser(child, isSlideChild));
+    .filter(child => isNode(child))
+    .map(child => markupParser(child));
 
 
   for (let i = 0; i < attributes.length || 0; i++) {

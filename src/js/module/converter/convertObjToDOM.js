@@ -2,7 +2,7 @@ const bindNode = ({tag, attrs, children}) => {
   const el = document.createElement(tag);
 
   Object.entries(attrs).forEach(([attr, value]) => {
-    el.setAttribute(attr, value);
+    if (attr === 'class' || attr === 'style') el.setAttribute(attr, value);
   });
 
   for (const child of children) {
