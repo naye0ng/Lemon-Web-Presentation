@@ -4,29 +4,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      font-family: 'Nanum Gothic', sans-serif;
+      line-height: 1.6;
+      letter-spacing: .05rem;
+    }
+
+    html,
+    body {
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      font-weight: normal;
+      font-size: 13px;
+      background: #f1f1f1;
+    }
+
+    button,
+    input {
+      cursor: pointer;
+      font-size: 13px;
+      letter-spacing: .05rem;
+      text-align: center;
     }
 
     *:focus {
+      border: none;
       outline: none;
+      text-decoration: none;
     }
 
-    body {
-      font-size: 14px;
-      line-height: 1.35;
-      font-family: 'SF Pro Text Regular', 'AppleSDGothicNeo', sans-serif;
+    button,
+    input {
+      background: none;
     }
 
-    body {
-      overflow: hidden;
+    span.badge {
+      padding: .2rem .3rem .3rem;
       margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background: #f1f1f1;
+      font-size: 90%;
+      background-color: #e9ecee;
+      border-radius: 3px;
     }
+
 
     .presentation-helper {
       width: 100vw;
@@ -41,13 +67,13 @@
     }
 
     .timer-and-viewer {
-      width: 50vw;
+      width: 45vw;
       border-right: 1.2px solid #cecece;
       ;
     }
 
     .controller-and-note {
-      width: 50vw;
+      width: 55vw;
     }
 
     #timer,
@@ -132,17 +158,22 @@
       background-color: #705aff;
     }
 
+
+    .slide svg {
+      pointer-events: none;
+    }
+
     .slide {
       width: 220px;
       height: calc(220px * 9 / 16);
       overflow: hidden;
-      background: #ffffff;
+      background-color: #ffffff;
       white-space: pre-wrap;
       flex-shrink: 0;
-      border-radius: 3px;
     }
 
     .slide-contents {
+
       overflow: hidden;
       -ms-overflow-style: none;
       scrollbar-width: none;
@@ -161,56 +192,80 @@
       display: none;
     }
 
+    /* slide contents */
+
     .slide-contents h1,
     .head-1 {
       font-size: 5rem;
+      font-weight: normal;
     }
 
     .slide-contents h2,
     .head-2 {
       font-size: 4.3rem;
+      font-weight: normal;
     }
 
     .slide-contents h3,
     .head-3 {
       font-size: 3.7rem;
+      font-weight: normal;
     }
 
     .slide-contents h4,
     .head-4 {
       font-size: 3.4rem;
+      font-weight: normal;
     }
 
     .slide-contents h5,
     .head-5 {
       font-size: 3rem;
+      font-weight: normal;
     }
 
     .slide-contents h6,
     .head-6 {
-      font-size: 2rem;
+      font-size: 2.6rem;
+      font-weight: normal;
+    }
+
+    .slide p {
+      display: inline-block;
+      margin: 5px;
+      padding: 3px;
     }
 
     .slide ul {
-      margin: 0 3%;
+      display: inline-block;
+      padding-left: 15px;
+      margin: 2px;
+      line-height: 2.5;
     }
 
     .slide ul li {
-      list-style: disc inside;
+      width: 100%;
+      list-style: none;
       line-height: 2;
+      padding: 3px;
+      margin: 5px 8px;
     }
 
     .slide ul.list-style-circle>li {
       list-style: disc inside;
     }
 
-    .slide ul.list-style-check>li {
-      list-style: none;
-      position: relative;
+    .slide ul.list-style-disk>li {
+      list-style: disc inside;
     }
 
     .slide ul.list-style-number>li {
       list-style: decimal inside;
+    }
+
+    .slide ul.list-style-check>li {
+      list-style: none;
+      position: relative;
     }
 
     .slide ul.list-style-check li::before {
@@ -222,9 +277,15 @@
     }
 
     .slide img {
-      display: flex;
+      display: inline-block;
       width: 50%;
       margin: auto;
+    }
+
+    .slide pre {
+      font-family: monospace;
+      color: #ffffff;
+      background-color: #a0a0a0;
     }
   </style>
   <title>발표자 도구 모음 창</title>

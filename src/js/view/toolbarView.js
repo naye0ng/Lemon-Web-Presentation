@@ -37,9 +37,9 @@ const toolbarView = () => {
       </div>
       <div class="align-btns">
         <label>정렬</label>
-        <button id="left" class="active" name="text-align" value="left">왼</button>
-        <button id="middle" name="text-align" value="center">중</button>
-        <button id="right" name="text-align" value="right">오</button>
+        <button id="left" class="active" name="text-align" value="left"></button>
+        <button id="middle" name="text-align" value="center"></button>
+        <button id="right" name="text-align" value="right"></button>
       </div>`;
   };
 

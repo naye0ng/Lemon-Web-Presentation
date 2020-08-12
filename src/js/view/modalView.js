@@ -15,7 +15,6 @@ const modalView = () => {
             <label>✔️ 슬라이드 애니메이션 :</label>
             <select id="animation" name="animation">
                 <option value="">효과 없음</option>
-                <option value="fade">천천히 사라지기</option>
                 <option value="horizontal">가로 슬라이드</option>
             </select>
         </div>

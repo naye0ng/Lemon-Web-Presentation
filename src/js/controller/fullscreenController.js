@@ -211,7 +211,7 @@ const fullscreenController = model => {
 
   const createPopup = () => {
     if (popupWindow) return popupWindow.close();
-    popupWindow = window.open('popup.html', '_blank', 'width=500, height=300, left=100, top=50');
+    popupWindow = window.open('popup.html', '_blank', 'width=600, height=300, left=100, top=50');
     popupWindow.addEventListener('DOMContentLoaded', renderPopup.bind(this));
     document.querySelector('#popup').classList.add('active');
   };
