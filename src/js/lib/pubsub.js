@@ -12,7 +12,6 @@ export default class PubSub {
 
   publish (event, data = {}) {
     if (!this.events[event]) return [];
-
     return this.events[event].map(callback => callback(data));
   }
 }
