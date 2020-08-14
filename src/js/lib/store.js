@@ -6,22 +6,18 @@ export default class Store {
 
     this.actions = params.actions;
     this.mutations = params.mutations;
-
-    this.status = 'resting';
+    this.stateEvent = '';
     this.state = new Proxy(params.state, {
       set (state, key, value) {
         state[key] = value;
-
-        this.events.publish('stateChange', this.state);
-        this.status = 'resting';
         return true;
       },
     });
   }
 
-  dispatch (action, payload) {
+  dispatch (action, payload = {}) {
     if (typeof this.actions[action] !== 'function') return false;
-    this.status = 'action';
+    this.stateEvent = payload.stateEvent;
     this.actions[action](this, payload);
     return true;
   }
@@ -30,6 +26,10 @@ export default class Store {
     if (typeof this.mutations[mutation] !== 'function') return false;
     const newState = this.mutations[mutation](this.state, payload);
     this.state = Object.assign(this.state, newState);
+
+    this.events.publish(this.stateEvent, this.state);
+    this.stateEvent = '';
+
     return true;
   }
 }

@@ -1,8 +1,10 @@
 export default class Component {
   constructor (props = {}) {
-    this.render = this.render || function () {};
     this.element = props.element;
+    this.store = props.store;
+  }
 
-    props.store.events.subscribe('stateChange', this.render.bind(this));
+  subscribeStateEvent (event, callback) {
+    this.store.events.subscribe(event, callback.bind(this));
   }
 }
