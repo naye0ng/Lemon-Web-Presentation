@@ -1,5 +1,6 @@
 import Component from '../lib/component';
 import store from '../store/store';
+import {rgbToHex} from '../utils/color';
 
 export default class Toolbar extends Component {
   constructor () {
@@ -7,6 +8,8 @@ export default class Toolbar extends Component {
       store,
       element: document.querySelector('#toolbar'),
     });
+
+    this.subscribeEvent();
   }
 
   render () {
@@ -14,7 +17,7 @@ export default class Toolbar extends Component {
     <div class="slide-controller">
       <div class="focus-btns">
           <button id="before" class="before-btn"></button>
-          <input type="number" id="slide-number" value="1" min="1" max="1">
+          <input type="number" id="slide-number" min="0" max="0">
           <button id="next" class="next-btn"></button>
       </div>
       <div class="crud-btns">
@@ -26,6 +29,8 @@ export default class Toolbar extends Component {
     <div class="editor-controller">
       <div class="attribute-controller"></div>
     </div>`;
+
+    this.addListener();
   }
 
   renderSlideAttribute (backgroundColor, color) {
@@ -44,5 +49,64 @@ export default class Toolbar extends Component {
         <button id="middle" name="text-align" value="center"></button>
         <button id="right" name="text-align" value="right"></button>
       </div>`;
+  }
+
+  addListener () {
+    this.element.addEventListener('click', ({target}) => this.clickHandler(target));
+    this.element.addEventListener('input', ({target}) => this.inputHandler(target));
+  }
+
+  clickHandler ({id, value}) {
+    switch (id) {
+      case 'before': return store.dispatch('focusOnBeforeSlide', {stateEvent: 'focusOnSlide'});
+      case 'next': return store.dispatch('focusOnNextSlide', {stateEvent: 'focusOnSlide'});
+      case 'create': return store.dispatch('createSlide', {stateEvent: 'createSlide'});
+      case 'copy': return store.dispatch('createSlide', {stateEvent: 'createSlide', isCopy: true});
+      case 'delete': return store.dispatch('deleteSlide', {stateEvent: 'focusOnSlide'});
+      case 'left':
+      case 'middle':
+      case 'right':
+        return store.dispatch('updateSlideAttribute', {name: 'textAlign', value});
+      default:
+    }
+  }
+
+  inputHandler ({id, value}) {
+    switch (id) {
+      case 'slide-number':
+        return store.dispatch('focusOnNthSlide', {
+          stateEvent: 'focusOnSlide',
+          slideIndex: value - 1,
+        });
+      case 'color':
+        return store.dispatch('updateSlideAttribute', {
+          name: 'color',
+          value,
+        });
+      case 'background-color':
+        return store.dispatch('updateSlideAttribute', {
+          name: 'backgroundColor',
+          value,
+        });
+      default:
+    }
+  }
+
+  subscribeEvent () {
+    store.events.subscribe('createSlide', this.updateToolbar.bind(this));
+    store.events.subscribe('focusOnSlide', this.updateToolbar.bind(this));
+  }
+
+  updateToolbar () {
+    const {currentSlideIndex, slideSize} = store.state;
+    const $slideNumberInput = this.element.querySelector('#slide-number');
+    $slideNumberInput.value = currentSlideIndex + 1;
+    $slideNumberInput.min = slideSize ? 1 : 0;
+    $slideNumberInput.max = slideSize;
+
+    const $slide = store.state.getSlideNode();
+    if (!$slide) return;
+    const {backgroundColor, color} = $slide.style;
+    this.renderSlideAttribute(rgbToHex(backgroundColor), rgbToHex(color));
   }
 }

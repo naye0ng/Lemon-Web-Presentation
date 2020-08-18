@@ -18,5 +18,25 @@ export default class Archive extends Component {
         </div>
         <div class="archive-list"></div>
       </div>`;
+
+    this.addListener();
+  }
+
+  renderArchiveItem (title) {
+    const item = `
+      <div class="archive-item" title="${title}">
+        <div class="archive-title" title="${title}">${title}</div>
+        <button id="delete-item" title="${title}">삭제</button>
+      </div>`;
+
+    this.element.querySelector('.archive-list').insertAdjacentHTML('beforeend', item);
+  }
+
+  addListener () {
+    this.element.querySelector('.archive-list').addEventListener('click', ({target}) => {
+      const title = target.getAttribute('title');
+      if (title && target.id !== 'delete-item') return store.dispatch('renderPresentation', {title});
+      return store.dispatch('deletePresentation', {title});
+    });
   }
 }
