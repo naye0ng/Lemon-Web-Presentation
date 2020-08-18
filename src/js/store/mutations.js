@@ -1,3 +1,139 @@
-export default {
+import {getStorageItem, setStorageItem, deleteStorageItem} from '../utils/storage';
+import {customSyntaxParser, convertObjToDOM} from '../module';
 
+// TODO : 슬라이드 만드는 것 자체를 util로 빼내기
+const getSlideHtmlText = ID => `
+  <div id="${ID}" class="slide" draggable="true">
+    <svg viewBox="0 0 1280 720" width="100%">
+      <foreignObject width="1280" height="720">
+      <div class="slide-contents"></div>
+      </foreignObject>
+    </svg>
+  </div>`;
+
+export default {
+  createSlide (state, payload) {
+    this.focusOutSlide(state);
+    const ID = `slide-${++state.slideKey}`;
+
+    if (payload.isCopy) {
+      const {note, originalData} = state.getSlide();
+      const $slide = state.getSlideNode().cloneNode(true);
+      $slide.id = ID;
+
+      state.slides[ID] = {note, originalData, $slide};
+    } else {
+      const [note, originalData] = ['', ''];
+      const [$slide] = new DOMParser().parseFromString(getSlideHtmlText(ID), 'text/html').body.childNodes;
+      state.slides[ID] = {note, originalData, $slide};
+    }
+
+    state.slideSize++;
+    state.currentSlideIndex++;
+
+    state.slideIDList.splice(state.currentSlideIndex, 0, ID);
+    this.focusOnSlide(state);
+  },
+
+  deleteSlide (state, payload) {
+    state.getSlideNode().remove();
+    state.slideIDList.splice(state.currentSlideIndex, 1);
+    state.slideSize--;
+
+    if (!state.currentSlideIndex && state.slideSize > 0) {
+      state.currentSlideIndex = 0;
+    } else {
+      state.currentSlideIndex -= 1;
+    }
+    this.focusOnSlide(state);
+  },
+
+  updateSlide (state, payload) {
+    state.getSlide().originalData = payload.value;
+    const [$slide] = new DOMParser().parseFromString(`<div class="slide-contents">${payload.value}</div>`, 'text/html').body.childNodes;
+    state.getSlideNode().querySelector('.slide-contents')
+      .replaceWith(convertObjToDOM(customSyntaxParser($slide)));
+  },
+
+  updateSlideAttribute (state, payload) {
+    state.getSlideNode().style[payload.name] = payload.value;
+  },
+
+  updateNote (state, payload) {
+    state.getSlide().note = payload.value;
+  },
+
+  updateTitle (state, payload) {
+    state.title = payload;
+  },
+
+  focusOutSlide (state) {
+    if (!state.slideSize) return;
+    state.getSlideNode().classList.remove('active');
+  },
+
+  focusOnSlide (state) {
+    if (!state.slideSize) return;
+    state.getSlideNode().classList.add('active');
+  },
+
+  focusOnBeforeSlide (state) {
+    this.focusOutSlide(state);
+    state.currentSlideIndex--;
+    this.focusOnSlide(state);
+  },
+
+  focusOnNextSlide (state) {
+    this.focusOutSlide(state);
+    state.currentSlideIndex++;
+    this.focusOnSlide(state);
+  },
+
+  focusOnNthSlide (state, {slideIndex}) {
+    this.focusOutSlide(state);
+    state.currentSlideIndex = slideIndex;
+    this.focusOnSlide(state);
+  },
+
+  // TODO : 스토리지 데이터를 조작하는 부분이 여기에 있는 것이 맞는가?
+  savePresentation (state, {title}) {
+    const presentationList = getStorageItem('presentationList') || [];
+    const order = presentationList.indexOf(title);
+    if (order === -1) presentationList.push(title);
+
+    const {slideIDList, slideKey, slides} = state;
+    const presentation = {
+      slideIDList,
+      slideKey,
+      slides: {},
+    };
+
+    slideIDList.forEach(id => {
+      const {$slide, note, originalData} = slides[id];
+      presentation.slides[id] = {
+        note,
+        originalData,
+        $slide: $slide.outerHTML,
+      };
+    });
+
+    setStorageItem('presentationList', presentationList);
+    setStorageItem(`${title}`, presentation);
+  },
+
+  createPresentation (state) {
+    state.slides = {};
+    state.slideIDList = [];
+    state.title = '';
+    state.slideKey = 0;
+    state.slideSize = 0;
+    state.currentSlideIndex = -1;
+  },
+
+  deletePresentation (state, {title}) {
+    deleteStorageItem(`${title}`);
+    const presentationList = getStorageItem('presentationList') || [];
+    presentationList.splice(presentationList.indexOf(title), 1);
+    setStorageItem('presentationList', presentationList);
+  },
 };

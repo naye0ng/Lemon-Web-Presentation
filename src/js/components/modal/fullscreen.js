@@ -1,7 +1,7 @@
 import Component from '../../lib/component';
 import store from '../../store/store';
 
-export default class Archive extends Component {
+export default class Fullscreen extends Component {
   constructor () {
     super({
       store,
