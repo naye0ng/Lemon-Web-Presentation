@@ -45,6 +45,7 @@ export default class Usage extends Component {
       </div>`;
 
     this.renderUsageItem();
+    this.addListener();
   }
 
   renderUsageItem () {
@@ -58,6 +59,12 @@ export default class Usage extends Component {
             <pre>${item.tag.replace(/</gi, '&lt;').replace(/>/gi, '&gt;')}</pre>
           </div>
         </div>`);
+    });
+  }
+
+  addListener () {
+    this.element.querySelector('#github').addEventListener('click', () => {
+      window.open('https://github.daumkakao.com/kelley-j/Lemon-Presentation', '_blank');
     });
   }
 }

@@ -1,5 +1,7 @@
 import Component from '../lib/component';
 import store from '../store/store';
+import {Header, Viewer, Toolbar, Editor, Fullscreen} from './';
+import {FullscreenModal} from './modal';
 
 export default class Layout extends Component {
   constructor () {
@@ -24,14 +26,40 @@ export default class Layout extends Component {
       <div id="modal" class="dark"></div>`;
 
     this.addListener();
+    this.renderChild();
+  }
+
+  renderChild () {
+    const header = new Header();
+    const viewer = new Viewer();
+    const toolbar = new Toolbar();
+    const editor = new Editor();
+    const fullscreen = new Fullscreen();
+
+    header.render();
+    viewer.render();
+    toolbar.render();
+    editor.render();
+    fullscreen.render();
   }
 
   addListener () {
-    const $modal = this.element.querySelector('#modal');
-    $modal.addEventListener('click', () => this.closeModal($modal));
+    this.element.querySelector('#fullscreen-btn').addEventListener('click', this.openFullscreenModal.bind(this));
+    this.element.querySelector('#modal').addEventListener('click', ({target}) => this.closeModal(target));
   }
 
-  closeModal ($modal) {
-    $modal.classList.remove('active');
+  closeModal (target) {
+    if (target.id !== 'modal') return;
+    return target.classList.remove('active');
+  }
+
+  openModal () {
+    document.querySelector('#modal').classList.add('active');
+  }
+
+  openFullscreenModal () {
+    const fullscreenModal = new FullscreenModal();
+    fullscreenModal.render(store.state.slideSize);
+    this.openModal();
   }
 }
