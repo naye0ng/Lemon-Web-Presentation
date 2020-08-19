@@ -17,7 +17,7 @@ export default class Fullscreen extends Component {
       <div class="pt-slide-viewer"></div>
       <div class="input-slide-number">
           <label>✔️ 시작 슬라이드 번호 (총 ${slideSize}개) : </label>
-          <input id="slide-number3" type="number" min="1" max="${slideSize}" value="1" />
+          <input id="slide-number3" type="number" min="1" max="${slideSize}" value="${store.state.currentSlideIndex + 1}" />
       </div>
       <div class="select-animation">
           <label>✔️ 슬라이드 애니메이션 :</label>
@@ -35,5 +35,30 @@ export default class Fullscreen extends Component {
           <button id="show">슬라이드 쇼</button>
       </div>
     </div>`;
+    this.renderSlides();
+    this.addListener();
+  }
+
+  renderSlides () {
+    const $slideContainer = this.element.querySelector('.pt-slide-viewer');
+    const $slide = store.state.getSlideNode();
+    $slideContainer.append($slide.cloneNode(true));
+  }
+
+  addListener () {
+    this.element.querySelectorAll('button').forEach(button => {
+      button.addEventListener('click', ({target}) => this.clickHandler(target));
+    });
+
+    // 애니메이션 select
+  }
+
+  clickHandler ({id}) {
+    switch (id) {
+      // case 'popup': return ;
+      // case 'cancel': return this.openArchiveModal();
+      case 'show': return store.dispatch('eventPublish', {stateEvent: 'startFullscreen'});
+      default:
+    }
   }
 }

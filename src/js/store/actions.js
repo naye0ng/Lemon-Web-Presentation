@@ -63,4 +63,9 @@ export default {
   renderPresentation (context, payload) {
     context.commit('renderPresentation', payload);
   },
+
+
+  eventPublish (context, payload) {
+    context.commit('eventPublish', payload);
+  },
 };

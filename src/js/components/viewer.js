@@ -36,12 +36,12 @@ export default class Layout extends Component {
   }
 
   renderPresentationSlide () {
-    const $slideContaioner = this.element.querySelector('#slide-container');
-    $slideContaioner.innerHTML = '';
+    const $slideContainer = this.element.querySelector('#slide-container');
+    $slideContainer.innerHTML = '';
 
     store.state.slideIDList.forEach(ID => {
       const $slide = store.state.getSlideNode(ID);
-      $slideContaioner.append($slide);
+      $slideContainer.append($slide);
     });
   }
 

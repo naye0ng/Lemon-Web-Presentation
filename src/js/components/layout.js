@@ -58,6 +58,7 @@ export default class Layout extends Component {
   }
 
   openFullscreenModal () {
+    if (!store.state.slideSize) return alert('슬라이드가 존재하지 않습니다.\n슬라이드를 만들어주세요!');
     const fullscreenModal = new FullscreenModal();
     fullscreenModal.render(store.state.slideSize);
     this.openModal();
