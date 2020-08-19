@@ -33,16 +33,15 @@ export default {
     context.commit('focusOnBeforeSlide');
   },
 
-  focusOnNextSlide (context) {
+  focusOnNextSlide (context, payload) {
     const {currentSlideIndex, slideSize} = context.state;
     if (currentSlideIndex >= slideSize - 1) return;
-    context.commit('focusOnNextSlide');
+    context.commit('focusOnNextSlide', payload);
   },
 
   focusOnNthSlide (context, payload) {
     context.commit('focusOnNthSlide', payload);
   },
-
 
   savePresentation (context) {
     const {title} = context.state;
@@ -50,14 +49,17 @@ export default {
     context.commit('savePresentation', {title});
   },
 
-  createPresentation (context) {
+  createPresentation (context, payload) {
     const response = confirm('새로운 프레젠테이션을 생성하시겠습니까?\n(현재 작업이 저장되지 않습니다.)');
     if (!response) return;
-    context.commit('createPresentation');
+    context.commit('createPresentation', payload);
   },
 
   deletePresentation (context, payload) {
     context.commit('deletePresentation', payload);
   },
 
+  renderPresentation (context, payload) {
+    context.commit('renderPresentation', payload);
+  },
 };

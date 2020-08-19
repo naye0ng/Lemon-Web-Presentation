@@ -1,5 +1,6 @@
 import Component from '../../lib/component';
 import store from '../../store/store';
+import {getStorageItem} from '../../utils/storage';
 
 export default class Archive extends Component {
   constructor () {
@@ -20,6 +21,26 @@ export default class Archive extends Component {
       </div>`;
 
     this.addListener();
+    this.subscribeEvent();
+    this.updatePresentationList();
+  }
+
+  addListener () {
+    this.element.querySelector('.archive-list').addEventListener('click', ({target}) => {
+      const title = target.getAttribute('title');
+      if (title === store.state.title) return;
+      if (title && target.id !== 'delete-item') return store.dispatch('renderPresentation', {stateEvent: 'choosePresentation', title});
+      return store.dispatch('deletePresentation', {stateEvent: 'updatePresentation', title});
+    });
+  }
+
+  subscribeEvent () {
+    store.events.subscribe('updatePresentation', this.updatePresentationList.bind(this));
+  }
+
+  updatePresentationList () {
+    this.element.querySelector('.archive-list').innerHTML = '';
+    getStorageItem('presentationList').forEach(title => this.renderArchiveItem(title));
   }
 
   renderArchiveItem (title) {
@@ -30,13 +51,5 @@ export default class Archive extends Component {
       </div>`;
 
     this.element.querySelector('.archive-list').insertAdjacentHTML('beforeend', item);
-  }
-
-  addListener () {
-    this.element.querySelector('.archive-list').addEventListener('click', ({target}) => {
-      const title = target.getAttribute('title');
-      if (title && target.id !== 'delete-item') return store.dispatch('renderPresentation', {title});
-      return store.dispatch('deletePresentation', {title});
-    });
   }
 }

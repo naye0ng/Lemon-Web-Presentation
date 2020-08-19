@@ -1,7 +1,6 @@
 import Component from '../lib/component';
 import store from '../store/store';
 import {ArchiveModal, UsageModal} from './modal';
-import {getStorageItem} from '../utils/storage';
 
 export default class Header extends Component {
   constructor () {
@@ -27,6 +26,7 @@ export default class Header extends Component {
       </div>`;
 
     this.addListener();
+    this.subscribeEvent();
   }
 
   addListener () {
@@ -47,15 +47,21 @@ export default class Header extends Component {
     }
   }
 
+  subscribeEvent () {
+    store.events.subscribe('choosePresentation', this.updateTitle.bind(this));
+  }
+
+  updateTitle () {
+    this.element.querySelector('#title-input').value = store.state.title;
+  }
+
   openModal () {
     document.querySelector('#modal').classList.add('active');
   }
 
-  // 이 부분 로직 변경!
   openArchiveModal () {
     const archiveModal = new ArchiveModal();
     archiveModal.render();
-    getStorageItem('presentationList').forEach(title => archiveModal.renderArchiveItem(title));
     this.openModal();
   }
 
