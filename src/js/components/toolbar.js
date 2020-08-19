@@ -60,8 +60,8 @@ export default class Toolbar extends Component {
     switch (id) {
       case 'before': return store.dispatch('focusOnBeforeSlide', {stateEvent: 'focusOnSlide'});
       case 'next': return store.dispatch('focusOnNextSlide', {stateEvent: 'focusOnSlide'});
-      case 'create': return store.dispatch('createSlide', {stateEvent: 'createSlide'});
-      case 'copy': return store.dispatch('createSlide', {stateEvent: 'createSlide', isCopy: true});
+      case 'create': return store.dispatch('createSlide', {stateEvent: 'updateSlide'});
+      case 'copy': return store.dispatch('createSlide', {stateEvent: 'updateSlide', isCopy: true});
       case 'delete': return store.dispatch('deleteSlide', {stateEvent: 'focusOnSlide'});
       case 'left':
       case 'middle':
@@ -93,8 +93,9 @@ export default class Toolbar extends Component {
   }
 
   subscribeEvent () {
-    store.events.subscribe('createSlide', this.updateToolbar.bind(this));
+    store.events.subscribe('updateSlide', this.updateToolbar.bind(this));
     store.events.subscribe('focusOnSlide', this.updateToolbar.bind(this));
+    store.events.subscribe('choosePresentation', this.updateToolbar.bind(this));
   }
 
   updateToolbar () {

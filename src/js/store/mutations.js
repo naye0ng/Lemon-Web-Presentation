@@ -1,5 +1,5 @@
 import {getStorageItem, setStorageItem, deleteStorageItem} from '../utils/storage';
-import {customSyntaxParser, convertObjToDOM} from '../module';
+import {customSyntaxParser, convertObjToDOM, convertslideStringToDOM} from '../module';
 
 // TODO : 슬라이드 만드는 것 자체를 util로 빼내기
 const getSlideHtmlText = ID => `
@@ -95,14 +95,14 @@ export default {
     this.focusOnSlide(state);
   },
 
-  // TODO : 스토리지 데이터를 조작하는 부분이 여기에 있는 것이 맞는가?
   savePresentation (state, {title}) {
     const presentationList = getStorageItem('presentationList') || [];
     const order = presentationList.indexOf(title);
     if (order === -1) presentationList.push(title);
 
-    const {slideIDList, slideKey, slides} = state;
+    const {slideIDList, slideKey, slides, currentSlideIndex} = state;
     const presentation = {
+      currentSlideIndex,
       slideIDList,
       slideKey,
       slides: {},
@@ -135,5 +135,24 @@ export default {
     const presentationList = getStorageItem('presentationList') || [];
     presentationList.splice(presentationList.indexOf(title), 1);
     setStorageItem('presentationList', presentationList);
+  },
+
+  renderPresentation (state, {title}) {
+    const newSlide = getStorageItem(title);
+    state.slideIDList = newSlide.slideIDList;
+    state.slideKey = newSlide.slideKey;
+    state.currentSlideIndex = newSlide.currentSlideIndex;
+    state.title = title;
+    state.slideSize = state.slideIDList.length;
+
+    state.slides = {};
+    state.slideIDList.forEach(id => {
+      const {$slide, note, originalData} = newSlide.slides[id];
+      state.slides[id] = {
+        note,
+        originalData,
+        $slide: convertslideStringToDOM($slide),
+      };
+    });
   },
 };

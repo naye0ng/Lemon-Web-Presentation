@@ -18,8 +18,9 @@ export default class Editor extends Component {
   }
 
   subscribeEvent () {
-    store.events.subscribe('createSlide', this.updateTextarea.bind(this));
+    store.events.subscribe('updateSlide', this.updateTextarea.bind(this));
     store.events.subscribe('focusOnSlide', this.updateTextarea.bind(this));
+    store.events.subscribe('choosePresentation', this.updateTextarea.bind(this));
   }
 
   addListener () {
