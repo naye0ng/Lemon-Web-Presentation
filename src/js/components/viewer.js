@@ -24,13 +24,25 @@ export default class Layout extends Component {
   }
 
   subscribeEvent () {
-    store.events.subscribe('createSlide', this.renderSlide.bind(this));
+    store.events.subscribe('updateSlide', this.renderSlide.bind(this));
+    store.events.subscribe('choosePresentation', this.renderPresentationSlide.bind(this));
   }
 
   renderSlide () {
     const $slide = store.state.getSlideNode();
     const $nextSlide = store.state.getNextSlideNode();
+    if (!$slide) return;
     this.element.querySelector('#slide-container').insertBefore($slide, $nextSlide);
+  }
+
+  renderPresentationSlide () {
+    const $slideContaioner = this.element.querySelector('#slide-container');
+    $slideContaioner.innerHTML = '';
+
+    store.state.slideIDList.forEach(ID => {
+      const $slide = store.state.getSlideNode(ID);
+      $slideContaioner.append($slide);
+    });
   }
 
   addListener () {
@@ -39,7 +51,6 @@ export default class Layout extends Component {
     });
 
     this.element.querySelector('#slide-container').addEventListener('click', ({target}) => this.focusOnClickedSlide(target));
-    // 원래는 드롭아니었나?
     // this.element.querySelector('#slide-container').addEventListener('dragover', e => e.preventDefault());
   }
 

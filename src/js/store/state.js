@@ -6,14 +6,14 @@ export default {
   slideSize: 0,
   currentSlideIndex: -1,
 
-  getSlide () {
+  getSlide (ID) {
     if (!this.slideSize) return null;
-    return this.slides[this.slideIDList[this.currentSlideIndex]];
+    return this.slides[ID || this.slideIDList[this.currentSlideIndex]];
   },
 
-  getSlideNode () {
+  getSlideNode (ID) {
     if (!this.slideSize) return null;
-    return this.getSlide().$slide;
+    return this.getSlide(ID).$slide;
   },
 
   getNextSlideNode () {
