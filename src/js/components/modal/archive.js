@@ -28,19 +28,19 @@ export default class Archive extends Component {
   addListener () {
     this.element.querySelector('.archive-list').addEventListener('click', ({target}) => {
       const title = target.getAttribute('title');
-      if (title === store.state.title) return;
-      if (title && target.id !== 'delete-item') return store.dispatch('renderPresentation', {stateEvent: 'choosePresentation', title});
-      return store.dispatch('deletePresentation', {stateEvent: 'updatePresentation', title});
+      if (target.id === 'delete-item') return store.dispatch('deletePresentation', {stateEvent: 'updatePresentationList', title});
+      if (title && title !== store.state.title) return store.dispatch('renderPresentation', {stateEvent: 'choosePresentation', title});
     });
   }
 
   subscribeEvent () {
-    store.events.subscribe('updatePresentation', this.updatePresentationList.bind(this));
+    store.events.subscribe('updatePresentationList', this.updatePresentationList.bind(this));
   }
 
   updatePresentationList () {
     this.element.querySelector('.archive-list').innerHTML = '';
-    getStorageItem('presentationList').forEach(title => this.renderArchiveItem(title));
+    const presentationList = getStorageItem('presentationList') || [];
+    presentationList.forEach(title => this.renderArchiveItem(title));
   }
 
   renderArchiveItem (title) {
