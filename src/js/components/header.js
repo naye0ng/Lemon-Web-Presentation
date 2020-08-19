@@ -40,7 +40,7 @@ export default class Header extends Component {
   clickHandler ({id}) {
     switch (id) {
       case 'save-btn': return store.dispatch('savePresentation');
-      case 'reset-btn': return store.dispatch('createPresentation');
+      case 'reset-btn': return store.dispatch('createPresentation', {stateEvent: 'updateSlide'}); // 여기 변경
       case 'archive-btn': return this.openArchiveModal();
       case 'usage-btn': return this.openUsageModal();
       default:

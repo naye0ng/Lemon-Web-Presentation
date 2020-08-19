@@ -44,6 +44,7 @@ export default {
   },
 
   savePresentation (context) {
+    if (!context.state.slideSize) return alert('저장 가능한 슬라이드가 존재하지 않습니다.\n슬라이드를 생성해주세요!');
     const {title} = context.state;
     if (!title) return alert('제목을 입력하세요!');
     context.commit('savePresentation', {title});

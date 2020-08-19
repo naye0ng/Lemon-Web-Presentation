@@ -121,13 +121,14 @@ export default {
     setStorageItem(`${title}`, presentation);
   },
 
-  createPresentation (state) {
+  createPresentation (state, payload) {
     state.slides = {};
     state.slideIDList = [];
     state.title = '';
     state.slideKey = 0;
     state.slideSize = 0;
     state.currentSlideIndex = -1;
+    this.createSlide(state, payload);
   },
 
   deletePresentation (state, {title}) {
@@ -135,6 +136,7 @@ export default {
     const presentationList = getStorageItem('presentationList') || [];
     presentationList.splice(presentationList.indexOf(title), 1);
     setStorageItem('presentationList', presentationList);
+    deleteStorageItem(title);
   },
 
   renderPresentation (state, {title}) {
