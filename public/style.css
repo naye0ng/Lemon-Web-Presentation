@@ -748,6 +748,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 #presentation-modal {
     width: 350px;
     height: 360px;
+    overflow: hidden;
 }
 
 .pt-slide-viewer {

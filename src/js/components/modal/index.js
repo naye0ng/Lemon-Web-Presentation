@@ -1,3 +1,3 @@
-export {default as ArchiveModal} from './archive';
-export {default as UsageModal} from './usage';
-export {default as FullscreenModal} from './fullscreen';
+export {default as ArchiveModal} from './archiveModal';
+export {default as UsageModal} from './usageModal';
+export {default as FullscreenModal} from './fullscreenModal';

@@ -1,5 +1,3 @@
-
-
 export default {
   createSlide (context, payload) {
     if (payload.isCopy && !context.state.slideSize) return alert('복사할 수 있는 슬라이드가 존재하지 않습니다.');
@@ -19,13 +17,18 @@ export default {
     context.commit('updateNote', payload);
   },
 
-
   updateSlideAttribute (context, payload) {
     context.commit('updateSlideAttribute', payload);
   },
 
   updateTitle (context, payload) {
     context.commit('updateTitle', payload);
+  },
+
+  updatePTIndex (context, payload) {
+    const {slideSize} = context.state;
+    if (payload.index >= slideSize || payload.index < 0) return;
+    context.commit('updatePTIndex', payload);
   },
 
   focusOnBeforeSlide (context) {
@@ -63,7 +66,6 @@ export default {
   renderPresentation (context, payload) {
     context.commit('renderPresentation', payload);
   },
-
 
   eventPublish (context, payload) {
     context.commit('eventPublish', payload);

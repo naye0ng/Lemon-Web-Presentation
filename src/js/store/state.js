@@ -5,6 +5,7 @@ export default {
   slideKey: 0,
   slideSize: 0,
   currentSlideIndex: -1,
+  ptIndex: -1,
 
   getSlide (ID) {
     if (!this.slideSize) return null;
@@ -23,5 +24,9 @@ export default {
 
   getSlideIndexByID (ID) {
     return this.slideIDList.indexOf(ID);
+  },
+
+  getPtSlide () {
+    return this.slides[this.slideIDList[this.ptIndex]];
   },
 };

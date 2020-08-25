@@ -4,7 +4,6 @@ import {ALLOW_TAGS, TAGS} from './constants';
 
 const isNode = ({nodeName, nodeValue}) => {
   if (!ALLOW_TAGS.includes(nodeName)) return false;
-  // if (nodeName === '#text' && nodeValue.trim() === '') return false;
   return true;
 };
 

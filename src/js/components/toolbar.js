@@ -1,19 +1,12 @@
-import Component from '../lib/component';
 import store from '../store/store';
-import {rgbToHex} from '../utils/color';
+import {rgbToHex} from '../utils/rgbToHex';
 
-export default class Toolbar extends Component {
-  constructor () {
-    super({
-      store,
-      element: document.querySelector('#toolbar'),
-    });
+export default function Toolbar () {
+  const element = document.querySelector('#toolbar');
+  const {state, events} = store;
 
-    this.subscribeEvent();
-  }
-
-  render () {
-    this.element.innerHTML = `
+  const render = function () {
+    element.innerHTML = `
     <div class="slide-controller">
       <div class="focus-btns">
           <button id="before" class="before-btn"></button>
@@ -29,12 +22,10 @@ export default class Toolbar extends Component {
     <div class="editor-controller">
       <div class="attribute-controller"></div>
     </div>`;
+  };
 
-    this.addListener();
-  }
-
-  renderSlideAttribute (backgroundColor, color) {
-    this.element.querySelector('.attribute-controller').innerHTML =
+  const renderSlideAttribute = function (backgroundColor, color) {
+    element.querySelector('.attribute-controller').innerHTML =
       `<div class="bg-color-btn">
         <label>배경 색</label>
         <input type="color" id="background-color" name="background-color" value="${backgroundColor || '#ffffff'}" />
@@ -49,14 +40,14 @@ export default class Toolbar extends Component {
         <button id="middle" name="text-align" value="center"></button>
         <button id="right" name="text-align" value="right"></button>
       </div>`;
-  }
+  };
 
-  addListener () {
-    this.element.addEventListener('click', ({target}) => this.clickHandler(target));
-    this.element.addEventListener('input', ({target}) => this.inputHandler(target));
-  }
+  const addListener = function () {
+    element.addEventListener('click', ({target}) => clickHandler(target));
+    element.addEventListener('input', ({target}) => inputHandler(target));
+  };
 
-  clickHandler ({id, value}) {
+  const clickHandler = function ({id, value}) {
     switch (id) {
       case 'before': return store.dispatch('focusOnBeforeSlide', {stateEvent: 'focusOnSlide'});
       case 'next': return store.dispatch('focusOnNextSlide', {stateEvent: 'focusOnSlide'});
@@ -69,9 +60,9 @@ export default class Toolbar extends Component {
         return store.dispatch('updateSlideAttribute', {name: 'textAlign', value});
       default:
     }
-  }
+  };
 
-  inputHandler ({id, value}) {
+  const inputHandler = function ({id, value}) {
     switch (id) {
       case 'slide-number':
         return store.dispatch('focusOnNthSlide', {
@@ -90,24 +81,31 @@ export default class Toolbar extends Component {
         });
       default:
     }
-  }
+  };
 
-  subscribeEvent () {
-    store.events.subscribe('updateSlide', this.updateToolbar.bind(this));
-    store.events.subscribe('focusOnSlide', this.updateToolbar.bind(this));
-    store.events.subscribe('choosePresentation', this.updateToolbar.bind(this));
-  }
+  const subscribeEvent = function () {
+    events.subscribe('updateSlide', updateToolbar.bind(this));
+    events.subscribe('focusOnSlide', updateToolbar.bind(this));
+    events.subscribe('choosePresentation', updateToolbar.bind(this));
+  };
 
-  updateToolbar () {
-    const {currentSlideIndex, slideSize} = store.state;
-    const $slideNumberInput = this.element.querySelector('#slide-number');
+  const updateToolbar = function () {
+    const {currentSlideIndex, slideSize} = state;
+    const $slideNumberInput = element.querySelector('#slide-number');
     $slideNumberInput.value = currentSlideIndex + 1;
     $slideNumberInput.min = slideSize ? 1 : 0;
     $slideNumberInput.max = slideSize;
 
-    const $slide = store.state.getSlideNode();
+    const $slide = state.getSlideNode();
     if (!$slide) return;
     const {backgroundColor, color} = $slide.style;
-    this.renderSlideAttribute(rgbToHex(backgroundColor), rgbToHex(color));
-  }
+    renderSlideAttribute(rgbToHex(backgroundColor), rgbToHex(color));
+  };
+
+
+  this.init = function () {
+    render();
+    addListener();
+    subscribeEvent();
+  };
 }
