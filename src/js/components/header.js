@@ -1,19 +1,12 @@
-import Component from '../lib/component';
 import store from '../store/store';
 import {ArchiveModal, UsageModal} from './modal';
 
-export default class Header extends Component {
-  constructor () {
-    super({
-      store,
-      element: document.querySelector('#header'),
-    });
+export default function Header () {
+  const element = document.querySelector('#header');
+  const {state, events} = store;
 
-    this.storage = localStorage;
-  }
-
-  render () {
-    this.element.innerHTML = `
+  const render = function () {
+    element.innerHTML = `
       <div class="header-infomation">
       <div class="header-logo"></div>
       <input id="title-input" type="text" placeholder="제목을 입력하세요." />
@@ -24,50 +17,50 @@ export default class Header extends Component {
           <button id="reset-btn" class="header-btn">새 프레젠테이션</button>
           <button id="usage-btn" class="header-btn">사용법</button>
       </div>`;
+  };
 
-    this.addListener();
-    this.subscribeEvent();
-  }
+  const addListener = function () {
+    element.querySelector('.header-menu').addEventListener('click', ({target}) => clickHandler(target));
+    element.querySelector('#title-input').addEventListener('input', ({target}) => store.dispatch('updateTitle', target.value));
+  };
 
-  addListener () {
-    this.element.querySelectorAll('button').forEach(button => {
-      button.addEventListener('click', ({target}) => this.clickHandler(target));
-    });
+  const subscribeEvent = function () {
+    events.subscribe('choosePresentation', updateTitle.bind(this));
+  };
 
-    this.element.querySelector('input').addEventListener('input', ({target}) => store.dispatch('updateTitle', target.value));
-  }
-
-  clickHandler ({id}) {
+  const clickHandler = function ({id}) {
     switch (id) {
       case 'save-btn': return store.dispatch('savePresentation');
       case 'reset-btn': return store.dispatch('createPresentation', {stateEvent: 'choosePresentation'});
-      case 'archive-btn': return this.openArchiveModal();
-      case 'usage-btn': return this.openUsageModal();
+      case 'archive-btn': return openArchiveModal();
+      case 'usage-btn': return openUsageModal();
       default:
     }
-  }
+  };
 
-  subscribeEvent () {
-    store.events.subscribe('choosePresentation', this.updateTitle.bind(this));
-  }
+  const updateTitle = function () {
+    element.querySelector('#title-input').value = state.title;
+  };
 
-  updateTitle () {
-    this.element.querySelector('#title-input').value = store.state.title;
-  }
-
-  openModal () {
-    document.querySelector('#modal').classList.add('active');
-  }
-
-  openArchiveModal () {
+  const openArchiveModal = function () {
     const archiveModal = new ArchiveModal();
-    archiveModal.render();
-    this.openModal();
-  }
+    archiveModal.init();
+    openModal();
+  };
 
-  openUsageModal () {
+  const openUsageModal = function () {
     const usageModal = new UsageModal();
-    usageModal.render();
-    this.openModal();
-  }
+    usageModal.init();
+    openModal();
+  };
+
+  const openModal = function () {
+    store.dispatch('eventPublish', {stateEvent: 'openModal'});
+  };
+
+  this.init = function () {
+    render();
+    addListener();
+    subscribeEvent();
+  };
 }

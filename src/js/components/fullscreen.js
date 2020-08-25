@@ -1,16 +1,11 @@
-import Component from '../lib/component';
 import store from '../store/store';
 
-export default class Editor extends Component {
-  constructor () {
-    super({
-      store,
-      element: document.querySelector('#fullscreen'),
-    });
-  }
+export default function Fullscreen () {
+  const element = document.querySelector('#fullscreen');
+  const {state, events} = store;
 
-  render () {
-    this.element.innerHTML = `
+  const render = function () {
+    element.innerHTML = `
       <div id="fullscreen-menu">
         <div class="fullscreenn-controller">
           <button id="before2" class="before-btn"></button>
@@ -21,40 +16,73 @@ export default class Editor extends Component {
       </div>
       <div id="fullscreen-contents"></div>
       <div id="mouse-pointer"></div>`;
+  };
 
-    this.subscribeEvent();
+  const addListener = function () {
+    document.addEventListener('keyup', ({key}) => keyupHandler(key));
+    document.addEventListener('fullscreenchange', fullscreenHandler.bind(this));
+    element.querySelector('#slide-number2').addEventListener('keyup', ({target}) => {
+      updateSlideIndex(target.value - 1);
+    });
+  };
 
-    // 방향키 이벤트 추가!!
-  }
+  const keyupHandler = function (key) {
+    switch (key) {
+      case 'ArrowLeft': return updateSlideIndex(state.ptIndex - 1);
+      case 'ArrowRight': return updateSlideIndex(state.ptIndex + 1);
+      default:
+    }
+  };
 
-  subscribeEvent () {
-    store.events.subscribe('startFullscreen', this.startFullscreen.bind(this));
-  }
+  const fullscreenHandler = function () {
+    if (document.fullscreen) return;
+    store.dispatch('eventPublish', {stateEvent: 'closeFullscreen'});
+  };
 
-  startFullscreen () {
-    this.renderSlides();
-    this.element.requestFullscreen();
-  }
+  const subscribeEvent = function () {
+    events.subscribe('startFullscreen', startFullscreen.bind(this));
+    events.subscribe('changePTSlideIndex', showNthSlide.bind(this));
+  };
 
-  renderSlides () {
-    const $slideContainer = this.element.querySelector('#fullscreen-contents');
+  const startFullscreen = function () {
+    renderSlides();
+    element.requestFullscreen();
+    store.dispatch('eventPublish', {stateEvent: 'closeModal'});
+  };
+
+  const renderSlides = function () {
+    const $slideContainer = element.querySelector('#fullscreen-contents');
     $slideContainer.innerHTML = '';
 
-    const {slideIDList, currentSlideIndex, slideSize} = store.state;
+    const {slideIDList, ptIndex, slideSize} = state;
     slideIDList.forEach(ID => {
-      const $slide = store.state.getSlideNode(ID);
+      const $slide = state.getSlideNode(ID);
       $slideContainer.append($slide.cloneNode(true));
     });
 
-    // TODO : 애니메이션!
     $slideContainer.style.width = `${100 * slideSize}vw`;
-    this.updateSlideNumber(currentSlideIndex + 1, slideSize);
-    // TODO : 모달 닫기
-  }
+    showNthSlide();
+    updateSlideNumber(ptIndex + 1, slideSize);
+  };
 
-  updateSlideNumber (value, max) {
-    const $slideNumber = this.element.querySelector('#slide-number2');
+  const updateSlideIndex = function (index) {
+    store.dispatch('updatePTIndex', {index, stateEvent: 'changePTSlideIndex'});
+  };
+
+  const showNthSlide = function () {
+    const $slideContainer = element.querySelector('#fullscreen-contents');
+    $slideContainer.style.marginLeft = `${-100 * state.ptIndex}vw`;
+  };
+
+  const updateSlideNumber = function (value, max) {
+    const $slideNumber = element.querySelector('#slide-number2');
     $slideNumber.value = value;
     $slideNumber.max = max;
-  }
+  };
+
+  this.init = function () {
+    render();
+    addListener();
+    subscribeEvent();
+  };
 }
