@@ -1,7 +1,6 @@
 import {getStorageItem, setStorageItem, deleteStorageItem} from '../utils/storage';
 import {customSyntaxParser, convertObjToDOM, convertslideStringToDOM} from '../module';
 
-// TODO : 슬라이드 만드는 것 자체를 util로 빼내기
 const getSlideHtmlText = ID => `
   <div id="${ID}" class="slide" draggable="true">
     <svg viewBox="0 0 1280 720" width="100%">
@@ -65,6 +64,10 @@ export default {
 
   updateTitle (state, payload) {
     state.title = payload;
+  },
+
+  updatePTIndex (state, payload) {
+    state.ptIndex = payload.index;
   },
 
   focusOutSlide (state) {
@@ -157,7 +160,6 @@ export default {
       };
     });
   },
-
 
   eventPublish () {},
 };
