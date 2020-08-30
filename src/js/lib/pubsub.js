@@ -1,18 +1,15 @@
-export default class PubSub {
-  constructor () {
-    this.events = {};
-  }
+export default function PubSub () {
+  this.events = new Map();
 
-  subscribe (event, callback) {
-    if (!this.events[event]) {
-      this.events[event] = [];
+  this.subscribe = function (event, callback) {
+    if (!this.events.get(event)) {
+      this.events.set(event, []);
     }
-    return this.events[event].push(callback);
-  }
+    return this.events.get(event).push(callback);
+  };
 
-  publish (event, data = {}) {
-    if (!this.events[event]) return [];
-
-    return this.events[event].map(callback => callback(data));
-  }
+  this.publish = function (event, data = {}) {
+    if (!this.events.get(event)) return [];
+    return this.events.get(event).map(callback => callback(data));
+  };
 }

@@ -4,11 +4,10 @@ import {ALLOW_TAGS, TAGS} from './constants';
 
 const isNode = ({nodeName, nodeValue}) => {
   if (!ALLOW_TAGS.includes(nodeName)) return false;
-  if (nodeName === '#text' && nodeValue.trim() === '') return false;
   return true;
 };
 
-const markupParser = ({nodeName, nodeValue, tagName, attributes, childNodes}) => {
+const customSyntaxParser = ({nodeName, nodeValue, tagName, attributes, childNodes}) => {
   if (nodeName === '#text') {
     if (nodeValue[0] === '\n') return nodeValue.slice(1);
     return nodeValue;
@@ -23,7 +22,7 @@ const markupParser = ({nodeName, nodeValue, tagName, attributes, childNodes}) =>
 
   parsedObj.children = Array.from(childNodes)
     .filter(child => isNode(child))
-    .map(child => markupParser(child));
+    .map(child => customSyntaxParser(child));
 
 
   for (let i = 0; i < attributes.length || 0; i++) {
@@ -43,4 +42,4 @@ const markupParser = ({nodeName, nodeValue, tagName, attributes, childNodes}) =>
   return parsedObj;
 };
 
-export default markupParser;
+export default customSyntaxParser;
