@@ -8,7 +8,7 @@
 
 ## ✨ Lemon Presentation
 
-![homepage](./screenshot/homepsage_v2.png)
+![homepage](./src/assets/homepsage_v2.png)
 
 ✔️ 일반 사용자를 위해 [새롭게 정의한 마크업 태그](#usage)를 제공합니다.
 
